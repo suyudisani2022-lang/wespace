@@ -1,4 +1,4 @@
-const CACHE_NAME = "wespace-shell-v3";
+const CACHE_NAME = "wespace-shell-v4";
 
 const SHELL_ASSETS = [
   "/",
@@ -73,4 +73,5 @@ self.addEventListener("fetch", (event) => {
 
   // Default: network
   event.respondWith(fetch(req));
+
 });
