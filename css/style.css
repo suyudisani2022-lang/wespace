@@ -3490,3 +3490,220 @@ body.auth .link2:hover{ text-decoration: underline; }
   flex-shrink:0;
 
 }
+/* =========================
+   Premium Post UI (weSPACE)
+   ========================= */
+
+.post-card{
+  background:#fff;
+  border:1px solid #e7e9ee;
+  border-radius:16px;
+  padding:14px 14px 12px;
+  margin:12px 0;
+  box-shadow:0 1px 0 rgba(0,0,0,.03);
+}
+
+.post-head{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+}
+
+.avatar-img{
+  width:42px;
+  height:42px;
+  border-radius:999px;
+  object-fit:cover;
+  border:1px solid #eef0f4;
+}
+
+.post-meta{ flex:1; min-width:0; }
+
+.name-row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+}
+
+.poster-name{
+  font-weight:700;
+  font-size:14px;
+  color:#111827;
+}
+
+.sub-row{
+  margin-top:4px;
+  font-size:12px;
+  color:#6b7280;
+  line-height:1.35;
+}
+
+.post-body{
+  margin-top:10px;
+}
+
+.post-text{
+  font-size:15px;
+  line-height:1.65;
+  color:#111827;
+  white-space:pre-wrap;
+  word-break:break-word;
+  margin:0 0 10px;
+}
+
+.more-toggle{
+  display:inline-block;
+  margin-top:6px;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:#2563eb;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.more-toggle:hover{ text-decoration:underline; }
+
+.post-badge{
+  font-size:12px;
+  font-weight:700;
+  padding:5px 10px;
+  border-radius:999px;
+  border:1px solid #e7e9ee;
+  background:#f7f8fb;
+  color:#111827;
+}
+
+/* Optional: subtle badge tints without being “loud” */
+.post-badge.market{ background:#f3f7ff; }
+.post-badge.opportunity{ background:#f3fff7; }
+.post-badge.social{ background:#fff7f1; }
+
+.connect-btn,
+.mini-del{
+  border:1px solid #e7e9ee;
+  background:#fff;
+  color:#111827;
+  border-radius:999px;
+  padding:6px 10px;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.connect-btn:hover,
+.mini-del:hover{
+  background:#f7f8fb;
+}
+
+.danger.mini-del{
+  border-color:#f1c7c7;
+  color:#b42318;
+}
+
+.post-media{
+  margin-top:10px;
+  border-radius:14px;
+  overflow:hidden;
+  border:1px solid #eef0f4;
+  background:#f3f4f6;
+}
+
+.post-media-track{
+  display:flex;
+  overflow:auto;
+  scroll-snap-type:x mandatory;
+  gap:10px;
+  padding:10px;
+}
+
+.post-media-item{
+  position:relative;
+  flex:0 0 85%;
+  scroll-snap-align:start;
+  border-radius:12px;
+  overflow:hidden;
+  background:#e5e7eb;
+}
+
+.post-media-item img{
+  width:100%;
+  height:auto;
+  display:block;
+}
+
+.post-wa-icon{
+  position:absolute;
+  right:10px;
+  bottom:10px;
+  width:44px;
+  height:44px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.8);
+  background:rgba(255,255,255,.92);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+.post-wa-icon img{
+  width:22px;
+  height:22px;
+}
+
+.post-price-badge{
+  position:absolute;
+  left:12px;
+  bottom:12px;
+  background:rgba(17,24,39,.92);
+  color:#fff;
+  font-weight:800;
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:999px;
+}
+
+.post-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid #eef0f4;
+}
+
+.post-actions button{
+  border:1px solid #e7e9ee;
+  background:#fff;
+  color:#111827;
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.post-actions button:hover{
+  background:#f7f8fb;
+}
+
+.post-actions button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+/* Make the page background “premium” (optional but recommended) */
+body{
+  background:#f5f7fb;
+  color:#111827;
+}
+
+/* Mobile polish */
+@media (max-width:480px){
+  .post-card{ border-radius:14px; padding:12px; }
+  .post-media-item{ flex-basis:92%; }
+  .post-text{ font-size:14px; }
+}
+
