@@ -4292,6 +4292,200 @@ body{
   overflow-y: hidden !important;
   overflow-x: hidden !important;
 }
+/* =========================================================
+   weSPACE FINAL FEED POLISH (FB-like)
+   - Media edge-to-edge inside card
+   - Tight header + description spacing
+   - Clean aligned actions
+   - Does NOT touch Visit Shop button
+   Paste at END of style.css
+========================================================= */
+
+@media (max-width: 900px){
+
+  body{
+    background: #f0f2f5 !important;
+    color: #050505 !important;
+  }
+
+  /* Post card: FB-like pop */
+  .post-card{
+    background: #fff !important;
+    border: 1px solid #dadde1 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.12) !important;
+    overflow: hidden !important;
+
+    /* KEY: no padding on card so media can touch edges */
+    padding: 0 !important;
+    margin: 10px 0 !important;
+  }
+
+  /* Header: tight like FB (DO NOT affect visit shop) */
+  .post-head{
+    padding: 10px 14px 4px !important;
+  }
+
+  /* Body: no padding (media full width). We'll pad only the text */
+  .post-body{
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* You don’t want title visible */
+  .post-title{
+    display: none !important;
+  }
+
+  /* Description closer to header */
+  .post-text{
+    padding: 4px 14px 10px !important;
+    margin: 0 !important;
+    text-align: left !important;
+    text-indent: 0 !important;
+
+    font-size: 16px !important;
+    line-height: 1.35 !important;
+    color: #050505 !important;
+
+    word-break: break-word;
+  }
+
+  /* Sub-row meta text */
+  .sub-row{
+    color: #65676b !important;
+    font-size: 13px !important;
+    line-height: 1.25 !important;
+  }
+
+  /* =========================
+     MEDIA: touch BOTH edges
+     Your HTML:
+     .post-media > .post-media-track > .post-media-item > img
+     ========================= */
+
+  .post-media{
+    position: relative !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border-radius: 0 !important;
+  }
+
+  .post-media-track{
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    gap: 0 !important;
+
+    display: flex !important;
+    overflow: hidden !important; /* prevents any inner “ruler” */
+    min-width: 0 !important;
+  }
+
+  .post-media-item{
+    width: 100% !important;
+    flex: 0 0 100% !important;
+
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    overflow: hidden !important;
+
+    position: relative !important;
+    min-width: 0 !important;
+  }
+
+  .post-media-item > img{
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important; /* removes inline gaps */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    object-fit: cover !important;
+  }
+
+  /* WhatsApp floating icon must NOT affect layout */
+  .post-wa-icon{
+    position: absolute !important;
+    right: 12px !important;
+    bottom: 12px !important;
+
+    width: 44px !important;
+    height: 44px !important;
+
+    border: 0 !important;
+    border-radius: 999px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+
+    background: rgba(255,255,255,.92) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,.18) !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    z-index: 3 !important;
+  }
+
+  .post-wa-icon img{
+    width: 22px !important;
+    height: 22px !important;
+    display: block !important;
+  }
+
+  /* =========================
+     ACTIONS: aligned + clean
+     ========================= */
+
+  .post-actions{
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    gap: 0 !important;
+
+    padding: 8px 10px !important;
+    border-top: 1px solid #dadde1 !important;
+    background: #fff !important;
+  }
+
+  .post-actions button{
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+
+    padding: 10px 6px !important;
+    font-size: 14px !important;
+    line-height: 1 !important;
+    color: #65676b !important;
+    font-weight: 600 !important;
+    border-radius: 10px !important;
+  }
+
+  /* Optional: cleaner look like FB */
+  .post-actions .count{
+    display: none !important;
+  }
+
+  /* Keep everything predictable */
+  .post-card *, .post-media *{
+    box-sizing: border-box !important;
+  }
+}
+
 
 
 
