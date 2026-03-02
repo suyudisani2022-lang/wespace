@@ -4259,6 +4259,39 @@ body{
     display: none !important;
   }
 }
+/* =========================
+   Remove inner vertical scrollbar (“ruler”) in posts
+   ========================= */
+
+/* Nothing inside the post should be scrollable */
+.post-card,
+.post-body,
+.post-media,
+.post-media-track,
+.post-media-item{
+  overflow: visible !important;
+}
+
+/* Media area should clip only the edges, not scroll */
+.post-media{
+  overflow: hidden !important;   /* hide overflow, don't scroll */
+  height: auto !important;
+  max-height: none !important;
+}
+
+/* If any of these were forcing scroll by height, remove it */
+.post-media-track,
+.post-media-item{
+  height: auto !important;
+  max-height: none !important;
+}
+
+/* Prevent any accidental scrollbars */
+.post-media,
+.post-media-track{
+  overflow-y: hidden !important;
+  overflow-x: hidden !important;
+}
 
 
 
