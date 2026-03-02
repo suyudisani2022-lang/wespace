@@ -826,7 +826,7 @@ visitorBackBtn?.addEventListener("click", async () => {
     </div>
 
     <div class="post-body">
-      <div class="post-title">${escapeHtml(p.title)}</div>
+      
 
       <div class="post-text"
            data-full="${escapeHtml(fullDesc)}"
@@ -1583,7 +1583,7 @@ async function applyProfileVerifiedBadge(userId){
 
     const type = postType?.value || "market";
     const category = postCategory?.value || "";
-    const title = postTitle?.value.trim();
+   
     const description = postDesc?.value.trim();
     const price = type === "market" ? postPrice?.value.trim() || "" : "";
     const apply_link =
@@ -1591,7 +1591,7 @@ async function applyProfileVerifiedBadge(userId){
     ? (applyLink?.value || "").trim()
     : "";
     const files = Array.from(postImages?.files || []);
-    if (!title) return alert("Please enter a title.");
+   
     if (!description) return alert("Please enter a description.");
     if (!files.length) return alert("Please select at least one image.");
 
@@ -1608,7 +1608,7 @@ async function applyProfileVerifiedBadge(userId){
         author_id: sessionUser.id,
         type,
         category,
-        title,
+        
         description,
         price,
         apply_link,
@@ -2222,5 +2222,6 @@ sessionUser = session?.user || null;
 }
  init();
 });
+
 
 // call it once
