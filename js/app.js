@@ -1042,7 +1042,8 @@ if (changePhotoWrap) {
        data-full="${escapeHtml(p.desc)}"
        data-short="${escapeHtml(short)}"
        data-expanded="0">
-    ${escapeHtml(short)} <button class="more-toggle" data-action="more" type="button">…more</button>
+    ${escapeHtml(short)} 
+    <button class="more-toggle" data-action="more" type="button">…more</button>
   </div>
 
   ${postMediaHTML(p)}
@@ -1729,4 +1730,5 @@ if (changePhotoWrap) {
     swap(accent, accents[j]);
   }, 3200);
 })();
+
 
