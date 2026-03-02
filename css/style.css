@@ -4396,95 +4396,23 @@ body{
     position: relative !important;
     min-width: 0 !important;
   }
-
-  .post-media-item > img{
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    display: block !important; /* removes inline gaps */
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    object-fit: cover !important;
-  }
-
-  /* WhatsApp floating icon must NOT affect layout */
-  .post-wa-icon{
-    position: absolute !important;
-    right: 12px !important;
-    bottom: 12px !important;
-
-    width: 44px !important;
-    height: 44px !important;
-
-    border: 0 !important;
-    border-radius: 999px !important;
-    padding: 0 !important;
-    margin: 0 !important;
-
-    background: rgba(255,255,255,.92) !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,.18) !important;
-
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    z-index: 3 !important;
-  }
-
-  .post-wa-icon img{
-    width: 22px !important;
-    height: 22px !important;
-    display: block !important;
-  }
-
-  /* =========================
-     ACTIONS: aligned + clean
-     ========================= */
-
-  .post-actions{
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-around !important;
-    gap: 0 !important;
-
-    padding: 8px 10px !important;
-    border-top: 1px solid #dadde1 !important;
-    background: #fff !important;
-  }
-
-  .post-actions button{
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 6px !important;
-
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-
-    padding: 10px 6px !important;
-    font-size: 14px !important;
-    line-height: 1 !important;
-    color: #65676b !important;
-    font-weight: 600 !important;
-    border-radius: 10px !important;
-  }
-
-  /* Optional: cleaner look like FB */
-  .post-actions .count{
-    display: none !important;
-  }
-
-  /* Keep everything predictable */
-  .post-card *, .post-media *{
-    box-sizing: border-box !important;
-  }
+   .more-toggle{
+  display: none !important;
 }
+   .post-text{
+  text-indent: 0 !important;
+  padding: 4px 14px 10px !important;
+  margin: 0 !important;
+  text-align: left !important;
+
+  /* 3-line clamp */
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 3 !important;
+  overflow: hidden !important;
+}
+
+
 
 
 
