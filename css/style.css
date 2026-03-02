@@ -4041,15 +4041,15 @@ body{
   padding: 10px 14px 6px !important;
 }
 .post-body{
-  padding: 0 14px 10px !important; /* left/right padding stays for text */
+  padding: 0 17px 10px !important; /* left/right padding stays for text */
   margin: 0 !important;
 }
 
 /* Make ONLY media escape the body padding */
 .post-body .post-media{
-  margin-left: -14px !important;
-  margin-right: -14px !important;
-  margin-top: 8px !important;
+  margin-left: -17px !important;
+  margin-right: -17px !important;
+  margin-top: 7px !important;
   margin-bottom: 8px !important;
   border-radius: 0 !important;
   overflow: hidden !important;
@@ -4122,6 +4122,7 @@ body{
 .post-card .connect-btn{
   display: none !important;
 }
+
 
 
 
