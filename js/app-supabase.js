@@ -724,7 +724,7 @@ visitorBackBtn?.addEventListener("click", async () => {
                   class="post-wa-icon"
                   data-action="contact"
                   data-phone="${escapeHtml(wa)}"
-                  data-title="${escapeHtml(post.title || "")}"
+                  data-title="${escapeHtml((post.description || "").slice(0, 40))}"
                   aria-label="Contact on WhatsApp"
                   title="Contact on WhatsApp"
                 >
@@ -2225,3 +2225,4 @@ sessionUser = session?.user || null;
 
 
 // call it once
+
