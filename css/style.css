@@ -4122,6 +4122,143 @@ body{
 .post-card .connect-btn{
   display: none !important;
 }
+/* =========================
+   weSPACE FB-like FIX (stable)
+   Works with your HTML structure:
+   .post-card > .post-head + .post-body + .post-actions
+   ========================= */
+
+@media (max-width: 700px){
+
+  /* make the page not look washed + remove side gutters */
+  html, body{
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #f0f2f5 !important;
+    color: #050505 !important;
+  }
+
+  /* remove any outer container padding that creates side space */
+  .container, .main, .page, .feed, .content{
+    max-width: 100% !important;
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Post card */
+  .post-card{
+    background: #fff !important;
+    border: 1px solid #dadde1 !important;
+    border-radius: 14px !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.12) !important;
+    overflow: hidden !important;
+
+    /* IMPORTANT: remove padding from the card */
+    padding: 0 !important;
+
+    /* FB style: full width card */
+    margin: 10px 0 !important;
+  }
+
+  /* Header spacing like FB */
+  .post-head{
+    padding: 12px 14px 6px !important;
+  }
+
+  /* Body: NO side padding so media can be full width */
+  .post-body{
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* You don’t want title showing */
+  .post-title{
+    display: none !important;
+  }
+
+  /* Text gets padding (FB style) */
+  .post-text{
+    padding: 4px 14px 10px !important;
+    margin: 0 !important;
+    font-size: 16px !important;
+    line-height: 1.35 !important;
+    color: #050505 !important;
+    text-align: left !important; /* fixes the “centered” look */
+    word-break: break-word;
+  }
+
+  .post-meta .sub-row{
+    color: #65676b !important;
+    font-size: 13px !important;
+  }
+
+  /* Media must be true full width INSIDE card */
+  .post-media{
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .post-media-track{
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+
+  .post-media-item{
+    flex: 0 0 100% !important;
+    border-radius: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .post-media img,
+  .post-media video{
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    border-radius: 0 !important;
+    object-fit: cover !important;
+  }
+
+  /* Action buttons aligned + clean */
+  .post-actions{
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+    gap: 0 !important;
+
+    padding: 8px 10px !important;
+    border-top: 1px solid #dadde1 !important;
+    background: #fff !important;
+  }
+
+  .post-actions button{
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+
+    padding: 10px 6px !important;
+    font-size: 14px !important;
+    line-height: 1 !important;
+    color: #65676b !important;
+    font-weight: 600 !important;
+    border-radius: 10px !important;
+  }
+
+  /* optional: hide counts for a cleaner FB look */
+  .post-actions .count{
+    display: none !important;
+  }
+}
 
 
 
