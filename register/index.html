@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account • weSPACE</title>
+  <meta name="description" content="weSPACE is a social commerce platform to buy, sell, and grow. Create a digital shop, upload products, share your link, and discover opportunities — all in one place.">
+
+  <link rel="stylesheet" href="../css/style.css" />
+
+  <!-- Icons -->
+  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <!-- PWA -->
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0a66c2">
+
+  <!-- iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="weSPACE">
+</head>
+
+<body class="auth">
+  <!-- Top bar (same style as landing) -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html" aria-label="Go to weSPACE home">
+        <div class="logo" aria-hidden="true">w</div>
+        <div>
+          <div class="brandname">weSPACE</div>
+          <div class="brandtag">Social commerce • Shops • Opportunities</div>
+        </div>
+      </a>
+
+      <nav class="top-actions" aria-label="Quick actions">
+        <a class="link" href="../index.html">Back</a>
+        <a class="link" href="../home.html">Browse</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="auth-shell">
+    <div class="auth-card">
+      <div class="auth-head">
+        <h1 class="auth-title">Create your weSPACE account</h1>
+        
+      </div>
+
+      <form id="registerForm" class="auth-form">
+        <div class="grid2">
+          <label class="field">
+            <span>Username</span>
+            <input id="regUsername" type="text" required placeholder="e.g. musa_store">
+          </label>
+
+          <label class="field">
+            <span>Full Name</span>
+            <input id="regName" type="text" required placeholder="e.g. Suyudi Sani">
+          </label>
+        </div>
+
+        <div class="grid2">
+          <label class="field">
+            <span>Skills / Trade</span>
+            <input id="regCampus" type="text" required placeholder="e.g.Graphic designer / student ">
+          </label>
+
+          <label class="field">
+            <span>Brandname / Campus(if student)</span>
+            <input id="regDept" type="text" required placeholder="e.g. meedas cakes and more/ bayero Uni">
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Email</span>
+          <input id="regEmail" type="email" required autocomplete="email" placeholder="you@example.com">
+        </label>
+
+        <div class="grid2">
+          <label class="field">
+            <span>Password</span>
+            <input id="regPassword" type="password" required placeholder="Create a password">
+          </label>
+
+          <label class="field">
+            <span>Repeat Password</span>
+            <input id="regPassword2" type="password" required placeholder="Repeat password">
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Profile Photo</span>
+          <input id="regPhoto" type="file" accept="image/*" required>
+          
+        </label>
+
+        <button class="btn primary full" type="submit">Create Account</button>
+
+        <div class="tiny center">
+          Already have an account?
+          <a class="link2" href="../index.html">Log in</a>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script type="module" src="../js/register-supabase.js"></script>
+   <footer class="footer">
+<div class="footer-inner">
+
+
+
+<a href="about.html">About</a>
+
+<span class="sep">•</span>
+
+<a href="privacy.html">Privacy</a>
+
+<span class="sep">•</span>
+
+<a href="terms.html">Terms</a>
+
+<span class="sep">•</span>
+
+<a href="contact.html">Contact</a>
+
+</body>
+</html>
