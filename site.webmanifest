@@ -1,0 +1,14 @@
+{
+  "name": "weSPACE",
+  "short_name": "weSPACE",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#eef3f8",
+  "theme_color": "#0a66c2",
+  "description": "weSPACE is a social commerce platform to buy, sell, and discover opportunities.",
+  "icons": [
+    { "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

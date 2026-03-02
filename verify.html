@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Seller Verification - weSPACE</title>
+
+  <!-- ✅ Your stylesheet -->
+  <link rel="stylesheet" href="/css/style.css">
+
+  <style>
+    body { background: #f7f7f8; }
+    .verify-box{
+      max-width:560px;
+      margin:40px auto;
+      padding:20px;
+      border:1px solid #e5e7eb;
+      border-radius:12px;
+      background:white;
+    }
+    .verify-box h2{ margin:0 0 14px; }
+    .verify-status{
+      margin:10px 0 18px;
+      font-weight:700;
+      padding:10px 12px;
+      border-radius:10px;
+      background:#f3f4f6;
+    }
+    .status-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+      background:#e5e7eb;
+    }
+    .status-pill.pending{ background:#fef3c7; }
+    .status-pill.approved{ background:#dcfce7; }
+    .status-pill.rejected{ background:#fee2e2; }
+    .hint{
+      font-size:13px;
+      color:#6b7280;
+      margin-top:6px;
+    }
+    label{ display:block; margin:14px 0 6px; font-weight:600; }
+    input[type="file"]{
+      width:100%;
+      padding:10px;
+      border:1px solid #e5e7eb;
+      border-radius:10px;
+      background:#fff;
+    }
+    .row{ display:flex; gap:10px; margin-top:14px; }
+    .row button{
+      flex:1;
+      padding:12px;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .btn-green{ background:#16a34a; color:white; }
+    .btn-gray{ background:#e5e7eb; color:#111827; }
+    .disabled{ opacity:.55; cursor:not-allowed; }
+    .small{ font-size:12px; color:#6b7280; margin-top:10px; }
+    .progress{
+      margin-top:12px;
+      font-size:13px;
+      color:#111827;
+      background:#f3f4f6;
+      border-radius:10px;
+      padding:10px 12px;
+      display:none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="verify-box">
+    <h2>Seller Verification</h2>
+
+    <div id="status" class="verify-status">Loading…</div>
+    <div class="hint">
+      Upload a clear ID document, a selfie, and product samples. We’ll review and verify your shop.
+    </div>
+
+    <label for="idDoc">ID Document</label>
+    <input type="file" id="idDoc" accept="image/*,application/pdf" />
+
+    <label for="selfie">Selfie</label>
+    <input type="file" id="selfie" accept="image/*" />
+
+    <label for="products">Product Samples (multiple)</label>
+    <input type="file" id="products" multiple accept="image/*" />
+
+    <div id="progress" class="progress"></div>
+
+    <div class="row">
+      <!-- ✅ NO onclick -->
+      <button id="submitBtn" class="btn-green" type="button">Submit Verification</button>
+      <button id="backBtn" class="btn-gray" type="button">Back</button>
+    </div>
+
+    <div class="small">
+      Note: If your status is <b>Pending</b>, you can’t submit again until review is complete.
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from "/js/supabaseClient.js";
+
+    // ✅ Your buckets
+    const DOCS_BUCKET = "verification-docs";
+    const PRODUCTS_BUCKET = "verification-products";
+
+    // optional limits
+    const MAX_ID_MB = 8;
+    const MAX_SELFIE_MB = 8;
+    const MAX_PRODUCT_MB = 8;
+
+    let sessionUser = null;
+    let verificationRow = null;
+
+    // Elements
+    const statusEl = document.getElementById("status");
+    const progressEl = document.getElementById("progress");
+    const submitBtn = document.getElementById("submitBtn");
+    const backBtn = document.getElementById("backBtn");
+
+    const idDocEl = document.getElementById("idDoc");
+    const selfieEl = document.getElementById("selfie");
+    const productsEl = document.getElementById("products");
+
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+    function bytesToMB(b){ return b / (1024 * 1024); }
+
+    function setProgress(msg){
+      if (!msg) { progressEl.style.display = "none"; progressEl.textContent = ""; return; }
+      progressEl.style.display = "block";
+      progressEl.textContent = msg;
+    }
+
+    function pill(status){
+      const s = String(status || "not_submitted");
+      const cls = s === "pending" ? "pending" : s === "approved" ? "approved" : s === "rejected" ? "rejected" : "";
+      const icon = s === "pending" ? "⏳" : s === "approved" ? "✅" : s === "rejected" ? "❌" : "📝";
+      return `<span class="status-pill ${cls}">${icon} ${escapeHtml(s.replaceAll("_"," "))}</span>`;
+    }
+
+    function setStatusUI(row){
+      const st = row?.status || "not_submitted";
+      let extra = "";
+      if (st === "rejected" && row?.review_note) {
+        extra = `<div class="hint" style="margin-top:8px;color:#b91c1c;">Reason: ${escapeHtml(row.review_note)}</div>`;
+      }
+      statusEl.innerHTML = `Status: ${pill(st)}${extra}`;
+
+      const locked = (st === "pending" || st === "approved");
+      submitBtn.disabled = locked;
+      submitBtn.classList.toggle("disabled", locked);
+    }
+
+   async function requireLogin(){
+
+  const { data, error } = await supabase.auth.getUser();
+
+  if (error) {
+    console.warn(error);
+  }
+
+  const user = data?.user;
+
+  // ❌ Not logged in → block access
+  if (!user){
+
+    alert("Login required");
+
+    location.href = "/login.html";
+
+    return false;
+  }
+
+  // ✅ Logged in → allow
+  sessionUser = user;
+
+  return true;
+}
+
+    async function getOrCreateVerificationRow(){
+      const { data, error } = await supabase
+        .from("seller_verifications")
+        .select("*")
+        .eq("user_id", sessionUser.id)
+        .maybeSingle();
+
+      if (error) console.warn("seller_verifications fetch:", error);
+
+      if (data) return data;
+
+      const { data: created, error: cErr } = await supabase
+        .from("seller_verifications")
+        .insert({
+          user_id: sessionUser.id,
+          status: "not_submitted"
+        })
+        .select("*")
+        .single();
+
+      if (cErr) throw cErr;
+      return created;
+    }
+
+    async function uploadToBucket(bucket, folder, file){
+      const safeName = file.name.replaceAll(" ", "_");
+      const path = `${sessionUser.id}/${verificationRow.id}/${folder}/${Date.now()}_${safeName}`;
+
+      const { error: upErr } = await supabase.storage
+        .from(bucket)
+        .upload(path, file, { upsert: false });
+
+      if (upErr) throw upErr;
+      return path;
+    }
+
+    async function logFileToDb({ fileType, bucket, path, file }){
+      const { error } = await supabase
+        .from("seller_verification_files")
+        .insert({
+          verification_id: verificationRow.id,
+          user_id: sessionUser.id,
+          file_type: fileType,
+          bucket,
+          path,
+          mime: file.type,
+          size_bytes: file.size
+        });
+
+      if (error) throw error;
+    }
+
+    async function submit(){
+      const st = verificationRow?.status || "not_submitted";
+      if (st === "pending" || st === "approved"){
+        alert("Your verification is already " + st + ".");
+        return;
+      }
+
+      const idFile = idDocEl.files?.[0] || null;
+      const selfieFile = selfieEl.files?.[0] || null;
+      const productFiles = Array.from(productsEl.files || []);
+
+      if (!idFile || !selfieFile || productFiles.length === 0){
+        alert("Upload ID document, selfie, and at least one product sample.");
+        return;
+      }
+
+      if (bytesToMB(idFile.size) > MAX_ID_MB) return alert(`ID document too large. Max ${MAX_ID_MB}MB`);
+      if (bytesToMB(selfieFile.size) > MAX_SELFIE_MB) return alert(`Selfie too large. Max ${MAX_SELFIE_MB}MB`);
+      for (const f of productFiles){
+        if (bytesToMB(f.size) > MAX_PRODUCT_MB) return alert(`A product image is too large. Max ${MAX_PRODUCT_MB}MB each`);
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.classList.add("disabled");
+
+      try{
+        setProgress("Uploading ID document…");
+        const idPath = await uploadToBucket(DOCS_BUCKET, "id_doc", idFile);
+        await logFileToDb({ fileType: "id_doc", bucket: DOCS_BUCKET, path: idPath, file: idFile });
+
+        setProgress("Uploading selfie…");
+        const selfiePath = await uploadToBucket(DOCS_BUCKET, "selfie", selfieFile);
+        await logFileToDb({ fileType: "selfie", bucket: DOCS_BUCKET, path: selfiePath, file: selfieFile });
+
+        let i = 0;
+        for (const f of productFiles){
+          i++;
+          setProgress(`Uploading product sample ${i}/${productFiles.length}…`);
+          const pPath = await uploadToBucket(PRODUCTS_BUCKET, "product_sample", f);
+          await logFileToDb({ fileType: "product_sample", bucket: PRODUCTS_BUCKET, path: pPath, file: f });
+        }
+
+        setProgress("Submitting for review…");
+
+        const { data: updated, error } = await supabase
+          .from("seller_verifications")
+          .update({
+            status: "pending",
+            submitted_at: new Date().toISOString()
+          })
+          .eq("id", verificationRow.id)
+          .select("*")
+          .single();
+
+        if (error) throw error;
+
+        verificationRow = updated;
+        setStatusUI(verificationRow);
+
+        alert("Verification submitted ✅");
+        setProgress("");
+      } catch (e){
+        console.error(e);
+        alert("Upload/Submit failed: " + (e?.message || "Unknown error"));
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("disabled");
+        setProgress("");
+      }
+    }
+
+    // ✅ button events (correct place)
+    backBtn.addEventListener("click", () => history.back());
+    submitBtn.addEventListener("click", submit);
+
+    (async function init(){
+      const ok = await requireLogin();
+      if (!ok) return;
+
+      try{
+        verificationRow = await getOrCreateVerificationRow();
+        setStatusUI(verificationRow);
+      } catch (e){
+        console.error(e);
+        alert("Could not initialize verification: " + (e?.message || "Unknown error"));
+      }
+    })();
+  </script>
+
+</body>
+</html>

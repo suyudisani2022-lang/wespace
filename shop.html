@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>weSPACE Shop</title>
+  <link rel="stylesheet" href="css/style.css"?v=1/>
+</head>
+<body>
+
+  <header class="topbar">
+    <button id="shopBackBtn" class="icon-btn" type="button">←</button>
+    <div style="font-weight:700;">Shop</div>
+    <div></div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+
+      <section>
+        <!-- ✅ UPDATED: Added Verified Badge beside shop title -->
+        <h2>
+          <span id="shopTitle">Shop</span>
+          <span id="shopVerifiedBadge" class="verifiedBadge" style="display:none;">✅ Verified</span>
+        </h2>
+
+        <p class="panel-hint" id="shopHint">Catalogues</p>
+
+        <!-- Owner-only create catalogue -->
+        <div id="ownerCatalogueBox" style="display:none; margin: 12px 0;">
+          <div class="panel-title">Create Catalogue</div>
+          <label class="field">
+            <span>Catalogue name (e.g. Bags)</span>
+            <input id="catName" type="text" maxlength="40" placeholder="Bags" />
+          </label>
+          <label class="field">
+            <span>Cover image</span>
+            <input id="catCover" type="file" accept="image/*" />
+          </label>
+          <button class="btn primary" id="createCatalogueBtn" type="button">Create</button>
+        </div>
+
+        <!-- Catalogue grid -->
+        <div id="catalogueGrid" class="shop-grid"></div>
+      </section>
+
+      <button id="copyShopLinkBtn" class="btn ghost" type="button">🔗 Copy Shop Link</button>
+
+      <!-- Catalogue view -->
+      <section id="catalogueView" style="display:none; margin-top:18px;">
+        <div class="panel-title" id="catalogueNameTitle">Catalogue</div>
+
+        <!-- Owner-only add product -->
+        <div id="ownerProductBox" style="display:none; margin: 12px 0;">
+          <div class="panel-title">Add Product</div>
+
+          <input id="productName" type="text" placeholder="Product name (e.g. iPhone 11 128GB)" required />
+
+          <label class="field">
+            <span>Price (text)</span>
+            <input id="prodPrice" type="text" maxlength="20" placeholder="₦5,000" />
+          </label>
+
+          <label class="field">
+            <span>Image</span>
+            <input id="prodImage" type="file" accept="image/*" />
+          </label>
+
+          <button class="btn primary" id="addProductBtn" type="button">Add</button>
+        </div>
+
+        <div id="productGrid" class="shop-grid"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FULLSCREEN IMAGE MODAL -->
+  <div id="imgModal" class="img-modal" aria-hidden="true">
+    <button id="imgModalClose" class="img-modal-close" type="button">✕</button>
+    <img id="imgModalImg" alt="Full image" />
+  </div>
+
+  <script type="module" src="js/shop.js"></script>
+</body>
+</html>
