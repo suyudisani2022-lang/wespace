@@ -1036,18 +1036,17 @@ if (changePhotoWrap) {
           </div>
         </div>
 
-        <div class="post-body">
-          <div class="post-title">${escapeHtml(p.title)}</div>
+       <div class="post-body">
 
-          <div class="post-text"
-               data-full="${escapeHtml(p.desc)}"
-               data-short="${escapeHtml(short)}"
-               data-expanded="0">
-            ${escapeHtml(short)} <button class="more-toggle" data-action="more" type="button">…more</button>
-          </div>
+  <div class="post-text"
+       data-full="${escapeHtml(p.desc)}"
+       data-short="${escapeHtml(short)}"
+       data-expanded="0">
+    ${escapeHtml(short)} <button class="more-toggle" data-action="more" type="button">…more</button>
+  </div>
 
-          ${postMediaHTML(p)}
-        </div>
+  ${postMediaHTML(p)}
+</div>
 
         <div class="post-actions">
           <button type="button" data-action="like">👍 Like <span class="count">(${likesCount})</span></button>
@@ -1730,3 +1729,4 @@ if (changePhotoWrap) {
     swap(accent, accents[j]);
   }, 3200);
 })();
+
