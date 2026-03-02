@@ -3706,4 +3706,88 @@ body{
   .post-media-item{ flex-basis:92%; }
   .post-text{ font-size:14px; }
 }
+/* =========================
+   weSPACE Post UI Fixes (MERGED)
+   ========================= */
+
+/* 1) Bring description UP (remove extra top spacing) */
+.post-body{
+  margin-top: 8px !important;
+}
+.post-text{
+  margin: 0 0 10px !important;
+}
+
+/* 2) Swipeable media that fills the card (no empty padding/gaps) */
+.post-media{
+  position: relative !important;       /* needed for badges positioning */
+  margin-top: 8px !important;
+  border-radius: 14px;
+  overflow: hidden;                    /* keep badges inside */
+  border: 1px solid #eef0f4;
+  background: #f3f4f6;
+}
+
+/* Keep swipe + remove the space */
+.post-media-track{
+  display: flex !important;
+  overflow-x: auto !important;         /* swipe */
+  overflow-y: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory !important;
+
+  padding: 0 !important;               /* remove side space */
+  gap: 0 !important;                   /* remove gaps */
+}
+
+/* Each slide fills full width */
+.post-media-item{
+  flex: 0 0 100% !important;
+  scroll-snap-align: start !important;
+
+  position: relative;
+  border-radius: 0 !important;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+/* Image fills slide cleanly */
+.post-media-item img{
+  width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  object-fit: cover !important;
+}
+
+/* Optional: hide scrollbar but keep swipe */
+.post-media-track::-webkit-scrollbar{ height: 0; }
+.post-media-track{ scrollbar-width: none; }
+
+/* 3) Price badge: neat, RIGHT, not stretching */
+.post-price-badge{
+  position: absolute !important;
+  right: 12px !important;
+  left: auto !important;
+  bottom: 12px !important;
+
+  width: auto !important;
+  max-width: 70% !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+/* 4) WhatsApp button: LEFT */
+.post-wa-icon{
+  position: absolute !important;
+  left: 10px !important;
+  right: auto !important;
+  bottom: 10px !important;
+}
+
+/* 5) Tighter post tile */
+.post-card{
+  padding-bottom: 10px !important;
+}
+
 
