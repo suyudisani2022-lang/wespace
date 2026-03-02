@@ -3789,5 +3789,117 @@ body{
 .post-card{
   padding-bottom: 10px !important;
 }
+/* =========================
+   weSPACE Mobile Feed "FB-like" UI
+   Paste at END of style.css
+   ========================= */
+
+:root{
+  --fb-bg: #f0f2f5;
+  --card: #ffffff;
+  --text: #050505;
+  --muted: #65676b;
+  --border: #dddfe2;
+}
+
+/* Page background like FB */
+body{
+  background: var(--fb-bg) !important;
+  color: var(--text) !important;
+}
+
+/* If you have a main container/wrapper, remove big side padding on mobile */
+@media (max-width: 600px){
+  .container, .main, .page, .feed, .content{
+    width: 100% !important;
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Make post card feel full-width like FB */
+  .post-card, .post, .feed-item{
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 10px 0 !important;
+    border-radius: 14px !important;
+    background: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,.06) !important;
+  }
+
+  /* Tighter header spacing */
+  .post-header{
+    padding: 12px 12px 6px !important;
+  }
+
+  /* Better text like FB */
+  .post-body{
+    padding: 0 12px 10px !important;
+    margin-top: 4px !important;
+  }
+  .post-text{
+    color: var(--text) !important;
+    font-size: 16px !important;
+    line-height: 1.35 !important;
+    margin: 6px 0 10px !important;
+    word-break: break-word;
+  }
+  .post-meta, .post-subtitle, .post-time, .post-hint{
+    color: var(--muted) !important;
+    font-size: 13px !important;
+  }
+
+  /* Media should be edge-to-edge inside the card */
+  .post-media{
+    margin: 8px 0 8px !important;
+    border-radius: 0 !important;
+    overflow: hidden !important;
+  }
+  .post-media-track{
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+  .post-media-item{
+    flex: 0 0 100% !important;
+    border-radius: 0 !important;
+  }
+  .post-media img, .post-media video{
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    object-fit: cover !important;
+  }
+}
+/* Action buttons should never break on mobile */
+.post-actions{
+  display: flex !important;
+  gap: 8px !important;
+  padding: 8px 12px 12px !important;
+}
+
+.post-actions button{
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  border-radius: 999px !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+
+/* If you have the count span */
+.post-actions .count{
+  color: #65676b !important;
+  font-weight: 600;
+}
+/* Hide connect button inside feed posts (show it only on profile page UI) */
+.post-card .connect-btn,
+.post .connect-btn,
+.feed-item .connect-btn{
+  display: none !important;
+}
+
 
 
