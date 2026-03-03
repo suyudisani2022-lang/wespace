@@ -2116,16 +2116,16 @@ if (nItem) {
 });
 
   // =========================
-// INIT (replace your whole current init block with this)
+// INIT (REPLACE your whole current init block with this)
 // =========================
 
 let notifChannel = null;
-let bootRunning = false;
+let bootInProgress = false;
+let pendingBoot = false;
 
 function setupNotifRealtime() {
   if (!sessionUser) return;
 
-  // clean old
   if (notifChannel) {
     supabase.removeChannel(notifChannel);
     notifChannel = null;
@@ -2146,13 +2146,31 @@ function setupNotifRealtime() {
     .subscribe();
 }
 
-async function bootUI() {
-  // prevent double boot
-  if (bootRunning) return;
-  bootRunning = true;
+async function bootForCurrentSession() {
+  // if a boot is already running, schedule one more run and exit
+  if (bootInProgress) {
+    pendingBoot = true;
+    return;
+  }
+
+  bootInProgress = true;
 
   try {
-    // Always set defaults fast (no awaits)
+    // 0) If logged in, load minimal identity FIRST so UI won't show Guest
+    if (sessionUser) {
+      try {
+        myProfile = await loadMyProfile(); // this is the key fix
+      } catch (e) {
+        console.warn("loadMyProfile failed:", e);
+        // still continue; at least sessionUser exists
+      }
+    } else {
+      myProfile = null;
+      myConnectionSet = new Set();
+      setProfileMode({ mode: "self", userId: null });
+    }
+
+    // 1) Render immediately (now it should show logged-in correctly)
     setProfileMode({ mode: "self", userId: null });
     renderProfileUI();
 
@@ -2166,7 +2184,7 @@ async function bootUI() {
       setPriceVisibility("market");
     }
 
-    // 1) FEED FIRST (fast visible result)
+    // 2) Load FEED first
     try {
       cachedFeedItems = await fetchFeedItemsMixed();
       renderFeed(cachedFeedItems);
@@ -2174,23 +2192,21 @@ async function bootUI() {
       console.warn("fetchFeedItemsMixed failed:", e);
     }
 
-    // 2) Defer the rest (don’t block first render)
+    // 3) Defer the rest
     queueMicrotask(async () => {
       try {
         if (sessionUser) {
           await Promise.allSettled([
-            loadMyProfile(),
             loadMyConnections(),
+            loadShopOwners(),
+            loadVerifiedSellers(),
           ]);
         } else {
-          myProfile = null;
-          myConnectionSet = new Set();
+          await Promise.allSettled([
+            loadShopOwners(),
+            loadVerifiedSellers(),
+          ]);
         }
-
-        await Promise.allSettled([
-          loadShopOwners(),
-          loadVerifiedSellers(),
-        ]);
 
         renderProfileUI();
         renderMarket();
@@ -2204,40 +2220,37 @@ async function bootUI() {
       }
     });
   } finally {
-    bootRunning = false;
+    bootInProgress = false;
+
+    // if something changed while booting (login/logout), run once more
+    if (pendingBoot) {
+      pendingBoot = false;
+      bootForCurrentSession();
+    }
   }
 }
 
 async function init() {
-  // 0) get session once
+  // initial session
   const { data: { session }, error } = await supabase.auth.getSession();
   if (error) console.warn("getSession error:", error);
 
   sessionUser = session?.user || null;
+  await bootForCurrentSession();
 
-  // 1) boot once
-  await bootUI();
-
-  // 2) keep synced on login/logout (no duplicate fetching elsewhere)
+  // keep synced on login/logout
   supabase.auth.onAuthStateChange(async (_event, newSession) => {
     sessionUser = newSession?.user || null;
-
-    // reset user-dependent caches
-    if (!sessionUser) {
-      myProfile = null;
-      myConnectionSet = new Set();
-    }
-
-    // reboot UI for new session state
-    await bootUI();
+    await bootForCurrentSession();
   });
 }
 
-// call it once
+// call once
 init();
 })
 
 
 // call it once
+
 
 
