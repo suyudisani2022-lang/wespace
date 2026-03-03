@@ -4253,6 +4253,32 @@ body{
     font-weight: 600 !important;
     border-radius: 10px !important;
   }
+   /* ==================================
+   RESTORE NORMAL POST CARD PADDING
+   ================================== */
+
+/* Card boxed again */
+.post-card{
+  padding: 14px !important;   /* restore original padding */
+}
+
+/* Body should NOT remove card padding */
+.post-body{
+  padding: 0 !important;
+}
+
+/* Remove any negative margins on media */
+.post-body .post-media{
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* Ensure media stays inside card */
+.post-media{
+  width: 100% !important;
+  border-radius: 12px !important; /* nice inner rounding */
+}
+
 
 
 
