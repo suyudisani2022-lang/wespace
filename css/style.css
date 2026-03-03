@@ -291,11 +291,6 @@ body.landing{
   margin-top: 2px;
 }
 
-.post-title {
-  font-weight: bold;
-  font-size: 15px;
-  margin-bottom: 6px;
-}
 
 .post-text {
   font-size: 15px;
@@ -4323,15 +4318,20 @@ body{
   flex: 0 0 auto !important;
   white-space: nowrap !important;
 }
-/* =========================
-   Fix: description indentation
-   ========================= */
+/* === Make description start normally (no title space, no indent) === */
+.post-title{ 
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: 0 !important;
+}
 
 .post-text{
+  margin-top: 0 !important;      /* remove the 4px */
+  padding-top: 0 !important;
   text-indent: 0 !important;
   text-align: left !important;
-  padding: 0 !important;
-  margin: 6px 0 10px !important;
+  white-space: normal !important;
 }
 
 
