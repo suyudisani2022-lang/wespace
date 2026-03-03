@@ -4278,34 +4278,62 @@ body{
   width: 100% !important;
   border-radius: 12px !important; /* nice inner rounding */
 }
-/* ==================================
-   Shift avatar + name slightly right
-   Keep Visit button safe on left
-   ================================== */
+/* =========================
+   Fix: Name left, Visit Shop right (your real button)
+   ========================= */
 
 .post-head{
   display: flex !important;
   align-items: center !important;
-  gap: 12px !important;
+  gap: 10px !important;
 }
 
-/* Add left spacing to avatar */
-.post-head .avatar-img{
-  margin-right: 14px !important;  /* adjust 6–12px if needed */
+.avatar-img{
+  width: 38px !important;
+  height: 38px !important;
+  flex: 0 0 auto !important;
 }
 
-/* Make name row aligned nicely */
+/* meta takes remaining space */
 .post-meta{
-  flex: 1 !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important; /* allow shrink */
 }
 
-/* Give name-row breathing space */
+/* name row: keep in one line */
 .name-row{
   display: flex !important;
   align-items: center !important;
-  gap: 5px !important;
-  flex-wrap: wrap;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
 }
+
+/* name shrinks nicely instead of colliding */
+.poster-name{
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* Push Visit Shop to the far right */
+#visitShopBtn{
+  margin-left: auto !important;
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+/* =========================
+   Fix: description indentation
+   ========================= */
+
+.post-text{
+  text-indent: 0 !important;
+  text-align: left !important;
+  padding: 0 !important;
+  margin: 6px 0 10px !important;
+}
+
 
 
 
