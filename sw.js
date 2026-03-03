@@ -1,6 +1,6 @@
 // service-worker.js (REPLACE your whole file with this)
 
-const CACHE_NAME = "wespace-shell-v4"; // bump version whenever you deploy
+const CACHE_NAME = "wespace-shell-v7"; // bump version whenever you deploy
 
 const SHELL_ASSETS = [
   "/",
@@ -93,3 +93,4 @@ self.addEventListener("fetch", (event) => {
   // Default: network, fallback to cache
   event.respondWith(fetch(req).catch(() => caches.match(req)));
 });
+
