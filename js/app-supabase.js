@@ -99,6 +99,77 @@ async function loadVerifiedSellers() {
 verifySellerBtn?.addEventListener("click", () => {
   window.location.href = "/verify.html";
 });
+  // ===== Infinite scroll + Pull-to-refresh using sort_time cursor =====
+let feedCursor = null;
+let feedLoading = false;
+let feedHasMore = true;
+const FEED_PAGE_SIZE = 12;
+
+async function loadFeedFirstPage() {
+  feedCursor = null;
+  feedHasMore = true;
+  cachedFeedItems = [];
+
+  const items = await fetchFeedItemsMixed({ limit: FEED_PAGE_SIZE, cursor: null });
+  cachedFeedItems = items;
+  renderFeed(cachedFeedItems);
+
+  if (items.length) feedCursor = items[items.length - 1].sort_time;
+  if (items.length < FEED_PAGE_SIZE) feedHasMore = false;
+}
+
+async function loadFeedNextPage() {
+  if (feedLoading || !feedHasMore) return;
+  feedLoading = true;
+  try {
+    const more = await fetchFeedItemsMixed({ limit: FEED_PAGE_SIZE, cursor: feedCursor });
+    if (!more.length) { feedHasMore = false; return; }
+
+    cachedFeedItems = [...cachedFeedItems, ...more];
+    renderFeed(cachedFeedItems);
+
+    feedCursor = more[more.length - 1].sort_time;
+    if (more.length < FEED_PAGE_SIZE) feedHasMore = false;
+  } finally {
+    feedLoading = false;
+  }
+}
+
+function enableInfiniteScrollFeed() {
+  if (window.__wespaceInfScroll) return;
+  window.__wespaceInfScroll = true;
+
+  window.addEventListener("scroll", () => {
+    const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 700;
+    if (nearBottom) loadFeedNextPage();
+  }, { passive: true });
+}
+
+// pull-to-refresh: reload first page (simple + safe)
+function enablePullToRefreshFeed() {
+  if (window.__wespacePullRefresh) return;
+  window.__wespacePullRefresh = true;
+
+  let startY = 0, pulling = false, fired = false;
+
+  window.addEventListener("touchstart", (e) => {
+    if (window.scrollY !== 0) return;
+    startY = e.touches[0].clientY;
+    pulling = true;
+    fired = false;
+  }, { passive: true });
+
+  window.addEventListener("touchmove", (e) => {
+    if (!pulling || fired) return;
+    const dy = e.touches[0].clientY - startY;
+    if (dy > 90) {
+      fired = true;
+      loadFeedFirstPage();
+    }
+  }, { passive: true });
+
+  window.addEventListener("touchend", () => { pulling = false; }, { passive: true });
+}
 
   // =========================
   // SEARCH MODAL (WORKING)
@@ -969,13 +1040,14 @@ visitorBackBtn?.addEventListener("click", async () => {
   }
 
   // =========================
-  // DATA: MIXED FEED (POSTS + RESHARES)
-  // =========================
-  async function fetchFeedItemsMixed() {
-    // base posts
+  // DATA: MIXED FEED (POSTS + RESHARES) + pagination support
+async function fetchFeedItemsMixed({ limit = 12, cursor = null } = {}) {
+  // If called with NO args like before, keep old behavior (don’t break anything)
+  const isOldCall = (arguments.length === 0);
+  if (isOldCall) {
+    // your old behavior (loads using cachedPosts/fetchPosts and last 80 reshares)
     const posts = cachedPosts?.length ? cachedPosts : await fetchPosts();
 
-    // latest reshares (simple: last 80 reshares)
     const { data: rs, error: rErr } = await supabase
       .from("post_reshares")
       .select("post_id, user_id, created_at")
@@ -984,7 +1056,6 @@ visitorBackBtn?.addEventListener("click", async () => {
 
     if (rErr) {
       console.error("fetch reshares error:", rErr);
-      // fallback: show only posts
       return posts.map((p) => ({
         kind: "post",
         sort_time: p.created_at,
@@ -1007,18 +1078,15 @@ visitorBackBtn?.addEventListener("click", async () => {
       }));
     }
 
-    // Map original post_id -> post object using cached posts
     const postById = new Map(posts.map((p) => [p.id, p]));
-
-    // We also want reshared-by name
     const resharedUserIds = [...new Set(reshares.map((r) => r.user_id))];
+
     const { data: resharedProfiles, error: rpErr } = await supabase
       .from("profiles")
       .select("id, name, username")
       .in("id", resharedUserIds);
 
     if (rpErr) console.error("resharedProfiles error:", rpErr);
-
     const resharedById = new Map((resharedProfiles || []).map((u) => [u.id, u]));
 
     const feedReshares = reshares
@@ -1031,7 +1099,7 @@ visitorBackBtn?.addEventListener("click", async () => {
 
         return {
           kind: "reshare",
-          sort_time: r.created_at, // reshare time drives timeline
+          sort_time: r.created_at,
           post,
           reshared_by: r.user_id,
           reshared_by_name: displayName,
@@ -1049,12 +1117,106 @@ visitorBackBtn?.addEventListener("click", async () => {
       reshared_at: null,
     }));
 
-    // combine + sort
-    const mixed = [...feedReshares, ...feedPosts].sort((a, b) => new Date(b.sort_time) - new Date(a.sort_time));
-
-    return mixed;
+    return [...feedReshares, ...feedPosts].sort(
+      (a, b) => new Date(b.sort_time) - new Date(a.sort_time)
+    );
   }
 
+  // ===== NEW: paged behavior (limit + cursor on sort_time) =====
+  // Cursor means: load items with sort_time < cursor (older)
+  const postsLimit = Math.ceil(limit * 0.8);
+  const resharesLimit = Math.ceil(limit * 0.8);
+
+  // posts page (older than cursor)
+  let postsQ = supabase
+    .from("posts")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(postsLimit);
+
+  if (cursor) postsQ = postsQ.lt("created_at", cursor);
+
+  const { data: posts, error: pErr } = await postsQ;
+  if (pErr) {
+    console.error("fetch posts page error:", pErr);
+  }
+
+  // reshares page (older than cursor)
+  let resharesQ = supabase
+    .from("post_reshares")
+    .select("post_id, user_id, created_at")
+    .order("created_at", { ascending: false })
+    .limit(resharesLimit);
+
+  if (cursor) resharesQ = resharesQ.lt("created_at", cursor);
+
+  const { data: rs, error: rErr } = await resharesQ;
+  if (rErr) {
+    console.error("fetch reshares page error:", rErr);
+  }
+
+  const safePosts = posts || [];
+  const reshares = rs || [];
+
+  // Build maps
+  const postById = new Map(safePosts.map((p) => [p.id, p]));
+
+  // If reshare references a post not in this posts page, fetch those posts quickly
+  const missingPostIds = [...new Set(reshares.map(r => r.post_id))].filter(id => !postById.has(id));
+  if (missingPostIds.length) {
+    const { data: extraPosts } = await supabase
+      .from("posts")
+      .select("*")
+      .in("id", missingPostIds.slice(0, 50)); // safety cap
+    (extraPosts || []).forEach(p => postById.set(p.id, p));
+  }
+
+  const resharedUserIds = [...new Set(reshares.map((r) => r.user_id))];
+  let resharedById = new Map();
+  if (resharedUserIds.length) {
+    const { data: resharedProfiles } = await supabase
+      .from("profiles")
+      .select("id, name, username")
+      .in("id", resharedUserIds);
+    resharedById = new Map((resharedProfiles || []).map((u) => [u.id, u]));
+  }
+
+  const feedReshares = reshares
+    .map((r) => {
+      const post = postById.get(r.post_id);
+      if (!post) return null;
+
+      const u = resharedById.get(r.user_id);
+      const displayName = u?.name ? u.name : u?.username ? `@${u.username}` : "Reshared";
+
+      return {
+        kind: "reshare",
+        sort_time: r.created_at,
+        post,
+        reshared_by: r.user_id,
+        reshared_by_name: displayName,
+        reshared_at: r.created_at,
+      };
+    })
+    .filter(Boolean);
+
+  const feedPosts = safePosts.map((p) => ({
+    kind: "post",
+    sort_time: p.created_at,
+    post: p,
+    reshared_by: null,
+    reshared_by_name: null,
+    reshared_at: null,
+  }));
+
+  // combine, sort, limit
+  const mixed = [...feedReshares, ...feedPosts].sort(
+    (a, b) => new Date(b.sort_time) - new Date(a.sort_time)
+  );
+
+  // Return only the page size requested
+  return mixed.slice(0, limit);
+}
   // =========================
   // PROFILE: POSTS LIST (now includes reshares)
   // =========================
@@ -2186,8 +2348,9 @@ async function bootForCurrentSession() {
 
     // 2) Load FEED first
     try {
-      cachedFeedItems = await fetchFeedItemsMixed();
-      renderFeed(cachedFeedItems);
+     await loadFeedFirstPage();
+enableInfiniteScrollFeed();
+enablePullToRefreshFeed();
     } catch (e) {
       console.warn("fetchFeedItemsMixed failed:", e);
     }
@@ -2251,6 +2414,7 @@ init();
 
 
 // call it once
+
 
 
 
