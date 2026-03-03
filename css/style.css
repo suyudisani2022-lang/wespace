@@ -4291,7 +4291,7 @@ body{
 
 /* Add left spacing to avatar */
 .post-head .avatar-img{
-  margin-left: 12px !important;  /* adjust 6–12px if needed */
+  margin-right: 14px !important;  /* adjust 6–12px if needed */
 }
 
 /* Make name row aligned nicely */
@@ -4306,6 +4306,7 @@ body{
   gap: 8px !important;
   flex-wrap: wrap;
 }
+
 
 
 
