@@ -4278,6 +4278,38 @@ body{
   width: 100% !important;
   border-radius: 12px !important; /* nice inner rounding */
 }
+/* ==================================
+   Shift avatar + name slightly right
+   Keep Visit button safe on left
+   ================================== */
+
+.post-head{
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+/* Add left spacing to avatar */
+.post-head .avatar-img{
+  margin-left: 8px !important;  /* adjust 6–12px if needed */
+}
+
+/* Make name row aligned nicely */
+.post-meta{
+  flex: 1 !important;
+}
+
+/* Give name-row breathing space */
+.name-row{
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap;
+}
+/* Fine-tune name alignment */
+.name-row{
+  margin-left: -2px !important;   /* adjust between -2px to -6px if needed */
+}
 
 
 
