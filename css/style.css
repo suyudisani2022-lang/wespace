@@ -4303,9 +4303,10 @@ body{
 .name-row{
   display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
+  gap: 5px !important;
   flex-wrap: wrap;
 }
+
 
 
 
