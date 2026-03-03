@@ -2116,113 +2116,128 @@ if (nItem) {
 });
 
   // =========================
-  // INIT
-  // =========================
-  
- async function init() {
-  // 1) Get session ONCE and set sessionUser first
- const { data: { session }, error } = await supabase.auth.getSession();
-if (error) console.warn("getSession error:", error);
+// INIT (replace your whole current init block with this)
+// =========================
 
-// 🔥 ADD THIS LINE
-await new Promise(r => setTimeout(r, 50));
+let notifChannel = null;
+let bootRunning = false;
 
-sessionUser = session?.user || null;
- supabase.auth.onAuthStateChange(async (_event, newSession) => {
+function setupNotifRealtime() {
+  if (!sessionUser) return;
+
+  // clean old
+  if (notifChannel) {
+    supabase.removeChannel(notifChannel);
+    notifChannel = null;
+  }
+
+  notifChannel = supabase
+    .channel("notif-badge")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "notifications",
+        filter: `user_id=eq.${sessionUser.id}`,
+      },
+      () => refreshNotifBadge()
+    )
+    .subscribe();
+}
+
+async function bootUI() {
+  // prevent double boot
+  if (bootRunning) return;
+  bootRunning = true;
+
+  try {
+    // Always set defaults fast (no awaits)
+    setProfileMode({ mode: "self", userId: null });
+    renderProfileUI();
+
+    showSection("feed");
+    if (bottomButtons.length) setBottomActive(bottomButtons[0]);
+    if (tabButtons.length) setTabActive(tabButtons[0]);
+
+    if (postType) {
+      postType.value = "market";
+      setCategoryOptions("market");
+      setPriceVisibility("market");
+    }
+
+    // 1) FEED FIRST (fast visible result)
+    try {
+      cachedFeedItems = await fetchFeedItemsMixed();
+      renderFeed(cachedFeedItems);
+    } catch (e) {
+      console.warn("fetchFeedItemsMixed failed:", e);
+    }
+
+    // 2) Defer the rest (don’t block first render)
+    queueMicrotask(async () => {
+      try {
+        if (sessionUser) {
+          await Promise.allSettled([
+            loadMyProfile(),
+            loadMyConnections(),
+          ]);
+        } else {
+          myProfile = null;
+          myConnectionSet = new Set();
+        }
+
+        await Promise.allSettled([
+          loadShopOwners(),
+          loadVerifiedSellers(),
+        ]);
+
+        renderProfileUI();
+        renderMarket();
+        renderOpps();
+        renderSocials();
+
+        setupNotifRealtime();
+        await refreshNotifBadge();
+      } catch (e) {
+        console.warn("deferred boot failed:", e);
+      }
+    });
+  } finally {
+    bootRunning = false;
+  }
+}
+
+async function init() {
+  // 0) get session once
+  const { data: { session }, error } = await supabase.auth.getSession();
+  if (error) console.warn("getSession error:", error);
+
+  sessionUser = session?.user || null;
+
+  // 1) boot once
+  await bootUI();
+
+  // 2) keep synced on login/logout (no duplicate fetching elsewhere)
+  supabase.auth.onAuthStateChange(async (_event, newSession) => {
     sessionUser = newSession?.user || null;
 
-    if (sessionUser) {
-      myProfile = await loadMyProfile();
-      await loadMyConnections();
-    } else {
+    // reset user-dependent caches
+    if (!sessionUser) {
       myProfile = null;
       myConnectionSet = new Set();
-      setProfileMode({ mode: "self", userId: null });
     }
 
-    setupNotifRealtime();
-    await refreshNotifBadge();
-
-    cachedPosts = await fetchPosts();
-    cachedFeedItems = await fetchFeedItemsMixed();
-    await loadShopOwners();
-   await loadVerifiedSellers();
-    renderProfileUI();
-    renderFeed(cachedFeedItems);
-    renderMarket();
-    renderOpps();
-    renderSocials();
+    // reboot UI for new session state
+    await bootUI();
   });
-
-  // 2) Notifications realtime (keep outside of any auth crash)
-  let notifChannel = null;
-
-  function setupNotifRealtime() {
-    if (!sessionUser) return;
-
-    // clean old
-    if (notifChannel) {
-      supabase.removeChannel(notifChannel);
-      notifChannel = null;
-    }
-
-    notifChannel = supabase
-      .channel("notif-badge")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "notifications",
-          filter: `user_id=eq.${sessionUser.id}`,
-        },
-        () => refreshNotifBadge()
-      )
-      .subscribe();
-  }
-
-  // 3) Load user-dependent data safely
-  if (sessionUser) {
-    myProfile = await loadMyProfile();
-    await loadMyConnections();
-  } else {
-    myProfile = null;
-    myConnectionSet = new Set();
-  }
-
-  // 4) Fetch + render initial data
-  cachedPosts = await fetchPosts();
-  cachedFeedItems = await fetchFeedItemsMixed();
-  await loadShopOwners();
-
-  if (postType) {
-    postType.value = "market";
-    setCategoryOptions("market");
-    setPriceVisibility("market");
-  }
-
-  setProfileMode({ mode: "self", userId: null });
-  renderProfileUI();
-
-  showSection("feed");
-  if (bottomButtons.length) setBottomActive(bottomButtons[0]);
-  if (tabButtons.length) setTabActive(tabButtons[0]);
-
-  renderFeed(cachedFeedItems);
-  renderMarket();
-  renderOpps();
-  renderSocials();
-
-  // start notifications after initial render
-  setupNotifRealtime();
-  await refreshNotifBadge();
-
-  // 5) Keep UI synced when auth changes (login/logout)
- 
 }
- init();
-});
+
+// call it once
+init();
+})
 
 
 // call it once
+
 
