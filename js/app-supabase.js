@@ -2184,7 +2184,9 @@ async function bootForCurrentSession() {
     // 2) Load FEED first
     try {
         cachedFeedItems = await fetchFeedItemsMixed();
-        renderFeed(cachedFeedItems);
+renderFeed(cachedFeedItems);
+
+cachedPosts = await fetchPosts();   // ✅ add
     } catch (e) {
       console.warn("fetchFeedItemsMixed failed:", e);
     }
@@ -2248,6 +2250,7 @@ init();
 
 
 // call it once
+
 
 
 
