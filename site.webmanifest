@@ -1,7 +1,7 @@
 {
   "name": "weSPACE",
   "short_name": "weSPACE",
-  "id": "/"
+  
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -14,3 +14,4 @@
   ]
 
 }
+
