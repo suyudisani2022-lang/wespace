@@ -728,7 +728,7 @@ visitorBackBtn?.addEventListener("click", async () => {
                   aria-label="Contact on WhatsApp"
                   title="Contact on WhatsApp"
                 >
-                  <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp">
+                  <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" loading="lazy">
                 </button>
               ` : ""
             }
@@ -800,7 +800,7 @@ visitorBackBtn?.addEventListener("click", async () => {
     ${reshareBanner}
 
     <div class="post-head">
-      <img class="avatar-img" src="${escapeHtml(p.author_photo_url || "")}" alt="avatar">
+      <img class="avatar-img" src="${escapeHtml(p.author_photo_url || "")}" alt="avatar loading="lazy">
 
       <div class="post-meta">
         <div class="name-row">
@@ -1247,7 +1247,7 @@ async function fetchFeedItemsMixed() {
         (u) => `
       <div class="connection-card">
         <div class="connection-left">
-          <img src="${escapeHtml(u.photo_url || "")}" alt="avatar" />
+          <img src="${escapeHtml(u.photo_url || "")}" alt="avatar" loading="lazy"/>
           <div>
             <div class="connection-name">${escapeHtml(u.name || "User")}</div>
             <div class="connection-meta">@${escapeHtml(u.username || "user")} • ${escapeHtml(u.campus || "")} • ${escapeHtml(u.department || "")}</div>
@@ -2248,6 +2248,7 @@ init();
 
 
 // call it once
+
 
 
 
