@@ -708,7 +708,7 @@ visitorBackBtn?.addEventListener("click", async () => {
   const images = Array.isArray(post.image_urls) ? post.image_urls : [];
   if (!images.length) return "";
 
-  const wa = String(post.whatsapp || "").trim();
+  const wa = post.type === "market" ? String(post.whatsapp || "").trim() : "";
   const hasMany = images.length > 1;
 
   return `
@@ -2250,6 +2250,7 @@ init();
 
 
 // call it once
+
 
 
 
