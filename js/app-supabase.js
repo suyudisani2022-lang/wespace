@@ -360,7 +360,7 @@ async function bootAfterAuth() {
 
   } finally {
 
-    bootInProgress = false;
+  
 
     if (pendingBoot) {
       pendingBoot = false;
@@ -2307,6 +2307,7 @@ init();
 
 
 // call it once
+
 
 
 
