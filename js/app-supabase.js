@@ -2169,8 +2169,7 @@ if (nItem) {
 // =========================
 
 let notifChannel = null;
-let bootInProgress = false;
-let pendingBoot = false;
+
 
 function setupNotifRealtime() {
   if (!sessionUser) return;
@@ -2307,6 +2306,7 @@ init();
 
 
 // call it once
+
 
 
 
