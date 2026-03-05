@@ -19,7 +19,7 @@ const SHELL_ASSETS = [
   "/apple-touch-icon.png",
   "/android-chrome-192x192.png",
   "/android-chrome-512x512.png",
-  "/android-chrome-512x512.png",
+  
   "/site.webmanifest"
 ];
 
@@ -93,4 +93,5 @@ self.addEventListener("fetch", (event) => {
   // Default: network, fallback to cache
   event.respondWith(fetch(req).catch(() => caches.match(req)));
 });
+
 
