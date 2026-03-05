@@ -89,7 +89,7 @@ async function loadVerifiedSellers() {
   }
   verifiedSellerSet = new Set((data || []).map(r => r.user_id));
 }
-  
+ 
 
 
   
@@ -368,7 +368,7 @@ async function bootAfterAuth() {
 }
 
 /* ---------------- APP STATE ---------------- */
-
+ let myProfile = null;
 let cachedPosts = [];
 let cachedFeedItems = [];
 
@@ -383,7 +383,7 @@ const profileView = {
 };
 
 /* ---------------- RESUME FIX (MINIMIZE BUG) ---------------- */
- let resumeTimer = null;
+let resumeTimer = null;
 
 function onAppResume() {
   clearTimeout(resumeTimer);
@@ -392,7 +392,7 @@ function onAppResume() {
   }, 150);
 }
 
-;document.addEventListener("visibilitychange", () => {
+document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") onAppResume();
 });
 
@@ -2298,6 +2298,7 @@ init();
 
 
 // call it once
+
 
 
 
