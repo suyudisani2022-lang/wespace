@@ -3778,6 +3778,26 @@ body{
   left: 10px !important;
   right: auto !important;
   bottom: 10px !important;
+
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.post-wa-icon img{
+  width: 20px;
+  height: 20px;
 }
 
 /* 5) Tighter post tile */
@@ -3975,6 +3995,7 @@ body{
 }
 
 .post-media-item{
+   position: relative;
   flex: 0 0 100% !important;
 }
 
@@ -4351,6 +4372,7 @@ body{
   letter-spacing: 0.3px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
+
 
 
 
