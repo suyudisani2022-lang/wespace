@@ -298,6 +298,7 @@ let lastAuthUserId = null;
 
 let bootInProgress = false;
 let pendingBoot = false;
+let activeSectionId = "feed"; 
 
 async function initAuth() {
 
@@ -399,7 +400,7 @@ function onAppResume() {
 
 }
 
-document.addEventListener("visibilitychange", () => {
+;document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") onAppResume();
 });
 
@@ -410,7 +411,6 @@ window.addEventListener("pageshow", (e) => {
 });
 
 window.addEventListener("online", onAppResume);
-
   
 
   // =========================
@@ -2306,6 +2306,7 @@ init();
 
 
 // call it once
+
 
 
 
