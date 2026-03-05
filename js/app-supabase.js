@@ -728,7 +728,7 @@ visitorBackBtn?.addEventListener("click", async () => {
                   aria-label="Contact on WhatsApp"
                   title="Contact on WhatsApp"
                 >
-                  <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" loading="lazy">
+                  <img src="https://cdn-icons-png.flaticon.com/128/733/733585.png">
                 </button>
               ` : ""
             }
@@ -2250,6 +2250,7 @@ init();
 
 
 // call it once
+
 
 
 
