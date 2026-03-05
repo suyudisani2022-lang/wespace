@@ -73,6 +73,7 @@ const applyLink = document.getElementById("applyLink");
 
   const previewEmpty = document.getElementById("imagePreviewEmpty");
   const previewStrip = document.getElementById("imagePreviewStrip");
+  
   let verifiedSellerSet = new Set();
 
 async function loadVerifiedSellers() {
@@ -307,41 +308,63 @@ async function initAuth() {
      showSection(activeSectionId);
      let lastAuthUserId = null;
 
-supabase.auth.onAuthStateChange(async (_event, newSession) => {
+let lastAuthUserId = null;
+
+supabase.auth.onAuthStateChange((_event, newSession) => {
   const newUserId = newSession?.user?.id || null;
 
-  if (newUserId === lastAuthUserId) return; // prevents duplicate rerenders
-
+  // prevent duplicate rerenders
+  if (newUserId === lastAuthUserId) return;
   lastAuthUserId = newUserId;
 
   sessionUser = newSession?.user || null;
 
-  // ... your existing code
+  // re-boot UI when login/logout happens
+  bootAfterAuth();
 });
-
-    // IMPORTANT: when auth changes, refresh UI
-    bootAfterAuth();
-  });
 }
 
 function requireUser() {
   return sessionUser?.id ? sessionUser : null;
 }
 async function bootAfterAuth() {
-  // If you rely on profile / connections / shop owners, do them here
-  if (requireUser()) {
-    await loadMyProfile?.();          // if you have it
-    await loadMyConnections?.();      // if you have it
-    await loadShopOwners?.();         // you DO have this
-    await refreshNotifBadge?.();      // you DO have this
+  // prevent freeze if minimize interrupts an async boot
+  if (bootInProgress) {
+    pendingBoot = true;
+    return;
   }
 
-  // Re-render current section so UI reflects login state
-  showSection(activeSectionId);
-}
-  let myProfile = null; // profiles row
+  bootInProgress = true;
+  pendingBoot = false;
 
-  let activeSectionId = "feed";
+  try {
+    // Re-check session on each boot (helps after resume)
+    const { data: { session } } = await supabase.auth.getSession();
+    sessionUser = session?.user || null;
+
+    if (requireUser()) {
+      await loadMyProfile?.();
+      await loadMyConnections?.();
+      await loadShopOwners?.();
+      await refreshNotifBadge?.();
+    }
+
+    // Re-render current section so UI wakes up
+    showSection(activeSectionId);
+
+  } catch (err) {
+    console.error("bootAfterAuth error:", err);
+
+  } finally {
+    bootInProgress = false;
+
+    // if something requested a boot while we were running, do one more
+    if (pendingBoot) {
+      pendingBoot = false;
+      bootAfterAuth();
+    }
+  }
+}
 
   // cachedPosts = raw posts list for category pages
   let cachedPosts = [];
@@ -358,6 +381,27 @@ async function bootAfterAuth() {
     returnSection: "profile",
     returnScrollY: 0,
   };
+  let resumeTimer = null;
+
+function onAppResume() {
+  clearTimeout(resumeTimer);
+  resumeTimer = setTimeout(() => {
+    bootAfterAuth();
+  }, 150);
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") onAppResume();
+});
+
+window.addEventListener("focus", onAppResume);
+
+// When the browser restores from back/forward cache (common on mobile)
+window.addEventListener("pageshow", (e) => {
+  if (e.persisted) onAppResume();
+});
+
+window.addEventListener("online", onAppResume);
 
   
 
@@ -2252,6 +2296,7 @@ init();
 
 
 // call it once
+
 
 
 
