@@ -91,10 +91,6 @@ async function loadVerifiedSellers() {
 }
   
 
-  (async function startApp() {
-  await initAuth();      // MUST be first
-  await bootAfterAuth(); // then render
-})();
 
   
 verifySellerBtn?.addEventListener("click", () => {
@@ -387,17 +383,13 @@ const profileView = {
 };
 
 /* ---------------- RESUME FIX (MINIMIZE BUG) ---------------- */
-
-let resumeTimer = null;
+ let resumeTimer = null;
 
 function onAppResume() {
-
   clearTimeout(resumeTimer);
-
   resumeTimer = setTimeout(() => {
     bootAfterAuth();
   }, 150);
-
 }
 
 ;document.addEventListener("visibilitychange", () => {
@@ -2306,6 +2298,7 @@ init();
 
 
 // call it once
+
 
 
 
