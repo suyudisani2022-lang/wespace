@@ -2228,6 +2228,24 @@ cachedPosts = await fetchPosts();   // ✅ add
     }
   }
 }
+  async function rehydrateOnReturn() {
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) console.warn("rehydrate getSession error:", error);
+
+    const newUser = session?.user || null;
+
+    // Only reboot if session state changed OR page was sleeping
+    const changed = (!sessionUser && newUser) || (sessionUser && !newUser) || (sessionUser?.id !== newUser?.id);
+
+    sessionUser = newUser;
+
+    // Always reboot when returning (simple & reliable)
+    await bootForCurrentSession();
+  } catch (e) {
+    console.warn("rehydrateOnReturn failed:", e);
+  }
+}
 
 async function init() {
   // initial session
@@ -2247,9 +2265,18 @@ async function init() {
 // call once
 init();
 })
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) rehydrateOnReturn();
+});
+
+// iOS/Safari commonly restores from bfcache; this catches it
+window.addEventListener("pageshow", () => {
+  rehydrateOnReturn();
+});
 
 
 // call it once
+
 
 
 
