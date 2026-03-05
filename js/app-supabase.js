@@ -2291,13 +2291,10 @@ async function init() {
 // call once
 init();
 })
-async function startApp() {
-  await initAuth();
-  await bootAfterAuth();
-}
-startApp();
+
 
 // call it once
+
 
 
 
