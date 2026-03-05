@@ -292,43 +292,44 @@ async function markNotificationsRead(ids) {
   // =========================
   // STATE
   // =========================
-  let sessionUser = null; // auth user
-  let authReady = false;
+ let sessionUser = null; // auth user
+let authReady = false;
+let lastAuthUserId = null;
+
+let bootInProgress = false;
+let pendingBoot = false;
 
 async function initAuth() {
+
   const { data: { session }, error } = await supabase.auth.getSession();
   if (error) console.error("getSession error:", error);
 
   sessionUser = session?.user ?? null;
   authReady = true;
 
-  // Keep sessionUser synced forever
-  supabase.auth.onAuthStateChange((_event, session) => {
-    sessionUser = session?.user ?? null;
-     showSection(activeSectionId);
-     let lastAuthUserId = null;
+  // Listen for login / logout changes
+  supabase.auth.onAuthStateChange(async (_event, newSession) => {
 
-let lastAuthUserId = null;
+    const newUserId = newSession?.user?.id || null;
 
-supabase.auth.onAuthStateChange((_event, newSession) => {
-  const newUserId = newSession?.user?.id || null;
+    // prevent duplicate rerenders
+    if (newUserId === lastAuthUserId) return;
 
-  // prevent duplicate rerenders
-  if (newUserId === lastAuthUserId) return;
-  lastAuthUserId = newUserId;
+    lastAuthUserId = newUserId;
 
-  sessionUser = newSession?.user || null;
+    sessionUser = newSession?.user || null;
 
-  // re-boot UI when login/logout happens
-  bootAfterAuth();
-});
+    await bootAfterAuth();
+
+  });
 }
 
 function requireUser() {
   return sessionUser?.id ? sessionUser : null;
 }
+
 async function bootAfterAuth() {
-  // prevent freeze if minimize interrupts an async boot
+
   if (bootInProgress) {
     pendingBoot = true;
     return;
@@ -338,7 +339,8 @@ async function bootAfterAuth() {
   pendingBoot = false;
 
   try {
-    // Re-check session on each boot (helps after resume)
+
+    // re-check session (important after minimize)
     const { data: { session } } = await supabase.auth.getSession();
     sessionUser = session?.user || null;
 
@@ -349,45 +351,52 @@ async function bootAfterAuth() {
       await refreshNotifBadge?.();
     }
 
-    // Re-render current section so UI wakes up
+    // wake up UI
     showSection(activeSectionId);
 
   } catch (err) {
+
     console.error("bootAfterAuth error:", err);
 
   } finally {
+
     bootInProgress = false;
 
-    // if something requested a boot while we were running, do one more
     if (pendingBoot) {
       pendingBoot = false;
       bootAfterAuth();
     }
+
   }
 }
 
-  // cachedPosts = raw posts list for category pages
-  let cachedPosts = [];
+/* ---------------- APP STATE ---------------- */
 
-  // cachedFeedItems = mixed feed list (posts + reshares)
-  let cachedFeedItems = [];
+let cachedPosts = [];
+let cachedFeedItems = [];
 
-  let myConnectionSet = new Set();
-  let shopOwnerSet = new Set();
+let myConnectionSet = new Set();
+let shopOwnerSet = new Set();
 
-  const profileView = {
-    mode: "self", // "self" | "visitor"
-    userId: null,
-    returnSection: "profile",
-    returnScrollY: 0,
-  };
-  let resumeTimer = null;
+const profileView = {
+  mode: "self",
+  userId: null,
+  returnSection: "profile",
+  returnScrollY: 0,
+};
+
+/* ---------------- RESUME FIX (MINIMIZE BUG) ---------------- */
+
+let resumeTimer = null;
 
 function onAppResume() {
+
   clearTimeout(resumeTimer);
+
   resumeTimer = setTimeout(() => {
     bootAfterAuth();
   }, 150);
+
 }
 
 document.addEventListener("visibilitychange", () => {
@@ -396,7 +405,6 @@ document.addEventListener("visibilitychange", () => {
 
 window.addEventListener("focus", onAppResume);
 
-// When the browser restores from back/forward cache (common on mobile)
 window.addEventListener("pageshow", (e) => {
   if (e.persisted) onAppResume();
 });
@@ -2292,10 +2300,14 @@ async function init() {
 // call once
 init();
 })
-
+(async function startApp() {
+  await initAuth();
+  await bootAfterAuth();
+})();
 
 
 // call it once
+
 
 
 
