@@ -617,7 +617,7 @@ visitorBackBtn?.addEventListener("click", async () => {
   const CATEGORY_MAP = {
     market: [
       "Phones & Gadgets",
-      "Fashion & Clothing",
+      "Fashion & Textiles",
       "Shoes & Bags",
       "Perfumes & Beauty",
       "Food & Snacks",
@@ -627,8 +627,8 @@ visitorBackBtn?.addEventListener("click", async () => {
       "Electronics",
       "Others",
     ],
-    opportunity: ["Scholarship", "Job", "Training", "Internship", "Volunteer", "Others"],
-    social: ["Event", "Hangout", "Sports", "Conference", "Club / Community", "Others"],
+    opportunity: ["Grants & Funding", "Scholarship", "Job", "Training", "Internship", "Others"],
+    social: ["Events", "Trends", "Conference", "Others"],
   };
 
   const setCategoryOptions = (type) => {
@@ -2252,6 +2252,7 @@ init();
 
 
 // call it once
+
 
 
 
