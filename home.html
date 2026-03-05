@@ -399,8 +399,11 @@
 
       console.log("SW registered:", reg.scope);
 
-      // 🔥 force update check every load
-      reg.update();
+       document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") reg.update().catch(()=>{});
+      });
+
+      
 
     } catch (err) {
       console.error("SW registration failed:", err);
@@ -414,6 +417,7 @@
 
 </body>
 </html>
+
 
 
 
