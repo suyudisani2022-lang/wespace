@@ -2289,7 +2289,7 @@ async function init() {
 
 // call once
 init();
-})
+
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState === "visible") {
     const { data } = await supabase.auth.getSession();
@@ -2305,6 +2305,7 @@ document.addEventListener("visibilitychange", async () => {
   await initAuth();
   await bootAfterAuth();
 })();
+
 
 
 
