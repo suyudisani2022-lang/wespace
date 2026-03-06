@@ -2294,6 +2294,7 @@ document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState === "visible") {
     const { data } = await supabase.auth.getSession();
     sessionUser = data?.session?.user || null;
+    await bootForCurrentSession();
   }
 });
   window.addEventListener("focus", () => {
@@ -2301,10 +2302,7 @@ document.addEventListener("visibilitychange", async () => {
     showSection(activeSectionId || "feed");
   }
 });
-  (async function startApp() {
-  await initAuth();
-  await bootAfterAuth();
-})();
+  
 
 
 
