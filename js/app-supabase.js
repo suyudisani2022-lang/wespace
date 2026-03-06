@@ -2236,4 +2236,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sessionUser) setupNotifRealtime();
   });
 
+  // (NEW) Desktop fix: sometimes switching windows doesn't trigger visibilitychange
+  // but it DOES trigger a 'focus' event when you click back into the window.
+  window.addEventListener("focus", () => {
+    console.log("Window focused: Re-checking Supabase connection...");
+    supabase.auth.getSession().catch(console.error);
+    if (sessionUser) setupNotifRealtime();
+  });
+
 })
