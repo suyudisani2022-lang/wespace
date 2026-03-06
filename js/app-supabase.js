@@ -2305,9 +2305,22 @@ async function init() {
 // call once
 init();
 })
+document.addEventListener("visibilitychange", async () => {
+  if (document.visibilityState === "visible") {
+    const { data } = await supabase.auth.getSession();
+    sessionUser = data?.session?.user || null;
+  }
+});
+  window.addEventListener("focus", () => {
+  if (typeof showSection === "function") {
+    showSection(activeSectionId || "feed");
+  }
+});
+  (async function startApp() {
+  await initAuth();
+  await bootAfterAuth();
+})();
 
-
-// call it once
 
 
 
