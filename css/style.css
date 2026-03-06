@@ -3986,738 +3986,132 @@ body {
 }
 
 /* =========================
-   weSPACE Post UI Fixes (MERGED)
+   weSPACE: Stable Edge-to-Edge Media
    ========================= */
 
-/* 1) Bring description UP (remove extra top spacing) */
+/* Ensure the card allows media to bleed to the edges */
+.post-card {
+  padding: 14px !important;
+  overflow: hidden !important;
+  background: #fff !important;
+  border: 1px solid #dadde1 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .1) !important;
+  margin: 10px 0 !important;
+}
+
+/* Header needs its own padding */
+.post-head {
+  padding: 0 0 10px 0 !important;
+}
+
+/* Body contains text and media */
 .post-body {
-  margin-top: 8px !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
+/* Text gets standard horizontal padding */
 .post-text {
-  margin: 0 0 10px !important;
+  padding: 0 4px 10px 4px !important;
+  margin: 0 !important;
+  font-size: 16px !important;
+  line-height: 1.4 !important;
+  color: #050505 !important;
+  word-break: break-word;
 }
 
-/* 2) Swipeable media that fills the card (no empty padding/gaps) */
+/* Media escapes card padding with negative margins */
 .post-media {
+  margin-left: -14px !important;
+  margin-right: -14px !important;
+  margin-top: 4px !important;
+  margin-bottom: 10px !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  background: #f0f2f5 !important;
   position: relative !important;
-  /* needed for badges positioning */
-  margin-top: 8px !important;
-  border-radius: 14px;
-  overflow: hidden;
-  /* keep badges inside */
-  border: 1px solid #eef0f4;
-  background: #f3f4f6;
+
+  /* Praise-worthy height limit */
+  max-height: 520px !important;
 }
 
-/* Keep swipe + remove the space */
 .post-media-track {
   display: flex !important;
   overflow-x: auto !important;
-  /* swipe */
-  overflow-y: hidden !important;
-  -webkit-overflow-scrolling: touch;
   scroll-snap-type: x mandatory !important;
-
   padding: 0 !important;
-  /* remove side space */
   gap: 0 !important;
-  /* remove gaps */
 }
 
-/* Each slide fills full width */
-.post-media-item {
-  flex: 0 0 100% !important;
-  scroll-snap-align: start !important;
-
-  position: relative;
-  border-radius: 0 !important;
-  overflow: hidden;
-  background: #e5e7eb;
-}
-
-/* Image fills slide cleanly */
-.post-media-item img {
-  width: 100% !important;
-  height: auto !important;
-  display: block !important;
-  object-fit: cover !important;
-}
-
-/* Optional: hide scrollbar but keep swipe */
 .post-media-track::-webkit-scrollbar {
   height: 0;
 }
 
-.post-media-track {
-  scrollbar-width: none;
-}
-
-/* 3) Price badge: neat, RIGHT, not stretching */
-.post-price-badge {
-  position: absolute !important;
-  right: 12px !important;
-  left: auto !important;
-  bottom: 12px !important;
-
-  width: auto !important;
-  max-width: 70% !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-/* 4) WhatsApp button: LEFT */
-.post-wa-icon {
-  position: absolute !important;
-  left: 10px !important;
-  right: auto !important;
-  bottom: 10px !important;
-
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #ffffff;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border: none;
-  cursor: pointer;
-  padding: 0;
-
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-}
-
-.post-wa-icon img {
-  width: 20px;
-  height: 20px;
-}
-
-/* 5) Tighter post tile */
-.post-card {
-  padding-bottom: 10px !important;
-}
-
-/* =========================
-   weSPACE Mobile Feed "FB-like" UI
-   Paste at END of style.css
-   ========================= */
-
-:root {
-  --fb-bg: #f0f2f5;
-  --card: #ffffff;
-  --text: #050505;
-  --muted: #65676b;
-  --border: #dddfe2;
-}
-
-/* Page background like FB */
-body {
-  background: var(--fb-bg) !important;
-  color: var(--text) !important;
-}
-
-/* If you have a main container/wrapper, remove big side padding on mobile */
-@media (max-width: 600px) {
-
-  .container,
-  .main,
-  .page,
-  .feed,
-  .content {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-
-  /* Make post card feel full-width like FB */
-  .post-card,
-  .post,
-  .feed-item {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin: 10px 0 !important;
-    border-radius: 14px !important;
-    background: var(--card) !important;
-    border: 1px solid var(--border) !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .06) !important;
-  }
-
-  /* Tighter header spacing */
-  .post-header {
-    padding: 12px 12px 6px !important;
-  }
-
-  /* Better text like FB */
-  .post-body {
-    padding: 0 12px 10px !important;
-    margin-top: 4px !important;
-  }
-
-  .post-text {
-    color: var(--text) !important;
-    font-size: 16px !important;
-    line-height: 1.35 !important;
-    margin: 6px 0 10px !important;
-    word-break: break-word;
-  }
-
-  .post-meta,
-  .post-subtitle,
-  .post-time,
-  .post-hint {
-    color: var(--muted) !important;
-    font-size: 13px !important;
-  }
-
-  /* Media should be edge-to-edge inside the card */
-  .post-media {
-    margin: 8px 0 8px !important;
-    border-radius: 0 !important;
-    overflow: hidden !important;
-  }
-
-  .post-media-track {
-    padding: 0 !important;
-    gap: 0 !important;
-  }
-
-  .post-media-item {
-    flex: 0 0 100% !important;
-    border-radius: 0 !important;
-  }
-
-  .post-media img,
-  .post-media video {
-    width: 100% !important;
-    height: auto !important;
-    display: block !important;
-    object-fit: cover !important;
-  }
-}
-
-/* Action buttons should never break on mobile */
-.post-actions {
-  display: flex !important;
-  gap: 8px !important;
-  padding: 8px 12px 12px !important;
-}
-
-.post-actions button {
-  flex: 1 1 0 !important;
-  min-width: 0 !important;
-  border-radius: 999px !important;
-  white-space: nowrap !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-}
-
-/* If you have the count span */
-.post-actions .count {
-  color: #65676b !important;
-  font-weight: 600;
-}
-
-/* Hide connect button inside feed posts (show it only on profile page UI) */
-.post-card .connect-btn,
-.post .connect-btn,
-.feed-item .connect-btn {
-  display: none !important;
-}
-
-/* =========================
-   FB-like Media Edge-to-Edge
-   ========================= */
-
-:root {
-  --fb-bg: #f0f2f5;
-  --card: #ffffff;
-  --text: #050505;
-  --muted: #65676b;
-  --border: #dadde1;
-}
-
-body {
-  background: var(--fb-bg) !important;
-  color: var(--text) !important;
-}
-
-/* Stronger “card pop” like FB */
-.post-card,
-.post,
-.feed-item {
-  background: var(--card) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: 14px !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, .10) !important;
-}
-
-/* IMPORTANT:
-   Your card has inner padding (often 12px).
-   We make media “bleed” left/right by using negative margins. */
-.post-media {
-  margin-left: -12px !important;
-  margin-right: -12px !important;
-  border-radius: 0 !important;
-  overflow: hidden !important;
-}
-
-/* Ensure media truly fills */
-.post-media-track {
-  padding: 0 !important;
-  gap: 0 !important;
-}
-
 .post-media-item {
   flex: 0 0 100% !important;
-  border-radius: 0 !important;
-  overflow: hidden !important;
+  scroll-snap-align: start !important;
+  position: relative !important;
+  height: 520px !important;
+  /* Fixed height for consistency */
 }
 
-.post-media img,
-.post-media video {
+.post-media-item img {
   width: 100% !important;
-  height: auto !important;
+  height: 100% !important;
   display: block !important;
   object-fit: cover !important;
+  /* No more side spaces */
 }
 
-/* =========================
-   Fix media to edge inside padded card
-   Your card padding = 14px
-   ========================= */
-
-.post-card {
-  padding: 14px;
-  overflow: hidden;
-  /* important */
-}
-
-/* This is the KEY fix */
-.post-media {
-  margin-left: -14px !important;
-  margin-right: -14px !important;
-  margin-top: 8px !important;
-  margin-bottom: 8px !important;
-  border-radius: 0 !important;
-  overflow: hidden !important;
-}
-
-.post-media-track {
-  padding: 0 !important;
-  gap: 0 !important;
-}
-
-.post-media-item {
-  position: relative;
-  flex: 0 0 100% !important;
-}
-
-.post-media img,
-.post-media video {
-  width: 100% !important;
-  display: block !important;
-  object-fit: cover;
-}
-
-body {
-  background: #f0f2f5 !important;
-}
-
-.post-card {
-  background: #ffffff !important;
-  border: 1px solid #dadde1 !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, .10) !important;
-}
-
-.post-text {
-  color: #050505 !important;
-}
-
-.post-meta {
-  color: #65676b !important;
-}
-
-.post-actions {
-  border-top: 1px solid #dadde1;
-  margin-top: 6px;
-  padding-top: 6px;
-
-  display: flex;
-  justify-content: space-around;
-}
-
-.post-actions button {
-  background: none !important;
-  border: none !important;
-  box-shadow: none !important;
-  color: #65676b;
-  font-weight: 600;
-}
-
-/* =========================
-   weSPACE: Edge-to-edge media (your structure)
-   post-body contains media
-   ========================= */
-
-/* Card */
-.post-card {
-  background: #fff;
-  border: 1px solid #dadde1;
-  border-radius: 14px;
-  overflow: hidden;
-  /* critical */
-  box-shadow: 0 1px 2px rgba(0, 0, 0, .10);
-}
-
-/* Header + body padding like FB */
-.post-head {
-  padding: 10px 14px 6px !important;
-}
-
-.post-body {
-  padding: 0 17px 10px !important;
-  /* left/right padding stays for text */
-  margin: 0 !important;
-}
-
-/* Make ONLY media escape the body padding */
-.post-body .post-media {
-  margin-left: -17px !important;
-  margin-right: -17px !important;
-  margin-top: 7px !important;
-  margin-bottom: 8px !important;
-  border-radius: 0 !important;
-  overflow: hidden !important;
-}
-
-/* Ensure no inner gaps */
-.post-media-track {
-  padding: 0 !important;
-  gap: 0 !important;
-}
-
-.post-media-item {
-  flex: 0 0 100% !important;
-  border-radius: 0 !important;
-}
-
-.post-media img,
-.post-media video {
-  width: 100% !important;
-  display: block !important;
-  object-fit: cover !important;
-}
-
-/* Remove title line from UI (keep DB field) */
-.post-title {
-  display: none !important;
-}
-
-.post-text {
-  margin-top: 2px !important;
-  margin-bottom: 8px !important;
-  line-height: 1.35 !important;
-  color: #050505 !important;
-}
-
-.sub-row {
-  color: #65676b !important;
-}
-
-/* =========================
-   FB-like action row alignment
-   ========================= */
-
+/* Post Actions */
 .post-actions {
   display: flex !important;
-  align-items: center !important;
   justify-content: space-around !important;
-  gap: 0 !important;
-  padding: 8px 10px !important;
+  padding: 8px 0 0 0 !important;
   border-top: 1px solid #dadde1 !important;
-  background: transparent !important;
 }
 
 .post-actions button {
-  flex: 1 1 0 !important;
-  min-width: 0 !important;
-
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-
+  flex: 1 !important;
   background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-
-  padding: 10px 6px !important;
-  font-size: 14px !important;
-  line-height: 1 !important;
+  border: none !important;
   color: #65676b !important;
   font-weight: 600 !important;
-  border-radius: 10px !important;
+  padding: 10px !important;
+  font-size: 14px !important;
+  cursor: pointer;
+  border-radius: 6px !important;
 }
 
-.post-actions button:active {
-  transform: scale(0.98);
+.post-actions button:hover {
+  background: #f2f2f2 !important;
 }
 
-/* Optional: hide counts for a cleaner FB look */
-.post-actions .count {
-  display: none !important;
-}
-
+/* Hide utility elements as requested previously */
+.post-title,
 .post-card .connect-btn {
   display: none !important;
 }
 
 /* =========================
-   weSPACE FB-like FIX (stable)
-   Works with your HTML structure:
-   .post-card > .post-head + .post-body + .post-actions
+   weSPACE: Layout Polishes
    ========================= */
 
-@media (max-width: 700px) {
+.post-text {
+  margin-top: 0 !important;
+  /* remove the 4px */
+  padding-top: 0 !important;
+  text-indent: 0 !important;
+  text-align: left !important;
+  white-space: normal !important;
+}
 
-  /* make the page not look washed + remove side gutters */
-  html,
-  body {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #f0f2f5 !important;
-    color: #050505 !important;
-  }
-
-  /* remove any outer container padding that creates side space */
-  .container,
-  .main,
-  .page,
-  .feed,
-  .content {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-
-  /* Post card */
-  .post-card {
-    background: #fff !important;
-    border: 1px solid #dadde1 !important;
-    border-radius: 14px !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .12) !important;
-    overflow: hidden !important;
-
-    /* IMPORTANT: remove padding from the card */
-    padding: 0 !important;
-
-    /* FB style: full width card */
-    margin: 10px 0 !important;
-  }
-
-  /* Header spacing like FB */
-  .post-head {
-    padding: 12px 14px 6px !important;
-  }
-
-  /* Body: NO side padding so media can be full width */
-  .post-body {
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  /* You don’t want title showing */
-  .post-title {
-    display: none !important;
-  }
-
-  /* Text gets padding (FB style) */
-  .post-text {
-    padding: 4px 14px 10px !important;
-    margin: 0 !important;
-    font-size: 16px !important;
-    line-height: 1.35 !important;
-    color: #050505 !important;
-    text-align: left !important;
-    /* fixes the “centered” look */
-    word-break: break-word;
-  }
-
-  .post-meta .sub-row {
-    color: #65676b !important;
-    font-size: 13px !important;
-  }
-
-  /* Media must be true full width INSIDE card */
-  .post-media {
-    margin: 0 !important;
-    padding: 0 !important;
-    border-radius: 0 !important;
-    overflow: hidden !important;
-  }
-
-  .post-media-track {
-    padding: 0 !important;
-    gap: 0 !important;
-  }
-
-  .post-media-item {
-    flex: 0 0 100% !important;
-    border-radius: 0 !important;
-    overflow: hidden !important;
-  }
-
-  .post-media img,
-  .post-media video {
-    width: 100% !important;
-    height: auto !important;
-    display: block !important;
-    border-radius: 0 !important;
-    object-fit: cover !important;
-  }
-
-  /* Action buttons aligned + clean */
-  .post-actions {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-around !important;
-    gap: 0 !important;
-
-    padding: 8px 10px !important;
-    border-top: 1px solid #dadde1 !important;
-    background: #fff !important;
-  }
-
-  .post-actions button {
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 6px !important;
-
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-
-    padding: 10px 6px !important;
-    font-size: 14px !important;
-    line-height: 1 !important;
-    color: #65676b !important;
-    font-weight: 600 !important;
-    border-radius: 10px !important;
-  }
-
-  /* ==================================
-   RESTORE NORMAL POST CARD PADDING
-   ================================== */
-
-  /* Card boxed again */
-  .post-card {
-    padding: 14px !important;
-    /* restore original padding */
-  }
-
-  /* Body should NOT remove card padding */
-  .post-body {
-    padding: 0 !important;
-  }
-
-  /* Remove any negative margins on media */
-  .post-body .post-media {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-
-  /* Ensure media stays inside card */
-  .post-media {
-    width: 100% !important;
-    border-radius: 12px !important;
-    /* nice inner rounding */
-  }
-
-  /* =========================
-   Fix: Name left, Visit Shop right (your real button)
-   ========================= */
-
-  .post-head {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-  }
-
-  .avatar-img {
-    width: 38px !important;
-    height: 38px !important;
-    flex: 0 0 auto !important;
-  }
-
-  /* meta takes remaining space */
-  .post-meta {
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    /* allow shrink */
-  }
-
-  /* name row: keep in one line */
-  .name-row {
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    flex-wrap: nowrap !important;
-  }
-
-  /* name shrinks nicely instead of colliding */
-  .poster-name {
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-
-  /* Push Visit Shop to the far right */
-  #visitShopBtn {
-    margin-left: auto !important;
-    flex: 0 0 auto !important;
-    white-space: nowrap !important;
-  }
-
-  /* === Make description start normally (no title space, no indent) === */
-  .post-title {
-    display: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: 0 !important;
-  }
-
-  .post-text {
-    margin-top: 0 !important;
-    /* remove the 4px */
-    padding-top: 0 !important;
-    text-indent: 0 !important;
-    text-align: left !important;
-    white-space: normal !important;
-  }
-
-  /* =========================
-   Shift Visit Shop slightly further right
-   ========================= */
-
-  #visitShopBtn {
-    margin-left: auto !important;
-    /* pushes it to far right */
-    margin-right: 6px !important;
-    /* adds breathing space from edge */
-  }
+#visitShopBtn {
+  margin-left: auto !important;
+  /* pushes it to far right */
+  margin-right: 6px !important;
+  /* adds breathing space from edge */
 }
 
 
