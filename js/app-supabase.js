@@ -354,7 +354,7 @@ async function bootAfterAuth() {
   } catch (err) {
 
     console.error("bootAfterAuth error:", err);
-finally {
+  } finally {
 
   bootInProgress = false;   // VERY IMPORTANT
 
@@ -2305,6 +2305,7 @@ document.addEventListener("visibilitychange", async () => {
   await initAuth();
   await bootAfterAuth();
 })();
+
 
 
 
