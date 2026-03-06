@@ -391,6 +391,13 @@
     <div class="notif-item">💡 Tip: Use Search to find products and people.</div>
     <div class="notif-item">📌 Your profile badge will show on posts.</div>
   </div>
+  <!-- Image Lightbox Modal -->
+  <div class="modal-overlay lightbox-overlay" id="imageLightbox" aria-hidden="true">
+    <button type="button" class="lightbox-close" id="closeLightbox" aria-label="Close">✕</button>
+    <div class="lightbox-content">
+      <img id="lightboxImg" src="" alt="Full view">
+    </div>
+  </div>
  <script>
   if ("serviceWorker" in navigator) {
   window.addEventListener("load", async () => {
@@ -417,6 +424,7 @@
 
 </body>
 </html>
+
 
 
 
