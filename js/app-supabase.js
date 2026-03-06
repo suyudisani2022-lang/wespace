@@ -2306,7 +2306,35 @@ document.addEventListener("visibilitychange", async () => {
     showSection(activeSectionId || "feed");
   }
 });
+  let resumeLock = false;
+
+async function handleAppResume() {
+  if (resumeLock) return;
+  resumeLock = true;
+
+  try {
+    const { data } = await supabase.auth.getSession();
+    sessionUser = data?.session?.user || null;
+
+    if (typeof bootForCurrentSession === "function") {
+      await bootForCurrentSession();
+    }
+  } catch (e) {
+    console.warn("resume recovery failed:", e);
+  } finally {
+    resumeLock = false;
+  }
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    handleAppResume();
+  }
+});
+
+window.addEventListener("focus", handleAppResume);
   
+
 
 
 
