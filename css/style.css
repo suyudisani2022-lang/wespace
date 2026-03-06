@@ -1,7 +1,7 @@
 /* =========================================================
    CAMPORA — FULL STYLE.CSS (REPLACE YOUR ENTIRE FILE)
 ========================================================= */
-:root{
+:root {
 
   /* Backgrounds */
   --bin: #f4f7ff;
@@ -9,7 +9,8 @@
   --bg-soft: #eef4ff;
 
   /* Text */
-  --text-main: #0f172a;      /* dark navy */
+  --text-main: #0f172a;
+  /* dark navy */
   --text-secondary: #475569;
   --text-muted: #64748b;
 
@@ -18,10 +19,11 @@
   --primary-dark: #1e40af;
 
   /* Borders */
-  --border-light: rgba(15,23,42,0.12);
+  --border-light: rgba(15, 23, 42, 0.12);
 
 }
-body.landing{
+
+body.landing {
   background: var(--bg-main);
   color: var(--text-main);
 }
@@ -121,6 +123,7 @@ body.landing{
   color: #65676b;
   font-size: 12px;
 }
+
 /* Ensure these navs can slide without affecting layout */
 .topbar,
 .desktop-tabs,
@@ -143,6 +146,7 @@ body.landing{
 .bottom-nav.nav-hidden {
   transform: translateY(120%);
 }
+
 /* =========================================================
    DESKTOP TABS (INSIDE .container in your HTML)
 ========================================================= */
@@ -183,7 +187,8 @@ body.landing{
     gap: 10px;
 
     position: sticky;
-    top: 60px; /* under topbar */
+    top: 60px;
+    /* under topbar */
     z-index: 900;
 
     background: #f0f2f5;
@@ -234,7 +239,7 @@ body.landing{
   border-radius: 14px;
   padding: 14px;
   margin-bottom: 14px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 
   display: flex;
   flex-direction: column;
@@ -300,13 +305,15 @@ body.landing{
   margin-bottom: 10px;
   font-weight: 400;
 }
+
 .post-body {
   margin-top: 6px;
 }
+
 /* RESTRICTED IMAGE SIZE (Like Facebook) */
 .post-image {
   width: 100%;
-  max-height: 500px;
+  max-height: 380px;
   margin: 12px 0;
   border-radius: 14px;
   overflow: hidden;
@@ -318,10 +325,12 @@ body.landing{
 
 .post-image img {
   width: 100%;
-  max-height: 500px;
-  height: auto;           /* ✅ key */
+  max-height: 380px;
+  height: auto;
+  /* ✅ key */
   display: block;
-  object-fit: contain;    /* ✅ no crop, just letterboxed if too tall */
+  object-fit: contain;
+  /* ✅ no crop, just letterboxed if too tall */
 }
 
 /* actions */
@@ -418,7 +427,7 @@ body.landing{
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0, 0, 0, 0.45);
   align-items: center;
   justify-content: center;
   padding: 16px;
@@ -434,7 +443,7 @@ body.landing{
   background: #fff;
   border-radius: 14px;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
   overflow: hidden;
 }
 
@@ -530,7 +539,7 @@ body.landing{
   color: #1c1e21;
 }
 
-.btn.primary{
+.btn.primary {
 
   background: var(--primary);
 
@@ -540,7 +549,7 @@ body.landing{
 
 }
 
-.btn.primary:hover{
+.btn.primary:hover {
 
   background: var(--primary-dark);
 
@@ -553,9 +562,8 @@ body.landing::before {
   inset: 0;
   background:
     linear-gradient(180deg,
-      rgba(10,18,40,0.6),
-      rgba(10,18,40,0.85)
-    );
+      rgba(10, 18, 40, 0.6),
+      rgba(10, 18, 40, 0.85));
 
 }
 
@@ -572,7 +580,7 @@ body.landing::before {
 }
 
 .landing-tagline {
-  color: rgba(255,255,255,0.95);
+  color: rgba(255, 255, 255, 0.95);
   font-size: 18px;
   line-height: 1.5;
   margin-bottom: 20px;
@@ -597,7 +605,7 @@ body.auth {
   place-items: center;
 }
 
-.auth-card{
+.auth-card {
 
   background: var(--bg-card);
 
@@ -605,7 +613,7 @@ body.auth {
 
   color: var(--text-main);
 
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 
 }
 
@@ -627,48 +635,57 @@ body.auth {
 }
 
 /* Profile display */
-.profile-card{
-  background:#fff;
-  border:1px solid #e5e7eb;
-  border-radius:14px;
-  padding:14px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+.profile-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
-.profile-head{
-  display:flex;
-  gap:12px;
-  align-items:center;
+.profile-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
   margin-bottom: 12px;
 }
 
-.profile-avatar{
-  width:64px;
-  height:64px;
-  border-radius:999px;
+.profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
   object-fit: cover;
-  background:#e5e7eb;
-  flex:none;
+  background: #e5e7eb;
+  flex: none;
 }
 
-.profile-name{ font-weight:800; font-size:16px; }
-.profile-meta{ color:#65676b; font-size:13px; margin-top:2px; }
+.profile-name {
+  font-weight: 800;
+  font-size: 16px;
+}
 
-.profile-actions{
+.profile-meta {
+  color: #65676b;
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+.profile-actions {
   display: grid;
   gap: 10px;
 }
 
 /* Post avatar image */
-.avatar-img{
-  width:42px;
-  height:42px;
-  border-radius:999px;
-  object-fit:cover;
-  background:#dbeafe;
-  flex:none;
+.avatar-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  object-fit: cover;
+  background: #dbeafe;
+  flex: none;
 }
-body.auth{
+
+body.auth {
   min-height: 100vh;
   display: grid;
   place-items: center;
@@ -676,62 +693,83 @@ body.auth{
   padding: 24px;
 }
 
-.auth-card{
+.auth-card {
   width: min(92vw, 540px);
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 14px;
   padding: 16px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
-.auth-title{ font-size: 18px; margin-bottom: 6px; }
-.auth-subtitle{ color: #65676b; font-size: 13px; margin-bottom: 14px; }
+.auth-title {
+  font-size: 18px;
+  margin-bottom: 6px;
+}
 
-.auth-form{ display: grid; gap: 12px; }
+.auth-subtitle {
+  color: #65676b;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.auth-form {
+  display: grid;
+  gap: 12px;
+}
 
 /* 2-column row on desktop, 1-column on phone */
-.grid-2{
+.grid-2 {
   display: grid;
   gap: 12px;
   grid-template-columns: 1fr;
 }
-@media (min-width: 700px){
-  .grid-2{ grid-template-columns: 1fr 1fr; }
+
+@media (min-width: 700px) {
+  .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 /* Reuse your .field styles; if you don't have them, use these: */
-.field span{
-  display:block;
+.field span {
+  display: block;
   font-size: 12px;
-  color:#65676b;
+  color: #65676b;
   margin-bottom: 6px;
-  font-weight:bold;
+  font-weight: bold;
 }
-.field input, .field textarea{
+
+.field input,
+.field textarea {
   width: 100%;
   padding: 12px;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   outline: none;
 }
-.field input:focus, .field textarea:focus{
+
+.field input:focus,
+.field textarea:focus {
   border-color: #1877f2;
 }
 
-.landing-actions{
+.landing-actions {
   position: relative;
-  z-index: 5;           /* ✅ brings buttons above any overlay */
+  z-index: 5;
+  /* ✅ brings buttons above any overlay */
   display: grid;
   gap: 12px;
 }
 
-.landing-actions a{
-  display: block;       /* ✅ makes the whole button area clickable */
+.landing-actions a {
+  display: block;
+  /* ✅ makes the whole button area clickable */
   text-decoration: none;
 }
+
 /* ===== Notifications panel ===== */
-.notif-panel{
+.notif-panel {
   position: fixed;
   top: 70px;
   right: 12px;
@@ -739,25 +777,31 @@ body.auth{
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 14px;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
   padding: 12px;
   display: none;
   z-index: 4000;
 }
-.notif-panel.show{ display:block; }
-.notif-head{
-  display:flex;
+
+.notif-panel.show {
+  display: block;
+}
+
+.notif-head {
+  display: flex;
   justify-content: space-between;
-  align-items:center;
+  align-items: center;
   margin-bottom: 10px;
 }
-.notif-close{
-  border:none;
+
+.notif-close {
+  border: none;
   background: transparent;
   font-size: 16px;
-  cursor:pointer;
+  cursor: pointer;
 }
-.notif-item{
+
+.notif-item {
   padding: 10px;
   border-radius: 12px;
   background: #f0f2f5;
@@ -766,25 +810,30 @@ body.auth{
 }
 
 /* ===== Post action states ===== */
-.post-actions button.active{
+.post-actions button.active {
   background: #dbeafe;
 }
-.connect-btn.connected{
-  background:#1877f2;
-  color:#fff;
+
+.connect-btn.connected {
+  background: #1877f2;
+  color: #fff;
 }
-.more-toggle{
-  border:none;
-  background:transparent;
-  color:#1877f2;
-  font-weight:bold;
-  cursor:pointer;
+
+.more-toggle {
+  border: none;
+  background: transparent;
+  color: #1877f2;
+  font-weight: bold;
+  cursor: pointer;
   padding: 0;
   margin-left: 6px;
 }
 
 /* Make search input nicer */
-#searchInput{ background:#fff; }
+#searchInput {
+  background: #fff;
+}
+
 /* =====================================================
    LANDING PAGE BACKGROUND
 ===================================================== */
@@ -808,115 +857,126 @@ body.landing::before {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.35);
   z-index: -1;
 }
-.account-row{
-  display:flex;
-  gap:10px;
-  align-items:center;
+
+.account-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
   justify-content: space-between;
   padding: 10px;
-  border:1px solid #e5e7eb;
+  border: 1px solid #e5e7eb;
   border-radius: 12px;
-  background:#fff;
+  background: #fff;
 }
-.account-left{
-  display:flex;
-  gap:10px;
-  align-items:center;
+
+.account-left {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
-.account-avatar{
-  width:40px;
-  height:40px;
-  border-radius:999px;
+
+.account-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
   object-fit: cover;
-  background:#e5e7eb;
+  background: #e5e7eb;
 }
-.account-name{
-  font-weight:800;
-  font-size:14px;
+
+.account-name {
+  font-weight: 800;
+  font-size: 14px;
 }
-.account-meta{
-  font-size:12px;
-  color:#65676b;
-  margin-top:2px;
+
+.account-meta {
+  font-size: 12px;
+  color: #65676b;
+  margin-top: 2px;
 }
-.account-actions{
-  display:flex;
-  gap:8px;
+
+.account-actions {
+  display: flex;
+  gap: 8px;
 }
-.account-actions button{
-  border:none;
-  background:#f0f2f5;
-  padding:8px 10px;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:bold;
-  font-size:12px;
+
+.account-actions button {
+  border: none;
+  background: #f0f2f5;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
 }
-.account-actions button.primary{
-  background:#1877f2;
-  color:#fff;
+
+.account-actions button.primary {
+  background: #1877f2;
+  color: #fff;
 }
-.account-actions button.danger{
-  background:#fee2e2;
+
+.account-actions button.danger {
+  background: #fee2e2;
 }
+
 /* ===== Landing Auth ===== */
 
-.auth-wrapper{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.auth-box{
-  width:100%;
-  max-width:400px;
-  background:#fff;
-  padding:32px;
-  border-radius:20px;
-  box-shadow:0 25px 60px rgba(0,0,0,0.2);
+.auth-box {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  padding: 32px;
+  border-radius: 20px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
 }
 
-.brand{
-  text-align:center;
-  font-size:32px;
-  font-weight:900;
-  margin-bottom:6px;
+.brand {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 900;
+  margin-bottom: 6px;
 }
 
-.subtitle{
-  text-align:center;
-  color:#65676b;
-  margin-bottom:24px;
+.subtitle {
+  text-align: center;
+  color: #65676b;
+  margin-bottom: 24px;
 }
 
-.auth-form .field{
-  display:flex;
-  flex-direction:column;
-  margin-bottom:16px;
+.auth-form .field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
 }
 
-.auth-form input{
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  font-size:14px;
+.auth-form input {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 14px;
 }
 
-.divider{
-  text-align:center;
-  margin:16px 0;
-  color:#aaa;
-  font-size:13px;
+.divider {
+  text-align: center;
+  margin: 16px 0;
+  color: #aaa;
+  font-size: 13px;
 }
+
 /* =====================================================
    LANDING PAGE (Professional)
 ===================================================== */
 
-body.landing{
+body.landing {
   min-height: 100vh;
   background-image: url("../assets/landing.png");
   background-size: cover;
@@ -925,15 +985,15 @@ body.landing{
   background-attachment: fixed;
 }
 
-body.landing::before{
-  content:"";
+body.landing::before {
+  content: "";
   position: fixed;
   inset: 0;
-  background: linear-gradient(180deg, rgba(8,12,24,0.40), rgba(8,12,24,0.80));
+  background: linear-gradient(180deg, rgba(8, 12, 24, 0.40), rgba(8, 12, 24, 0.80));
   z-index: -1;
 }
 
-.landing-wrap{
+.landing-wrap {
   min-height: 100vh;
   width: min(980px, 92vw);
   margin: 0 auto;
@@ -943,53 +1003,53 @@ body.landing::before{
   align-content: center;
 }
 
-.landing-hero{
+.landing-hero {
   color: #fff;
   padding: 18px 18px 6px;
 }
 
-.brand-row{
-  display:flex;
+.brand-row {
+  display: flex;
   gap: 12px;
-  align-items:center;
+  align-items: center;
   margin-bottom: 14px;
 }
 
-.brand-mark{
+.brand-mark {
   width: 44px;
   height: 44px;
   border-radius: 14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 900;
   font-size: 18px;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(10px);
 }
 
-.brand-title{
+.brand-title {
   margin: 0;
   font-size: 28px;
   font-weight: 900;
   letter-spacing: 0.2px;
 }
 
-.brand-tag{
+.brand-tag {
   margin: 2px 0 0;
   opacity: 0.85;
   font-size: 13px;
 }
 
-.hero-headline{
+.hero-headline {
   margin: 10px 0 8px;
   font-size: 28px;
   line-height: 1.1;
   font-weight: 900;
 }
 
-.hero-subtext{
+.hero-subtext {
   margin: 0 0 14px;
   opacity: 0.9;
   font-size: 14px;
@@ -997,63 +1057,63 @@ body.landing::before{
   max-width: 64ch;
 }
 
-.hero-points{
-  display:grid;
+.hero-points {
+  display: grid;
   gap: 8px;
   max-width: 520px;
 }
 
-.point{
+.point {
   padding: 10px 12px;
   border-radius: 14px;
-  background: rgba(255,255,255,0.10);
-  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(10px);
   font-size: 13px;
 }
 
-.landing-auth{
-  display:flex;
+.landing-auth {
+  display: flex;
   justify-content: center;
   padding: 0 18px;
 }
 
-.auth-box{
+.auth-box {
   width: min(420px, 100%);
-  background: rgba(255,255,255,0.94);
-  border: 1px solid rgba(255,255,255,0.55);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: 20px;
   padding: 20px;
-  box-shadow: 0 22px 60px rgba(0,0,0,0.30);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.30);
 }
 
-.auth-title{
+.auth-title {
   margin: 0 0 4px;
   font-size: 18px;
   font-weight: 900;
   color: #111827;
 }
 
-.auth-subtitle{
+.auth-subtitle {
   margin: 0 0 14px;
   font-size: 13px;
   color: #6b7280;
 }
 
-.auth-form .field{
-  display:flex;
+.auth-form .field {
+  display: flex;
   flex-direction: column;
   margin-bottom: 12px;
 }
 
-.auth-form .field span{
+.auth-form .field span {
   font-size: 12px;
   color: #374151;
   font-weight: 700;
   margin-bottom: 6px;
 }
 
-.auth-form input{
+.auth-form input {
   height: 42px;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
@@ -1063,12 +1123,12 @@ body.landing::before{
   background: #fff;
 }
 
-.auth-form input:focus{
+.auth-form input:focus {
   border-color: #1877f2;
-  box-shadow: 0 0 0 4px rgba(24,119,242,0.12);
+  box-shadow: 0 0 0 4px rgba(24, 119, 242, 0.12);
 }
 
-.divider{
+.divider {
   position: relative;
   text-align: center;
   margin: 12px 0;
@@ -1076,24 +1136,24 @@ body.landing::before{
   font-size: 12px;
 }
 
-.divider span{
-  background: rgba(255,255,255,0.94);
+.divider span {
+  background: rgba(255, 255, 255, 0.94);
   padding: 0 10px;
   position: relative;
   z-index: 1;
 }
 
-.divider::before{
-  content:"";
-  position:absolute;
-  left:0;
-  right:0;
-  top:50%;
-  height:1px;
-  background:#e5e7eb;
+.divider::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: #e5e7eb;
 }
 
-.tiny-note{
+.tiny-note {
   margin: 12px 0 0;
   font-size: 11px;
   color: #6b7280;
@@ -1101,20 +1161,27 @@ body.landing::before{
 }
 
 /* Desktop layout: hero left, auth right */
-@media (min-width: 900px){
-  .landing-wrap{
+@media (min-width: 900px) {
+  .landing-wrap {
     grid-template-columns: 1.2fr 0.8fr;
     align-items: center;
   }
-  .landing-hero{ padding-right: 28px; }
-  .landing-auth{ justify-content: flex-end; }
+
+  .landing-hero {
+    padding-right: 28px;
+  }
+
+  .landing-auth {
+    justify-content: flex-end;
+  }
 }
+
 /* =====================================================
    LANDING PAGE (Official + smaller card + centered low)
    Uses: /assets/bg.jpg
 ===================================================== */
 
-body.landing{
+body.landing {
   min-height: 100vh;
   background-image: url("../assets/bg.jpg");
   background-size: cover;
@@ -1123,17 +1190,17 @@ body.landing{
 }
 
 /* clean overlay for readability */
-body.landing::before{
-  content:"";
+body.landing::before {
+  content: "";
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(1200px 700px at 20% 20%, rgba(255,255,255,0.10), transparent 60%),
-    linear-gradient(180deg, rgba(10,14,26,0.35), rgba(10,14,26,0.82));
+    radial-gradient(1200px 700px at 20% 20%, rgba(255, 255, 255, 0.10), transparent 60%),
+    linear-gradient(180deg, rgba(10, 14, 26, 0.35), rgba(10, 14, 26, 0.82));
   z-index: -1;
 }
 
-.landing-shell{
+.landing-shell {
   width: min(980px, 92vw);
   margin: 0 auto;
   min-height: 100vh;
@@ -1145,39 +1212,39 @@ body.landing::before{
 }
 
 /* Top area */
-.landing-hero{
+.landing-hero {
   color: #fff;
   padding: 10px 0;
 }
 
-.brandline{
-  display:flex;
-  align-items:center;
+.brandline {
+  display: flex;
+  align-items: center;
   gap: 10px;
   margin-bottom: 14px;
 }
 
-.branddot{
+.branddot {
   width: 10px;
   height: 10px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.85);
-  box-shadow: 0 0 0 6px rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.12);
 }
 
-.brandname{
+.brandname {
   font-weight: 900;
   font-size: 20px;
   letter-spacing: 0.2px;
 }
 
-.brandtag{
+.brandtag {
   font-size: 12px;
   opacity: 0.85;
   margin-top: 2px;
 }
 
-.headline{
+.headline {
   margin: 8px 0 10px;
   font-size: clamp(26px, 4vw, 38px);
   line-height: 1.12;
@@ -1185,39 +1252,39 @@ body.landing::before{
   max-width: 18ch;
 }
 
-.subtext{
+.subtext {
 
   color: var(--text-secondary);
 
 }
 
-.tiny{
+.tiny {
 
   color: var(--text-muted);
 
 }
 
 
-.bullets{
-  display:flex;
+.bullets {
+  display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
 
-.bullet{
+.bullet {
   padding: 10px 12px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.10);
-  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   backdrop-filter: blur(10px);
   font-size: 12px;
   font-weight: 700;
 }
 
 /* Login section: centered and pushed down */
-.landing-auth{
-  display:flex;
-  justify-content:center;
+.landing-auth {
+  display: flex;
+  justify-content: center;
   margin-top: 18px;
   /* push card lower on screen */
   padding-top: 18px;
@@ -1226,87 +1293,87 @@ body.landing::before{
 /* Smaller, more official card */
 /* ===== GLASS LOGIN CARD ===== */
 
-.auth-card{
+.auth-card {
   width: min(380px, 100%);
   padding: 22px;
 
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
 
   border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.25);
+  border: 1px solid rgba(255, 255, 255, 0.25);
 
   box-shadow:
-    0 20px 50px rgba(0,0,0,0.35),
-    inset 0 1px 0 rgba(255,255,255,0.2);
+    0 20px 50px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 
   color: #fff;
 }
 
-.auth-top{
+.auth-top {
   margin-bottom: 10px;
 }
 
-.auth-title{
+.auth-title {
   font-size: 16px;
   font-weight: 900;
   color: #111827;
   margin-bottom: 2px;
 }
 
-.auth-note{
+.auth-note {
   font-size: 12px;
   color: #6b7280;
 }
 
-.auth-form .field{
-  display:flex;
+.auth-form .field {
+  display: flex;
   flex-direction: column;
   margin-bottom: 10px;
 }
 
-.auth-form .field span{
+.auth-form .field span {
   font-size: 12px;
   font-weight: 800;
-  color:#374151;
+  color: #374151;
   margin-bottom: 6px;
 }
 
-.auth-form input{
+.auth-form input {
   height: 42px;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.35);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   padding: 0 12px;
   font-size: 14px;
 
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   color: #fff;
   outline: none;
 }
 
-.auth-form input::placeholder{
-  color: rgba(255,255,255,0.6);
+.auth-form input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
 }
 
-.auth-form input:focus{
+.auth-form input:focus {
   border-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.25);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
 }
 
 /* Buttons row */
-.auth-row{
-  display:flex;
+.auth-row {
+  display: flex;
   gap: 10px;
   margin-top: 10px;
 }
 
-.auth-row .btn{
-  flex:1;
+.auth-row .btn {
+  flex: 1;
 }
 
 /* small helper */
-.tiny{
+.tiny {
   margin-top: 10px;
   font-size: 11px;
   color: #6b7280;
@@ -1314,35 +1381,40 @@ body.landing::before{
 }
 
 /* On large screens, keep everything centered (not side-by-side) */
-@media (min-width: 900px){
-  .landing-shell{
+@media (min-width: 900px) {
+  .landing-shell {
     align-content: center;
     padding-top: 10px;
   }
-  .landing-auth{
+
+  .landing-auth {
     margin-top: 8px;
   }
 }
-.auth-card{
+
+.auth-card {
   animation: fadeGlass 0.6s ease-out;
 }
 
-@keyframes fadeGlass{
-  from{
-    opacity:0;
+@keyframes fadeGlass {
+  from {
+    opacity: 0;
     transform: translateY(20px);
   }
-  to{
-    opacity:1;
+
+  to {
+    opacity: 1;
     transform: translateY(0);
   }
 }
+
 /* ===== Glass card readability fix ===== */
 
 /* Darker glass base so text doesn't fade */
-.auth-card{
-  background: rgba(10,14,26,0.45) !important;  /* darker glass */
-  border: 1px solid rgba(255,255,255,0.22) !important;
+.auth-card {
+  background: rgba(10, 14, 26, 0.45) !important;
+  /* darker glass */
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
   backdrop-filter: blur(18px) !important;
   -webkit-backdrop-filter: blur(18px) !important;
 }
@@ -1350,75 +1422,77 @@ body.landing::before{
 /* Make all text inside card bright + slightly glowing */
 .auth-card,
 .auth-card {
-  color: rgba(255,255,255,0.95);
-  text-shadow: 0 2px 10px rgba(0,0,0,0.35);
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
 }
 
 /* Titles a bit stronger */
-.auth-title{
-  color: rgba(255,255,255,0.98) !important;
+.auth-title {
+  color: rgba(255, 255, 255, 0.98) !important;
   font-weight: 900;
 }
+
 .auth-note,
-.tiny{
-  color: rgba(255,255,255,0.72) !important;
+.tiny {
+  color: rgba(255, 255, 255, 0.72) !important;
   text-shadow: none;
 }
 
 /* Labels */
-.auth-form .field span{
-  color: rgba(255,255,255,0.9) !important;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.25);
+.auth-form .field span {
+  color: rgba(255, 255, 255, 0.9) !important;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
 }
 
 /* Inputs: darker glass so text is readable */
-.auth-form input{
-  background: rgba(0,0,0,0.30) !important;
-  border: 1px solid rgba(255,255,255,0.28) !important;
-  color: rgba(255,255,255,0.96) !important;
+.auth-form input {
+  background: rgba(0, 0, 0, 0.30) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  color: rgba(255, 255, 255, 0.96) !important;
 }
 
-.auth-form input::placeholder{
-  color: rgba(255,255,255,0.55) !important;
+.auth-form input::placeholder {
+  color: rgba(255, 255, 255, 0.55) !important;
 }
 
 /* Input focus */
-.auth-form input:focus{
-  border-color: rgba(255,255,255,0.65) !important;
-  box-shadow: 0 0 0 4px rgba(255,255,255,0.14) !important;
+.auth-form input:focus {
+  border-color: rgba(255, 255, 255, 0.65) !important;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.14) !important;
 }
 
 /* If your ghost buttons look too faint, boost them */
-.btn.ghost{
-  background: rgba(255,255,255,0.10) !important;
-  border: 1px solid rgba(255,255,255,0.20) !important;
-  color: rgba(255,255,255,0.92) !important;
+.btn.ghost {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  color: rgba(255, 255, 255, 0.92) !important;
 }
 
-.btn.ghost:hover{
-  background: rgba(255,255,255,0.16) !important;
+.btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
 }
 
 /* Primary button stays crisp */
-.btn.primary{
-  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+.btn.primary {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
 }
+
 /* ===== Fix Button Contrast on Glass ===== */
 
 /* Primary button (Login) */
-.btn.primary{
+.btn.primary {
   background: #1877f2 !important;
   color: #ffffff !important;
   border: none !important;
   font-weight: 700;
 }
 
-.btn.primary:hover{
+.btn.primary:hover {
   background: #0f5ec7 !important;
 }
 
 /* Ghost buttons */
-.btn.ghost{
+.btn.ghost {
 
   background: var(--bg-soft);
 
@@ -1429,19 +1503,20 @@ body.landing::before{
 }
 
 
-.btn.ghost:hover{
-  background: rgba(255,255,255,0.25) !important;
+.btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.25) !important;
 }
+
 /* ===== Profile mini nav ===== */
-.profile-username{
+.profile-username {
   font-size: 12px;
   color: #6b7280;
   margin-top: 2px;
 }
 
-.profile-tabs{
-  display:flex;
-  gap:10px;
+.profile-tabs {
+  display: flex;
+  gap: 10px;
   margin: 14px 0 10px;
   padding: 8px;
   border-radius: 14px;
@@ -1449,7 +1524,7 @@ body.landing::before{
   overflow-x: auto;
 }
 
-.profile-tab{
+.profile-tab {
   border: none;
   background: transparent;
   padding: 10px 12px;
@@ -1460,89 +1535,111 @@ body.landing::before{
   white-space: nowrap;
 }
 
-.profile-tab.active{
+.profile-tab.active {
   background: #fff;
-  box-shadow: 0 10px 22px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
   color: #111827;
 }
 
-.profile-panel{ display:none; }
-.profile-panel.active{ display:block; }
-
-.panel-title{
-  font-weight: 900;
-  margin-bottom: 6px;
-  color:#111827;
+.profile-panel {
+  display: none;
 }
 
-.panel-hint{
+.profile-panel.active {
+  display: block;
+}
+
+.panel-title {
+  font-weight: 900;
+  margin-bottom: 6px;
+  color: #111827;
+}
+
+.panel-hint {
   font-size: 13px;
-  color:#6b7280;
+  color: #6b7280;
   margin-bottom: 12px;
   line-height: 1.4;
 }
 
-.panel-actions{
-  display:flex;
-  justify-content:flex-end;
+.panel-actions {
+  display: flex;
+  justify-content: flex-end;
   margin-top: 10px;
 }
 
-.grid-2{
-  display:grid;
+.grid-2 {
+  display: grid;
   gap: 10px;
 }
-@media (min-width: 640px){
-  .grid-2{ grid-template-columns: 1fr 1fr; }
+
+@media (min-width: 640px) {
+  .grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-#myPostsWrap .post-card{ margin-top: 12px; }
-.connection-card{
-  display:flex;
-  align-items:center;
+#myPostsWrap .post-card {
+  margin-top: 12px;
+}
+
+.connection-card {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: 10px;
   padding: 10px;
-  background:#fff;
+  background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 14px;
   margin-top: 10px;
 }
-.connection-left{
-  display:flex;
-  gap:10px;
-  align-items:center;
+
+.connection-left {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
-.connection-left img{
-  width:44px;
-  height:44px;
+
+.connection-left img {
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
   object-fit: cover;
-  background:#e5e7eb;
+  background: #e5e7eb;
 }
-.connection-name{ font-weight: 900; }
-.connection-meta{ font-size: 12px; color:#6b7280; margin-top:2px; }
+
+.connection-name {
+  font-weight: 900;
+}
+
+.connection-meta {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
 /* Fix profile buttons visibility */
 
 .profile-actions .btn {
 
-  background: blue(0,0,0,0.6);
+  background: blue(0, 0, 0, 0.6);
 
   color: yellowgreen;
 
-  border: 1px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 
 }
 
-.profile-actions .btn:hover{
+.profile-actions .btn:hover {
 
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
 
 }
 
 /* Reset button red */
 
-.btn.danger{
+.btn.danger {
 
   background: #e53935;
 
@@ -1550,142 +1647,162 @@ body.landing::before{
 
 }
 
-.btn.danger:hover{
+.btn.danger:hover {
 
   background: #c62828;
 
 }
+
 /* =========================
    PROFILE ACTION BUTTON FIX
    (forces visibility)
 ========================= */
 
-#profile .profile-actions{
+#profile .profile-actions {
   display: grid;
   gap: 10px;
   margin-top: 12px;
 }
 
 /* make buttons full width like official apps */
-#profile .profile-actions .btn{
+#profile .profile-actions .btn {
   width: 100%;
 }
 
 /* force ghost buttons to be visible */
-#profile .profile-actions .btn.ghost{
-  background: rgba(17, 24, 39, 0.85) !important; /* dark */
+#profile .profile-actions .btn.ghost {
+  background: rgba(17, 24, 39, 0.85) !important;
+  /* dark */
   color: #ffffff !important;
-  border: 1px solid rgba(255,255,255,0.22) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
   font-weight: 800;
 }
 
-#profile .profile-actions .btn.ghost:hover{
+#profile .profile-actions .btn.ghost:hover {
   background: rgba(17, 24, 39, 0.95) !important;
 }
 
 /* keep primary as primary */
-#profile .profile-actions .btn.primary{
+#profile .profile-actions .btn.primary {
   color: #ffffff !important;
 }
 
 /* reset button red stays clear */
-#profile .profile-actions .btn.danger{
+#profile .profile-actions .btn.danger {
   background: #e53935 !important;
   color: #ffffff !important;
   border: none !important;
   font-weight: 900;
 }
-#profile .profile-actions .btn.danger:hover{
+
+#profile .profile-actions .btn.danger:hover {
   background: #c62828 !important;
 }
-.section-filterbar{
+
+.section-filterbar {
   margin: 10px 0 14px;
   display: flex;
   gap: 10px;
 }
-.section-filterbar select{
+
+.section-filterbar select {
   width: 100%;
   padding: 10px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
   color: inherit;
 }
 
-.type-chip{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
+.type-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 6px 10px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 800;
   letter-spacing: .2px;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
 }
 
-.type-market{ color:#22c55e; }
-.type-opportunity{ color:#f59e0b; }
-.type-social{ color:#60a5fa; }
+.type-market {
+  color: #22c55e;
+}
 
-.preview-strip{
-  display:flex;
-  gap:10px;
-  overflow-x:auto;
+.type-opportunity {
+  color: #f59e0b;
+}
+
+.type-social {
+  color: #60a5fa;
+}
+
+.preview-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
   padding: 10px;
 }
-.preview-strip img{
+
+.preview-strip img {
   height: 90px;
   width: auto;
   border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.14);
+  border: 1px solid rgba(255, 255, 255, 0.14);
 }
 
-.carousel{
-  overflow-x:auto;
-  display:flex;
-  gap:10px;
-  scroll-snap-type:x mandatory;
+.carousel {
+  overflow-x: auto;
+  display: flex;
+  gap: 10px;
+  scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 6px;
 }
-.carousel::-webkit-scrollbar{ height: 8px; }
-.carousel img{
+
+.carousel::-webkit-scrollbar {
+  height: 8px;
+}
+
+.carousel img {
   scroll-snap-align: start;
   width: 100%;
   max-width: 520px;
   border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.12);
-  display:block;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: block;
 }
 
-.post-image-wrap{
+.post-image-wrap {
   position: relative;
 }
-.price-badge{
-  position:absolute;
+
+.price-badge {
+  position: absolute;
   right: 10px;
   bottom: 10px;
   padding: 7px 10px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 900;
-  background: rgba(0,0,0,0.62);
+  background: rgba(0, 0, 0, 0.62);
   color: #fff;
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(6px);
 }
+
 /* =========================================================
    CAMPORA PATCH (for new app.js)
    Paste at the VERY BOTTOM of style.css
 ========================================================= */
 
 /* --- Post type badge (market/opportunity/social) --- */
-.post-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
+.post-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 6px 10px;
   border-radius: 999px;
   font-size: 12px;
@@ -1697,62 +1814,73 @@ body.landing::before{
   white-space: nowrap;
 }
 
-.post-badge.market{
-  background: rgba(34,197,94,0.12);
-  border-color: rgba(34,197,94,0.25);
+.post-badge.market {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.25);
   color: #15803d;
 }
-.post-badge.opportunity{
-  background: rgba(245,158,11,0.14);
-  border-color: rgba(245,158,11,0.25);
+
+.post-badge.opportunity {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.25);
   color: #b45309;
 }
-.post-badge.social{
-  background: rgba(96,165,250,0.14);
-  border-color: rgba(96,165,250,0.25);
+
+.post-badge.social {
+  background: rgba(96, 165, 250, 0.14);
+  border-color: rgba(96, 165, 250, 0.25);
   color: #1d4ed8;
 }
 
 /* --- Multi-image slider (new structure) --- */
-.post-media{
+.post-media {
   position: relative;
   width: 100%;
   margin-top: 12px;
   border-radius: 14px;
   overflow: hidden;
-  background: transparent;
+  background: #f0f2f5;
+  /* Background for letterboxing */
+  max-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.post-media-track{
-  display:flex;
+.post-media-track {
+  display: flex;
   gap: 10px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 6px;
+  max-height: 520px;
 }
 
-.post-media-track::-webkit-scrollbar{
+.post-media-track::-webkit-scrollbar {
   height: 8px;
 }
 
-.post-media-item{
+.post-media-item {
   flex: 0 0 100%;
   scroll-snap-align: start;
 }
 
-.post-media-item img{
-  width: 100%;
-  height: auto;           /* ✅ no crop */
+.post-media-item img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 520px;
   display: block;
-  object-fit: contain;    /* ✅ no crop */
+  object-fit: contain;
+  /* Prevents stretching, fits within max-height */
   border-radius: 14px;
   border: 1px solid #e5e7eb;
   background: #fff;
 }
 
 /* --- Price badge ON the image (bottom-right) --- */
-.post-price-badge{
+.post-price-badge {
   position: absolute;
   right: 10px;
   bottom: 10px;
@@ -1760,94 +1888,99 @@ body.landing::before{
   border-radius: 999px;
   font-size: 12px;
   font-weight: 900;
-  background: rgba(0,0,0,0.62);
+  background: rgba(0, 0, 0, 0.62);
   color: #fff;
-  border: 1px solid rgba(255,255,255,0.22);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 }
 
 /* --- Post actions: active like state + count readability --- */
-.post-actions button .count{
+.post-actions button .count {
   font-weight: 900;
   opacity: 0.85;
 }
 
-.post-actions button.active{
+.post-actions button.active {
   background: #dbeafe !important;
   color: #0f172a;
 }
 
 /* --- Make connect button show "Connected" nicely --- */
-.connect-btn.connected{
-  background:#1877f2 !important;
-  color:#fff !important;
-  border-color:#1877f2 !important;
+.connect-btn.connected {
+  background: #1877f2 !important;
+  color: #fff !important;
+  border-color: #1877f2 !important;
 }
 
 /* --- Safety: your CSS uses .avatar-img already; keep consistent --- */
-.avatar-img{
-  width:42px;
-  height:42px;
-  border-radius:999px;
-  object-fit:cover;
-  background:#dbeafe;
-  flex:none;
+.avatar-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  object-fit: cover;
+  background: #dbeafe;
+  flex: none;
 }
 
 /* --- Optional: small reshared line style --- */
-.sub-row{
+.sub-row {
   line-height: 1.35;
 }
+
 /* =========================================================
    FIX: Create Post modal too tall (enable scrolling)
    Paste at VERY BOTTOM of style.css
 ========================================================= */
 
 /* allow the overlay itself to scroll on small screens */
-.modal-overlay{
+.modal-overlay {
   overflow-y: auto;
-  align-items: flex-start;      /* not centered, so top is visible */
+  align-items: flex-start;
+  /* not centered, so top is visible */
   padding-top: 16px;
   padding-bottom: 16px;
 }
 
 /* keep modal within viewport */
-.modal{
-  max-height: calc(100vh - 32px); /* account for overlay padding */
+.modal {
+  max-height: calc(100vh - 32px);
+  /* account for overlay padding */
   display: flex;
   flex-direction: column;
 }
 
 /* modal body becomes scrollable when content is long */
-.modal-body{
+.modal-body {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 /* optional: prevent "scroll lock" feeling on iOS/Edge */
-body{
+body {
   overscroll-behavior: contain;
 }
+
 /* =========================================================
    FIX: Create Post modal must scroll + keep buttons visible
 ========================================================= */
 
-.modal{
+.modal {
   max-height: calc(100vh - 28px);
   display: flex;
   flex-direction: column;
 }
 
 /* Make the form area scroll if it's taller than screen */
-.modal-body{
-  max-height: calc(100vh - 140px); /* header + padding space */
+.modal-body {
+  max-height: calc(100vh - 140px);
+  /* header + padding space */
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
 /* Keep buttons always reachable */
-.modal-actions{
+.modal-actions {
   position: sticky;
   bottom: 0;
   background: #fff;
@@ -1860,7 +1993,7 @@ body{
    FIX: Multi-image preview strip must be visible
 ========================================================= */
 
-.image-preview-wrap{
+.image-preview-wrap {
   height: auto !important;
   min-height: 140px;
   display: block !important;
@@ -1868,7 +2001,7 @@ body{
   overflow: hidden;
 }
 
-.preview-strip{
+.preview-strip {
   width: 100%;
   display: flex;
   gap: 10px;
@@ -1877,13 +2010,14 @@ body{
   padding: 6px 2px;
 }
 
-.preview-strip img{
+.preview-strip img {
   display: block;
   height: 96px;
   width: auto;
   border-radius: 12px;
-  border: 1px solid rgba(0,0,0,0.12);
+  border: 1px solid rgba(0, 0, 0, 0.12);
 }
+
 /* =========================
    DELETE POST BUTTON
    ========================= */
@@ -1925,58 +2059,60 @@ body{
     padding: 3px 8px;
   }
 }
+
 /* WhatsApp floating icon on post image */
 
 .post-wa-icon {
 
-position: absolute;
+  position: absolute;
 
-bottom: 10px;
-left: 10px;
+  bottom: 10px;
+  left: 10px;
 
-width: 38px;
-height: 38px;
+  width: 38px;
+  height: 38px;
 
-background: #25D366;
+  background: #25D366;
 
-border-radius: 50%;
+  border-radius: 50%;
 
-display: flex;
-align-items: center;
-justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-cursor: pointer;
+  cursor: pointer;
 
-box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 
-transition: 0.2s;
+  transition: 0.2s;
 }
 
 .post-wa-icon:hover {
 
-transform: scale(1.1);
+  transform: scale(1.1);
 
-background: #1ebe5d;
+  background: #1ebe5d;
 
 }
 
 .post-wa-icon img {
 
-width: 20px;
-height: 20px;
+  width: 20px;
+  height: 20px;
 
-pointer-events: none;
+  pointer-events: none;
 
 }
+
 /* ===== Landing: Mobile-first ===== */
-body.landing{
+body.landing {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background: #f6f9ff;
   color: #0f172a;
 }
 
-.landing-shell{
+.landing-shell {
   max-width: 1080px;
   margin: 0 auto;
   padding: 16px 14px 28px;
@@ -1985,56 +2121,56 @@ body.landing{
 }
 
 /* top */
-.landing-top{
+.landing-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.brandline{
+.brandline {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.branddot{
+.branddot {
   width: 38px;
   height: 38px;
   border-radius: 12px;
   background: linear-gradient(135deg, #1d6fff, #6a5bff);
-  box-shadow: 0 10px 24px rgba(29,111,255,.18);
+  box-shadow: 0 10px 24px rgba(29, 111, 255, .18);
 }
 
-.brandname{
+.brandname {
   font-weight: 900;
   font-size: 18px;
   letter-spacing: .2px;
 }
 
-.brandtag{
+.brandtag {
   font-size: 12px;
   opacity: .75;
   font-weight: 700;
 }
 
 /* hero */
-.landing-hero{
+.landing-hero {
   padding: 6px 0;
 }
 
-.trust-pill{
+.trust-pill {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(15,23,42,.10);
-  background: rgba(255,255,255,.8);
+  border: 1px solid rgba(15, 23, 42, .10);
+  background: rgba(255, 255, 255, .8);
   font-weight: 800;
   font-size: 12px;
 }
 
-.headline{
+.headline {
   margin: 12px 0 8px;
   font-size: 30px;
   line-height: 1.08;
@@ -2042,21 +2178,21 @@ body.landing{
   font-weight: 950;
 }
 
-.subtext{
+.subtext {
   margin: 0 0 14px;
   font-size: 14px;
   line-height: 1.55;
-  color: rgba(15,23,42,.78);
+  color: rgba(15, 23, 42, .78);
 }
 
 /* feature cards */
-.feature-grid{
+.feature-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 12px;
 }
 
-.feature-card{
+.feature-card {
 
   background: #ffffff;
 
@@ -2066,14 +2202,14 @@ body.landing{
 
 }
 
-.feature-card p{
+.feature-card p {
 
   color: var(--text-secondary);
 
 }
 
 
-.feature-icon{
+.feature-icon {
   width: 42px;
   height: 42px;
   display: grid;
@@ -2084,73 +2220,73 @@ body.landing{
   margin-bottom: 8px;
 }
 
-.feature-card h3{
+.feature-card h3 {
   margin: 0 0 6px;
   font-size: 15px;
   font-weight: 900;
 }
 
-.feature-card p{
+.feature-card p {
   margin: 0;
   font-size: 13px;
   line-height: 1.45;
-  color: rgba(15,23,42,.75);
+  color: rgba(15, 23, 42, .75);
 }
 
 /* auth */
-.landing-auth{
+.landing-auth {
   display: flex;
   justify-content: center;
 }
 
-.auth-card{
+.auth-card {
   width: 100%;
   max-width: 420px;
-  background: rgba(255,255,255,.9);
-  border: 1px solid rgba(15,23,42,.10);
+  background: rgba(255, 255, 255, .9);
+  border: 1px solid rgba(15, 23, 42, .10);
   border-radius: 20px;
   padding: 14px;
   box-shadow: 0 12px 40px rgba(2, 30, 84, .10);
 }
 
-.auth-top{
+.auth-top {
   margin-bottom: 10px;
 }
 
-.auth-title{
+.auth-title {
   font-size: 16px;
   font-weight: 950;
 }
 
-.auth-note{
+.auth-note {
   font-size: 12px;
-  color: rgba(15,23,42,.70);
+  color: rgba(15, 23, 42, .70);
   margin-top: 2px;
 }
 
-.field{
+.field {
   display: grid;
   gap: 6px;
   margin: 10px 0;
 }
 
-.field span{
+.field span {
   font-weight: 800;
   font-size: 12px;
-  color: rgba(15,23,42,.78);
+  color: rgba(15, 23, 42, .78);
 }
 
-.field input{
+.field input {
   width: 100%;
   padding: 12px 12px;
   border-radius: 14px;
-  border: 1px solid rgba(15,23,42,.12);
+  border: 1px solid rgba(15, 23, 42, .12);
   outline: none;
   background: #fff;
   font-size: 14px;
 }
 
-.btn{
+.btn {
   border: 0;
   cursor: pointer;
   border-radius: 14px;
@@ -2158,58 +2294,62 @@ body.landing{
   font-weight: 900;
 }
 
-.btn.primary{
+.btn.primary {
   width: 100%;
   background: linear-gradient(135deg, #1d6fff, #6a5bff);
   color: #fff;
-  box-shadow: 0 10px 22px rgba(29,111,255,.18);
+  box-shadow: 0 10px 22px rgba(29, 111, 255, .18);
 }
 
-.btn.ghost{
+.btn.ghost {
   background: #eef5ff;
   color: #0f172a;
-  border: 1px solid rgba(15,23,42,.10);
+  border: 1px solid rgba(15, 23, 42, .10);
 }
 
-.auth-row{
+.auth-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
   margin-top: 10px;
 }
 
-.tiny{
+.tiny {
   margin-top: 10px;
   font-size: 11px;
-  color: rgba(15,23,42,.65);
+  color: rgba(15, 23, 42, .65);
 }
 
 /* footer */
-.landing-foot{
+.landing-foot {
   padding-top: 6px;
   text-align: center;
 }
-.foot-note{
+
+.foot-note {
   font-size: 12px;
-  color: rgba(15,23,42,.60);
+  color: rgba(15, 23, 42, .60);
 }
 
 /* ===== Desktop enhancements ===== */
-@media (min-width: 900px){
-  .landing-shell{
+@media (min-width: 900px) {
+  .landing-shell {
     grid-template-columns: 1.15fr 0.85fr;
     gap: 22px;
     align-items: start;
     padding-top: 22px;
   }
-  .headline{
+
+  .headline {
     font-size: 40px;
   }
-  .feature-grid{
+
+  .feature-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
-.field input{
+
+.field input {
 
   background: #ffffff;
 
@@ -2219,12 +2359,13 @@ body.landing{
 
 }
 
-.field span{
+.field span {
 
   color: var(--text-secondary);
 
 }
-:root{
+
+:root {
   --bg-main: #f4f7ff;
   --bg-card: #ffffff;
   --bg-soft: #eef4ff;
@@ -2236,23 +2377,29 @@ body.landing{
   --primary: #2563eb;
   --primary-dark: #1e40af;
 
-  --border-light: rgba(15,23,42,0.12);
-  --shadow: 0 18px 50px rgba(2,6,23,0.10);
+  --border-light: rgba(15, 23, 42, 0.12);
+  --shadow: 0 18px 50px rgba(2, 6, 23, 0.10);
 }
 
 /* Reset-ish */
-*{ box-sizing: border-box; }
-body{ margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
 
 /* =========================
    LANDING (Premium)
 ========================= */
-body.landing{
+body.landing {
   background: url(../assets/bg.jpg);
   color: var(--text-main);
 }
 
-.landing-topbar{
+.landing-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2262,13 +2409,13 @@ body.landing{
   margin: 0 auto;
 }
 
-.topbar-left{
+.topbar-left {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.logo-badge{
+.logo-badge {
   width: 42px;
   height: 42px;
   border-radius: 14px;
@@ -2276,32 +2423,32 @@ body.landing{
   place-items: center;
   background: #ffffff;
   border: 1px solid var(--border-light);
-  box-shadow: 0 10px 30px rgba(2,6,23,0.10);
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.10);
   color: var(--primary);
   font-weight: 900;
   font-size: 22px;
   text-transform: lowercase;
 }
 
-.topbar-brand .brandname{
+.topbar-brand .brandname {
   font-size: 18px;
   font-weight: 900;
   letter-spacing: 0.2px;
 }
 
-.topbar-brand .brandtag{
+.topbar-brand .brandtag {
   font-size: 12.5px;
   color: var(--text-secondary);
   margin-top: 1px;
 }
 
-.landing-wrap{
+.landing-wrap {
   max-width: 1150px;
   margin: 0 auto;
   padding: 6px 16px 28px;
 }
 
-.hero{
+.hero {
   display: grid;
   grid-template-columns: 1.2fr 0.8fr;
   gap: 18px;
@@ -2309,11 +2456,11 @@ body.landing{
   padding-top: 8px;
 }
 
-.hero-copy{
+.hero-copy {
   padding: 10px 6px;
 }
 
-.pill{
+.pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -2324,10 +2471,10 @@ body.landing{
   color: var(--text-main);
   font-weight: 700;
   font-size: 13px;
-  box-shadow: 0 10px 24px rgba(2,6,23,0.06);
+  box-shadow: 0 10px 24px rgba(2, 6, 23, 0.06);
 }
 
-.headline{
+.headline {
   margin: 14px 0 8px;
   font-size: clamp(28px, 4.4vw, 44px);
   line-height: 1.08;
@@ -2335,7 +2482,7 @@ body.landing{
   font-weight: 900;
 }
 
-.subtext{
+.subtext {
   margin: 0;
   color: var(--text-secondary);
   font-size: 16px;
@@ -2343,47 +2490,47 @@ body.landing{
   max-width: 62ch;
 }
 
-.quick-grid{
+.quick-grid {
   margin-top: 16px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
-.quick-card{
+.quick-card {
   background: #ffffff;
   border: 1px solid var(--border-light);
   border-radius: 18px;
   padding: 14px 14px;
-  box-shadow: 0 14px 34px rgba(2,6,23,0.06);
+  box-shadow: 0 14px 34px rgba(2, 6, 23, 0.06);
 }
 
-.quick-ico{
+.quick-ico {
   width: 44px;
   height: 44px;
   border-radius: 16px;
   display: grid;
   place-items: center;
   background: var(--bg-soft);
-  border: 1px solid rgba(37,99,235,0.18);
+  border: 1px solid rgba(37, 99, 235, 0.18);
   font-size: 20px;
 }
 
-.quick-title{
+.quick-title {
   margin-top: 10px;
   font-weight: 900;
   font-size: 15.5px;
   color: var(--text-main);
 }
 
-.quick-desc{
+.quick-desc {
   margin-top: 6px;
   color: var(--text-secondary);
   font-size: 13.5px;
   line-height: 1.45;
 }
 
-.trust-row{
+.trust-row {
   margin-top: 12px;
   display: flex;
   flex-wrap: wrap;
@@ -2393,20 +2540,20 @@ body.landing{
   font-size: 13px;
 }
 
-.trust-item{
-  background: rgba(255,255,255,0.7);
+.trust-item {
+  background: rgba(255, 255, 255, 0.7);
   border: 1px solid var(--border-light);
   border-radius: 999px;
   padding: 8px 12px;
 }
 
 /* Auth */
-.auth{
+.auth {
   position: sticky;
   top: 12px;
 }
 
-.auth-card{
+.auth-card {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: 22px;
@@ -2414,39 +2561,39 @@ body.landing{
   box-shadow: var(--shadow);
 }
 
-.auth-top{
+.auth-top {
   margin-bottom: 10px;
 }
 
-.auth-title{
+.auth-title {
   font-size: 18px;
   font-weight: 900;
 }
 
-.auth-note{
+.auth-note {
   margin-top: 3px;
   color: var(--text-secondary);
   font-size: 13px;
 }
 
-.auth-form{
+.auth-form {
   display: grid;
   gap: 10px;
   margin-top: 10px;
 }
 
-.field{
+.field {
   display: grid;
   gap: 6px;
 }
 
-.field span{
+.field span {
   font-size: 13px;
   font-weight: 800;
   color: var(--text-secondary);
 }
 
-.field input{
+.field input {
   height: 46px;
   border-radius: 14px;
   border: 1px solid var(--border-light);
@@ -2456,12 +2603,12 @@ body.landing{
   outline: none;
 }
 
-.field input:focus{
-  border-color: rgba(37,99,235,0.55);
-  box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+.field input:focus {
+  border-color: rgba(37, 99, 235, 0.55);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
-.btn{
+.btn {
   height: 46px;
   border-radius: 14px;
   border: 1px solid transparent;
@@ -2470,39 +2617,42 @@ body.landing{
   padding: 0 14px;
 }
 
-.btn.primary{
+.btn.primary {
   background: var(--primary);
   color: #ffffff;
 }
 
-.btn.primary:hover{
+.btn.primary:hover {
   background: var(--primary-dark);
 }
 
-.btn.ghost{
+.btn.ghost {
   background: var(--bg-soft);
   color: var(--primary);
-  border: 1px solid rgba(37,99,235,0.35);
+  border: 1px solid rgba(37, 99, 235, 0.35);
 }
 
-.btn.ghost:hover{
-  border-color: rgba(37,99,235,0.55);
+.btn.ghost:hover {
+  border-color: rgba(37, 99, 235, 0.55);
 }
 
-.auth-row{
+.auth-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
-#changePhotoBtn{
+
+#changePhotoBtn {
   margin-top: 10px;
 }
-.mini-del{
+
+.mini-del {
   padding: 6px 10px;
   border-radius: 10px;
   font-size: 12px;
   margin-left: 8px;
 }
+
 /* Hide/show navs on scroll */
 .topbar.nav-hidden {
   transform: translateY(-120%);
@@ -2518,92 +2668,120 @@ body.landing{
   transform: translateY(120%);
   transition: transform 200ms ease;
 }
-.post-comments { margin-top: 10px; }
-.comment-box { display:flex; gap:8px; margin-bottom:10px; }
-.comment-input { flex:1; padding:10px; border-radius:10px; border:1px solid #ddd; }
-.comment-row { padding:10px; border-radius:10px; border:1px solid #eee; margin-bottom:8px; }
-.comment-time { font-size:12px; opacity:.7; margin-top:4px; }
-.shop-grid{
-  display:grid;
+
+.post-comments {
+  margin-top: 10px;
+}
+
+.comment-box {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.comment-input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.comment-row {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  margin-bottom: 8px;
+}
+
+.comment-time {
+  font-size: 12px;
+  opacity: .7;
+  margin-top: 4px;
+}
+
+.shop-grid {
+  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-.shop-card{
-  border:1px solid rgba(0,0,0,.12);
-  border-radius:12px;
-  padding:10px;
-  background:#fff;
-  text-align:left;
+.shop-card {
+  border: 1px solid rgba(0, 0, 0, .12);
+  border-radius: 12px;
+  padding: 10px;
+  background: #fff;
+  text-align: left;
 }
 
-.shop-card-img{
-  height:120px;
-  border-radius:10px;
-  overflow:hidden;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: rgba(0,0,0,.04);
+.shop-card-img {
+  height: 120px;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, .04);
 }
 
-.shop-card-img img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
+.shop-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.shop-card-title{
-  margin-top:8px;
-  font-weight:700;
+.shop-card-title {
+  margin-top: 8px;
+  font-weight: 700;
 }
 
-.shop-tile{
-  width:100%;
-  max-width:240px;
+.shop-tile {
+  width: 100%;
+  max-width: 240px;
 
-  display:flex;
-  flex-direction:column;
+  display: flex;
+  flex-direction: column;
 
-  background:#fff;
-  border-radius:12px;
+  background: #fff;
+  border-radius: 12px;
 
-  overflow:hidden;
+  overflow: hidden;
 
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-.shop-tile:hover{
-  transform:translateY(-4px);
-  box-shadow:0 8px 20px rgba(0,0,0,0.12);
+.shop-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
-.shop-tile-img{
-  position:relative;
+.shop-tile-img {
+  position: relative;
 
-  width:100%;
+  width: 100%;
 
-  aspect-ratio:4 / 5;   /* ✅ perfect square */
+  aspect-ratio: 4 / 5;
+  /* ✅ perfect square */
 
-  background:#f8f8f8;
+  background: #f8f8f8;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  overflow:hidden;
+  overflow: hidden;
 }
 
-.shop-tile-img img{
-  width:100%;
-  height:100%;
-  object-fit:cover;    /* ✅ keeps proportions */
+.shop-tile-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* ✅ keeps proportions */
 }
 
 
-.visit-shop-btn{
-  border: 1px solid rgba(0,0,0,.12);
+.visit-shop-btn {
+  border: 1px solid rgba(0, 0, 0, .12);
   background: #fff;
   padding: 8px 10px;
   border-radius: 999px;
@@ -2614,9 +2792,10 @@ body.landing{
   gap: 6px;
 }
 
-.visit-shop-btn:hover{
+.visit-shop-btn:hover {
   filter: brightness(.98);
 }
+
 .reshare-banner {
   font-size: 13px;
   color: #16a34a;
@@ -2629,6 +2808,7 @@ body.landing{
   font-weight: normal;
   margin-left: 6px;
 }
+
 .wa-contact-btn {
   background: none;
   border: none;
@@ -2640,324 +2820,350 @@ body.landing{
   width: 28px;
   height: 28px;
 }
-.shop-wa-icon{
-  position:absolute;
-  right:8px;
-  bottom:8px;
 
-  border:none;
-  outline:none;
-  background:transparent;
+.shop-wa-icon {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
 
-  padding:0;
+  border: none;
+  outline: none;
+  background: transparent;
 
-  width:28px;
-  height:28px;
+  padding: 0;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  width: 28px;
+  height: 28px;
 
-  cursor:pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  z-index:5;
+  cursor: pointer;
+
+  z-index: 5;
 }
 
-.shop-wa-icon img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
+.shop-wa-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-.shop-wa-icon img{
-  width:22px;
-  height:22px;
+.shop-wa-icon img {
+  width: 22px;
+  height: 22px;
 }
 
-.shop-wa-icon img{
-  width:22px;
-  height:22px;
+.shop-wa-icon img {
+  width: 22px;
+  height: 22px;
 }
 
-.shop-tile-img > img{
-  width:100%;
-  height:100%;
+.shop-tile-img>img {
+  width: 100%;
+  height: 100%;
 
-  object-fit:contain;
+  object-fit: contain;
 }
-.shop-tile-name{
-  padding:8px 10px;
 
-  font-size:14px;
-  font-weight:600;
+.shop-tile-name {
+  padding: 8px 10px;
 
-  line-height:1.3;
+  font-size: 14px;
+  font-weight: 600;
 
-  color:#222;
+  line-height: 1.3;
 
-  text-align:left;
+  color: #222;
+
+  text-align: left;
 }
 
 /* smaller visit shop button for header */
-.name-row .visit-shop-btn{
-  padding:6px 10px;
-  border-radius:999px;
-  font-size:12px;
-  line-height:1;
-  margin-left:8px;
-}
-.post-actions{
-  display:flex;
-  align-items:center;
-  gap:12px;
-
-  padding:6px 10px;   /* ✅ smaller height */
-
-  border-top:1px solid #eee;
-
-  font-size:13px;     /* ✅ smaller text */
-
-  background:#fff;
-}
-.post-actions button{
-  border:none;
-  background:transparent;
-
-  padding:4px 6px;   /* ✅ much smaller */
-
-  font-size:13px;
-  font-weight:500;
-
-  cursor:pointer;
-
-  display:flex;
-  align-items:center;
-  gap:4px;
-
-  color:#444;
+.name-row .visit-shop-btn {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1;
+  margin-left: 8px;
 }
 
-.post-actions button:hover{
-  color:#000;
+.post-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 6px 10px;
+  /* ✅ smaller height */
+
+  border-top: 1px solid #eee;
+
+  font-size: 13px;
+  /* ✅ smaller text */
+
+  background: #fff;
 }
-.post-actions .count{
-  font-size:12px;
-  opacity:0.7;
+
+.post-actions button {
+  border: none;
+  background: transparent;
+
+  padding: 4px 6px;
+  /* ✅ much smaller */
+
+  font-size: 13px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  color: #444;
 }
-.post-media{
-  margin-bottom:4px;
+
+.post-actions button:hover {
+  color: #000;
 }
+
+.post-actions .count {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.post-media {
+  margin-bottom: 4px;
+}
+
 /* ===============================
    FACEBOOK-STYLE POST ACTION BAR
    =============================== */
 
-.post-actions{
+.post-actions {
 
-  display:flex;
-  align-items:center;
-  justify-content:space-around;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 
-  padding:2px 6px;      /* ultra thin */
+  padding: 2px 6px;
+  /* ultra thin */
 
-  border-top:1px solid #eee;
+  border-top: 1px solid #eee;
 
-  height:32px;          /* force compact height */
+  height: 32px;
+  /* force compact height */
 
-  margin-top:2px;
+  margin-top: 2px;
 }
 
 
 /* override ALL global button styles */
-.post-actions button{
+.post-actions button {
 
-  all:unset;            /* removes inherited padding, height, borders */
+  all: unset;
+  /* removes inherited padding, height, borders */
 
-  cursor:pointer;
+  cursor: pointer;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  font-size:13px;
+  font-size: 13px;
 
-  color:#65676B;
+  color: #65676B;
 
-  padding:2px 6px;
+  padding: 2px 6px;
 
 }
 
 
 /* hover like Facebook */
-.post-actions button:hover{
+.post-actions button:hover {
 
-  background:#f2f2f2;
+  background: #f2f2f2;
 
-  border-radius:6px;
+  border-radius: 6px;
 }
 
 
 /* count */
-.post-actions .count{
+.post-actions .count {
 
-  font-size:12px;
+  font-size: 12px;
 
-  margin-left:4px;
+  margin-left: 4px;
 
-  opacity:0.8;
-}
-.post-media{
-  margin-bottom:0;
+  opacity: 0.8;
 }
 
-.post-body{
-  padding-bottom:2px;
+.post-media {
+  margin-bottom: 0;
 }
+
+.post-body {
+  padding-bottom: 2px;
+}
+
 /* Fullscreen image modal */
-.img-modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.92);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-  padding:18px;
-}
-.img-modal.show{ display:flex; }
-
-.img-modal img{
-  max-width:100%;
-  max-height:100%;
-  object-fit:contain;
-  border-radius:10px;
+.img-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 18px;
 }
 
-.img-modal-close{
-  position:absolute;
-  top:14px;
-  right:14px;
-  width:40px;
-  height:40px;
-  border:none;
-  border-radius:999px;
-  background:rgba(255,255,255,0.15);
-  color:#fff;
-  font-size:20px;
-  cursor:pointer;
-}
-.shop-card-wrap{ position:relative; }
-
-.shop-del-cat{
-  position:absolute;
-  top:8px;
-  right:8px;
-  border:none;
-  background:rgba(255,255,255,0.92);
-  border-radius:999px;
-  padding:6px;
-  cursor:pointer;
+.img-modal.show {
+  display: flex;
 }
 
-.shop-del-prod{
-  position:absolute;
-  left:8px;
-  bottom:8px;
-  border:none;
-  background:rgba(255,255,255,0.92);
-  border-radius:999px;
-  padding:6px;
-  cursor:pointer;
+.img-modal img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
 }
+
+.img-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.shop-card-wrap {
+  position: relative;
+}
+
+.shop-del-cat {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.shop-del-prod {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  padding: 6px;
+  cursor: pointer;
+}
+
 /* container must be relative */
-.shop-tile-img{
-  position:relative;
+.shop-tile-img {
+  position: relative;
 }
 
 
 /* DELETE → top right */
-.delete-product{
+.delete-product {
 
-  position:absolute;
+  position: absolute;
 
-  top:8px;
-  right:8px;
+  top: 8px;
+  right: 8px;
 
-  padding:6px 10px;
+  padding: 6px 10px;
 
-  border:none;
+  border: none;
 
-  background:white;
+  background: white;
 
-  border-radius:6px;
+  border-radius: 6px;
 
-  cursor:pointer;
+  cursor: pointer;
 
-  z-index:5;
+  z-index: 5;
 }
 
 
 /* WHATSAPP → bottom right */
-.shop-wa-btn{
+.shop-wa-btn {
 
-  position:absolute;
+  position: absolute;
 
-  bottom:8px;
-  right:8px;
+  bottom: 8px;
+  right: 8px;
 
-  width:34px;
-  height:34px;
+  width: 34px;
+  height: 34px;
 
-  border:none;
+  border: none;
 
-  background:white;
+  background: white;
 
-  border-radius:6px;
+  border-radius: 6px;
 
-  cursor:pointer;
+  cursor: pointer;
 
-  z-index:4;
+  z-index: 4;
 
-  padding:5px;
+  padding: 5px;
 }
 
-.shop-wa-btn img{
+.shop-wa-btn img {
 
-  width:100%;
-  height:100%;
+  width: 100%;
+  height: 100%;
 }
 
 
 /* PRICE → bottom left */
-.shop-tile-price{
+.shop-tile-price {
 
-position:absolute;
+  position: absolute;
 
-bottom:8px;
-left:8px;
+  bottom: 8px;
+  left: 8px;
 
-background:black;
-color:white;
+  background: black;
+  color: white;
 
-padding:4px 10px;
+  padding: 4px 10px;
 
-border-radius:6px;
+  border-radius: 6px;
 
-font-size:13px;
+  font-size: 13px;
 
-display:inline-block;   /* ⭐ important */
-width:auto;             /* ⭐ important */
-max-width:max-content;  /* ⭐ important */
+  display: inline-block;
+  /* ⭐ important */
+  width: auto;
+  /* ⭐ important */
+  max-width: max-content;
+  /* ⭐ important */
 
-white-space:nowrap;
+  white-space: nowrap;
 
-z-index:2;
+  z-index: 2;
 
 }
+
 /* =========================
    SHOP: CATALOGUE GRID SIZE
    ========================= */
 
-#catalogueGrid{
+#catalogueGrid {
   display: grid;
   gap: 14px;
 
@@ -2966,277 +3172,310 @@ z-index:2;
 }
 
 /* Catalogue card itself */
-.shop-card{
+.shop-card {
   width: 100%;
   border-radius: 14px;
   overflow: hidden;
   background: #fff;
-  border: 1px solid rgba(0,0,0,0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* cover area bigger */
-.shop-card-img{
+.shop-card-img {
   width: 100%;
-  aspect-ratio: 4 / 3; /* ✅ makes it look bigger */
+  aspect-ratio: 4 / 3;
+  /* ✅ makes it look bigger */
   overflow: hidden;
 }
 
-.shop-card-img img{
+.shop-card-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.shop-card-title{
+.shop-card-title {
   padding: 10px 12px;
   font-size: 14px;
   font-weight: 600;
 }
 
 /* ✅ desktop: larger cards, 3–4 per row depending screen */
-@media (min-width: 900px){
-  #catalogueGrid{
+@media (min-width: 900px) {
+  #catalogueGrid {
     gap: 18px;
     grid-template-columns: repeat(3, minmax(240px, 1fr));
   }
 
-  .shop-card-title{
+  .shop-card-title {
     font-size: 15px;
     padding: 12px 14px;
   }
 }
 
 /* ✅ large desktop: even nicer spacing */
-@media (min-width: 1200px){
-  #catalogueGrid{
+@media (min-width: 1200px) {
+  #catalogueGrid {
     grid-template-columns: repeat(4, minmax(260px, 1fr));
   }
 
-  .shop-card-img{
+  .shop-card-img {
     aspect-ratio: 16 / 10;
   }
 }
-.shop-tile-name{
-  position:absolute;
-  top:8px;
-  left:8px;
-  z-index:4;
+
+.shop-tile-name {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 4;
 
   max-width: calc(100% - 90px);
-  padding:6px 10px;
-  border-radius:6px;
+  padding: 6px 10px;
+  border-radius: 6px;
 
   background: blueviolet;
-  color:#fff;
+  color: #fff;
 
-  font-size:13px;
-  font-weight:600;
+  font-size: 13px;
+  font-weight: 600;
 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.notif-item{
-  padding:10px 12px;
-  border-bottom:1px solid rgba(0,0,0,0.08);
-  cursor:pointer;
+
+.notif-item {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: pointer;
 }
 
-.notif-item.unread{
-  background: rgba(0,0,0,0.04);
+.notif-item.unread {
+  background: rgba(0, 0, 0, 0.04);
 }
 
-.notif-text{
-  font-size:14px;
-  font-weight:600;
+.notif-text {
+  font-size: 14px;
+  font-weight: 600;
 }
 
-.notif-time{
-  font-size:12px;
-  opacity:0.7;
-  margin-top:4px;
-}
-.notif-item{
-  display:flex;
-  gap:10px;
-  padding:10px 12px;
-  border-bottom:1px solid rgba(0,0,0,0.08);
-  cursor:pointer;
-  align-items:flex-start;
+.notif-time {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 4px;
 }
 
-.notif-item.unread{
-  background: rgba(0,0,0,0.04);
+.notif-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  align-items: flex-start;
 }
 
-.notif-avatar{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  object-fit:cover;
-  flex:0 0 34px;
+.notif-item.unread {
+  background: rgba(0, 0, 0, 0.04);
 }
 
-.notif-avatar.fallback{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: rgba(0,0,0,0.08);
+.notif-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 34px;
 }
 
-.notif-body{ flex:1; }
-
-.notif-text{
-  font-size:14px;
-  font-weight:600;
-  line-height:1.25;
+.notif-avatar.fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.08);
 }
 
-.notif-time{
-  font-size:12px;
-  opacity:0.7;
-  margin-top:4px;
+.notif-body {
+  flex: 1;
 }
+
+.notif-text {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.notif-time {
+  font-size: 12px;
+  opacity: 0.7;
+  margin-top: 4px;
+}
+
 /* Notification bell badge */
-.notif-badge{
-  position:absolute;
-  top:-4px;
-  right:-4px;
-  min-width:18px;
-  height:18px;
-  padding:0 5px;
-  border-radius:999px;
-  background:#e53935;
-  color:#fff;
-  font-size:11px;
-  font-weight:700;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  line-height:18px;
-  border:2px solid #fff;
+.notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #e53935;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  line-height: 18px;
+  border: 2px solid #fff;
 }
+
 /* --- Facebook-style carousel --- */
-.post-media{
-  position:relative;
-  margin-top:10px;
+.post-media {
+  position: relative;
+  margin-top: 10px;
 }
 
-.post-media-track{
-  display:flex;
-  gap:0;
-  overflow-x:auto;
-  scroll-snap-type:x mandatory;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
+.post-media-track {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
-.post-media-track::-webkit-scrollbar{ display:none; }
 
-.post-media-item{
-  flex:0 0 100%;
-  scroll-snap-align:center;
-  position:relative;
+.post-media-track::-webkit-scrollbar {
+  display: none;
 }
-.post-media-item img{
-  width:100%;
-  height:auto;
-  display:block;
-  border-radius:12px;
+
+.post-media-item {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  position: relative;
+}
+
+.post-media-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
 }
 
 /* Dots (small black like Facebook) */
-.carousel-dots{
-  position:absolute;
-  left:50%;
-  bottom:10px;
-  transform:translateX(-50%);
-  display:flex;
-  gap:6px;
-  z-index:3;
+.carousel-dots {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 3;
 }
-.carousel-dots .dot{
-  width:6px;
-  height:6px;
-  border-radius:999px;
-  border:none;
-  background:rgba(0,0,0,0.35);
-  padding:0;
-  cursor:pointer;
+
+.carousel-dots .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0;
+  cursor: pointer;
 }
-.carousel-dots .dot.active{
-  background:rgba(0,0,0,0.85);
+
+.carousel-dots .dot.active {
+  background: rgba(0, 0, 0, 0.85);
 }
 
 /* Optional arrows (only show when multi-image) */
-.carousel-nav{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  z-index:3;
-  width:34px;
-  height:34px;
-  border-radius:999px;
-  border:none;
-  background:rgba(0,0,0,0.35);
-  color:#fff;
-  font-size:22px;
-  line-height:34px;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 22px;
+  line-height: 34px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.carousel-nav.prev{ left:8px; }
-.carousel-nav.next{ right:8px; }
+
+.carousel-nav.prev {
+  left: 8px;
+}
+
+.carousel-nav.next {
+  right: 8px;
+}
 
 /* On small screens keep arrows subtle */
-@media (max-width: 600px){
-  .carousel-nav{ width:30px; height:30px; font-size:20px; line-height:30px; }
+@media (max-width: 600px) {
+  .carousel-nav {
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    line-height: 30px;
+  }
 }
-.post-apply-badge{
-  position:absolute;
-  right:10px;
-  bottom:10px;
-  border:none;
-  border-radius:999px;
-  padding:8px 12px;
-  font-weight:600;
-  background:rgba(0,0,0,0.75);
-  color:#fff;
-  cursor:pointer;
-  z-index:5;
+
+.post-apply-badge {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 600;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  cursor: pointer;
+  z-index: 5;
 }
-.post-apply-badge:hover{ filter:brightness(1.05); }
-.post-apply-badge:active{ transform:scale(0.98); }
+
+.post-apply-badge:hover {
+  filter: brightness(1.05);
+}
+
+.post-apply-badge:active {
+  transform: scale(0.98);
+}
+
 /* =========================
    weSPACE AUTH PAGES (Register/Login)
    Scoped to body.auth only
    ========================= */
 
-body.auth{
+body.auth {
   margin: 0;
   color: #0f172a;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 
   /* Same premium light background as landing */
   background:
-    radial-gradient(900px 500px at 18% 10%, rgba(10,102,194,0.10), transparent 60%),
-    radial-gradient(900px 500px at 82% 18%, rgba(34,197,94,0.08), transparent 60%),
+    radial-gradient(900px 500px at 18% 10%, rgba(10, 102, 194, 0.10), transparent 60%),
+    radial-gradient(900px 500px at 82% 18%, rgba(34, 197, 94, 0.08), transparent 60%),
     linear-gradient(180deg, #eef3f8 0%, #f6f8fb 55%, #eef3f8 100%);
 }
 
 /* Top bar (same as landing) */
-body.auth .topbar{
+body.auth .topbar {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: rgba(238,243,248,0.92);
+  background: rgba(238, 243, 248, 0.92);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(229,231,235,0.95);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.95);
 }
 
-body.auth .topbar-inner{
+body.auth .topbar-inner {
   width: min(1100px, 92vw);
   margin: 0 auto;
   padding: 14px 0;
@@ -3246,7 +3485,7 @@ body.auth .topbar-inner{
   gap: 16px;
 }
 
-body.auth .brand{
+body.auth .brand {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -3254,7 +3493,7 @@ body.auth .brand{
   color: inherit;
 }
 
-body.auth .logo{
+body.auth .logo {
   width: 40px;
   height: 40px;
   border-radius: 12px;
@@ -3264,39 +3503,41 @@ body.auth .logo{
   place-items: center;
   font-weight: 900;
   font-size: 18px;
-  box-shadow: 0 10px 22px rgba(10,102,194,0.18);
+  box-shadow: 0 10px 22px rgba(10, 102, 194, 0.18);
 }
 
-body.auth .brandname{
+body.auth .brandname {
   font-weight: 900;
   letter-spacing: -0.2px;
   font-size: 18px;
   line-height: 1.1;
 }
 
-body.auth .brandtag{
+body.auth .brandtag {
   font-size: 12px;
   color: #64748b;
   margin-top: 2px;
 }
 
-body.auth .top-actions{
+body.auth .top-actions {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-body.auth .link{
+body.auth .link {
   color: #64748b;
   text-decoration: none;
   font-weight: 800;
   font-size: 14px;
 }
 
-body.auth .link:hover{ color: #0f172a; }
+body.auth .link:hover {
+  color: #0f172a;
+}
 
 /* Center shell */
-body.auth .auth-shell{
+body.auth .auth-shell {
   width: min(980px, 92vw);
   margin: 0 auto;
   padding: 22px 0 32px;
@@ -3305,27 +3546,27 @@ body.auth .auth-shell{
 }
 
 /* Auth card */
-body.auth .auth-card{
+body.auth .auth-card {
   width: min(560px, 100%);
   background: #ffffff;
-  border: 1px solid rgba(229,231,235,0.95);
+  border: 1px solid rgba(229, 231, 235, 0.95);
   border-radius: 14px;
-  box-shadow: 0 12px 34px rgba(2,6,23,0.08);
+  box-shadow: 0 12px 34px rgba(2, 6, 23, 0.08);
   padding: 18px;
 }
 
-body.auth .auth-head{
+body.auth .auth-head {
   margin-bottom: 12px;
 }
 
-body.auth .auth-title{
+body.auth .auth-title {
   margin: 0 0 6px;
   font-weight: 950;
   font-size: 22px;
   letter-spacing: -0.4px;
 }
 
-body.auth .auth-subtitle{
+body.auth .auth-subtitle {
   margin: 0;
   color: #64748b;
   line-height: 1.55;
@@ -3333,49 +3574,54 @@ body.auth .auth-subtitle{
 }
 
 /* Form */
-body.auth .auth-form{
+body.auth .auth-form {
   display: grid;
   gap: 12px;
 }
 
-body.auth .grid2{
+body.auth .grid2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-@media (max-width: 620px){
-  body.auth .grid2{ grid-template-columns: 1fr; }
-  body.auth .top-actions{ display:none; }
+@media (max-width: 620px) {
+  body.auth .grid2 {
+    grid-template-columns: 1fr;
+  }
+
+  body.auth .top-actions {
+    display: none;
+  }
 }
 
-body.auth .field{
+body.auth .field {
   display: grid;
   gap: 6px;
 }
 
-body.auth .field span{
+body.auth .field span {
   font-size: 12px;
   color: #64748b;
   font-weight: 800;
 }
 
-body.auth .field input{
+body.auth .field input {
   width: 100%;
   padding: 12px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(229,231,235,0.95);
+  border: 1px solid rgba(229, 231, 235, 0.95);
   outline: none;
   font-size: 14px;
   background: #fff;
 }
 
-body.auth .field input:focus{
-  border-color: rgba(10,102,194,0.45);
-  box-shadow: 0 0 0 4px rgba(10,102,194,0.12);
+body.auth .field input:focus {
+  border-color: rgba(10, 102, 194, 0.45);
+  box-shadow: 0 0 0 4px rgba(10, 102, 194, 0.12);
 }
 
-body.auth .hint{
+body.auth .hint {
   display: block;
   margin-top: 6px;
   font-size: 12px;
@@ -3383,7 +3629,7 @@ body.auth .hint{
 }
 
 /* Buttons */
-body.auth .btn{
+body.auth .btn {
   border: 0;
   cursor: pointer;
   border-radius: 12px;
@@ -3392,356 +3638,395 @@ body.auth .btn{
   font-size: 14px;
 }
 
-body.auth .btn.primary{
+body.auth .btn.primary {
   background: #0a66c2;
   color: #fff;
 }
 
-body.auth .btn.primary:hover{
+body.auth .btn.primary:hover {
   background: #084f96;
 }
 
-body.auth .btn.full{ width: 100%; }
+body.auth .btn.full {
+  width: 100%;
+}
 
-body.auth .tiny{
+body.auth .tiny {
   font-size: 12px;
   color: #64748b;
   line-height: 1.4;
   margin-top: 2px;
 }
 
-body.auth .center{ text-align: center; }
+body.auth .center {
+  text-align: center;
+}
 
-body.auth .link2{
+body.auth .link2 {
   color: #0a66c2;
   font-weight: 900;
   text-decoration: none;
 }
 
-body.auth .link2:hover{ text-decoration: underline; }
-.verifiedBadge{
-  margin-left:6px;
-  font-weight:700;
-  color:#16a34a;
-  font-size:13px;
-  vertical-align:middle;
+body.auth .link2:hover {
+  text-decoration: underline;
 }
-.verified-badge{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  margin-left:6px;
-  width:18px;
-  height:18px;
-  border-radius:999px;
-  background:#2563eb;
-  color:#fff;
-  font-size:12px;
-  font-weight:800;
-  line-height:1;
+
+.verifiedBadge {
+  margin-left: 6px;
+  font-weight: 700;
+  color: #16a34a;
+  font-size: 13px;
+  vertical-align: middle;
 }
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+}
+
 /* Twitter-style header row */
-.name-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
+.name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.name-left{
-  min-width:0;
-  flex:1;
+.name-left {
+  min-width: 0;
+  flex: 1;
 }
 
-.poster-name{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  font-weight:700;
-  min-width:0;
+.poster-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  min-width: 0;
 }
 
 /* If names are long, prevent breaking layout */
-.poster-name{
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
+.poster-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.name-right{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  flex:0 0 auto;
+.name-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
 }
 
 /* Verified badge */
-.verified-badge{
-  width:16px;
-  height:16px;
-  border-radius:50%;
-  background:#1d9bf0;
-  color:#fff;
-  font-size:11px;
-  font-weight:800;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  flex-shrink:0;
+.verified-badge {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #1d9bf0;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 
 }
+
 /* =========================
    Premium Post UI (weSPACE)
    ========================= */
 
-.post-card{
-  background:#fff;
-  border:1px solid #e7e9ee;
-  border-radius:16px;
-  padding:14px 14px 12px;
-  margin:12px 0;
-  box-shadow:0 1px 0 rgba(0,0,0,.03);
+.post-card {
+  background: #fff;
+  border: 1px solid #e7e9ee;
+  border-radius: 16px;
+  padding: 14px 14px 12px;
+  margin: 12px 0;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .03);
 }
 
-.post-head{
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
+.post-head {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
 }
 
-.avatar-img{
-  width:42px;
-  height:42px;
-  border-radius:999px;
-  object-fit:cover;
-  border:1px solid #eef0f4;
+.avatar-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid #eef0f4;
 }
 
-.post-meta{ flex:1; min-width:0; }
-
-.name-row{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:8px;
+.post-meta {
+  flex: 1;
+  min-width: 0;
 }
 
-.poster-name{
-  font-weight:700;
-  font-size:14px;
-  color:#111827;
+.name-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
 }
 
-.sub-row{
-  margin-top:4px;
-  font-size:12px;
-  color:#6b7280;
-  line-height:1.35;
+.poster-name {
+  font-weight: 700;
+  font-size: 14px;
+  color: #111827;
 }
 
-.post-body{
-  margin-top:10px;
+.sub-row {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.35;
 }
 
-.post-text{
-  font-size:15px;
-  line-height:1.65;
-  color:#111827;
-  white-space:pre-wrap;
-  word-break:break-word;
-  margin:0 0 10px;
+.post-body {
+  margin-top: 10px;
 }
 
-.more-toggle{
-  display:inline-block;
-  margin-top:6px;
-  padding:0;
-  border:0;
-  background:transparent;
-  color:#2563eb;
-  font-weight:700;
-  cursor:pointer;
+.post-text {
+  font-size: 15px;
+  line-height: 1.65;
+  color: #111827;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0 0 10px;
 }
 
-.more-toggle:hover{ text-decoration:underline; }
+.more-toggle {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #2563eb;
+  font-weight: 700;
+  cursor: pointer;
+}
 
-.post-badge{
-  font-size:12px;
-  font-weight:700;
-  padding:5px 10px;
-  border-radius:999px;
-  border:1px solid #e7e9ee;
-  background:#f7f8fb;
-  color:#111827;
+.more-toggle:hover {
+  text-decoration: underline;
+}
+
+.post-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid #e7e9ee;
+  background: #f7f8fb;
+  color: #111827;
 }
 
 /* Optional: subtle badge tints without being “loud” */
-.post-badge.market{ background:#f3f7ff; }
-.post-badge.opportunity{ background:#f3fff7; }
-.post-badge.social{ background:#fff7f1; }
+.post-badge.market {
+  background: #f3f7ff;
+}
+
+.post-badge.opportunity {
+  background: #f3fff7;
+}
+
+.post-badge.social {
+  background: #fff7f1;
+}
 
 .connect-btn,
-.mini-del{
-  border:1px solid #e7e9ee;
-  background:#fff;
-  color:#111827;
-  border-radius:999px;
-  padding:6px 10px;
-  font-size:12px;
-  font-weight:700;
-  cursor:pointer;
+.mini-del {
+  border: 1px solid #e7e9ee;
+  background: #fff;
+  color: #111827;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
 .connect-btn:hover,
-.mini-del:hover{
-  background:#f7f8fb;
+.mini-del:hover {
+  background: #f7f8fb;
 }
 
-.danger.mini-del{
-  border-color:#f1c7c7;
-  color:#b42318;
+.danger.mini-del {
+  border-color: #f1c7c7;
+  color: #b42318;
 }
 
-.post-media{
-  margin-top:10px;
-  border-radius:14px;
-  overflow:hidden;
-  border:1px solid #eef0f4;
-  background:#f3f4f6;
+.post-media {
+  margin-top: 10px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #eef0f4;
+  background: #f3f4f6;
 }
 
-.post-media-track{
-  display:flex;
-  overflow:auto;
-  scroll-snap-type:x mandatory;
-  gap:10px;
-  padding:10px;
+.post-media-track {
+  display: flex;
+  overflow: auto;
+  scroll-snap-type: x mandatory;
+  gap: 10px;
+  padding: 10px;
 }
 
-.post-media-item{
-  position:relative;
-  flex:0 0 85%;
-  scroll-snap-align:start;
-  border-radius:12px;
-  overflow:hidden;
-  background:#e5e7eb;
+.post-media-item {
+  position: relative;
+  flex: 0 0 85%;
+  scroll-snap-align: start;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #e5e7eb;
 }
 
-.post-media-item img{
-  width:100%;
-  height:auto;
-  display:block;
+.post-media-item img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
-.post-wa-icon{
-  position:absolute;
-  right:10px;
-  bottom:10px;
-  width:44px;
-  height:44px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.8);
-  background:rgba(255,255,255,.92);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
+.post-wa-icon {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .8);
+  background: rgba(255, 255, 255, .92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
-.post-wa-icon img{
-  width:22px;
-  height:22px;
+.post-wa-icon img {
+  width: 22px;
+  height: 22px;
 }
 
-.post-price-badge{
-  position:absolute;
-  left:12px;
-  bottom:12px;
-  background:rgba(17,24,39,.92);
-  color:#fff;
-  font-weight:800;
-  font-size:12px;
-  padding:6px 10px;
-  border-radius:999px;
+.post-price-badge {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  background: rgba(17, 24, 39, .92);
+  color: #fff;
+  font-weight: 800;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
 }
 
-.post-actions{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-top:12px;
-  padding-top:10px;
-  border-top:1px solid #eef0f4;
+.post-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #eef0f4;
 }
 
-.post-actions button{
-  border:1px solid #e7e9ee;
-  background:#fff;
-  color:#111827;
-  border-radius:999px;
-  padding:8px 12px;
-  font-size:13px;
-  font-weight:700;
-  cursor:pointer;
+.post-actions button {
+  border: 1px solid #e7e9ee;
+  background: #fff;
+  color: #111827;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
 }
 
-.post-actions button:hover{
-  background:#f7f8fb;
+.post-actions button:hover {
+  background: #f7f8fb;
 }
 
-.post-actions button:disabled{
-  opacity:.5;
-  cursor:not-allowed;
+.post-actions button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
 }
 
 /* Make the page background “premium” (optional but recommended) */
-body{
-  background:#f5f7fb;
-  color:#111827;
+body {
+  background: #f5f7fb;
+  color: #111827;
 }
 
 /* Mobile polish */
-@media (max-width:480px){
-  .post-card{ border-radius:14px; padding:12px; }
-  .post-media-item{ flex-basis:92%; }
-  .post-text{ font-size:14px; }
+@media (max-width:480px) {
+  .post-card {
+    border-radius: 14px;
+    padding: 12px;
+  }
+
+  .post-media-item {
+    flex-basis: 92%;
+  }
+
+  .post-text {
+    font-size: 14px;
+  }
 }
+
 /* =========================
    weSPACE Post UI Fixes (MERGED)
    ========================= */
 
 /* 1) Bring description UP (remove extra top spacing) */
-.post-body{
+.post-body {
   margin-top: 8px !important;
 }
-.post-text{
+
+.post-text {
   margin: 0 0 10px !important;
 }
 
 /* 2) Swipeable media that fills the card (no empty padding/gaps) */
-.post-media{
-  position: relative !important;       /* needed for badges positioning */
+.post-media {
+  position: relative !important;
+  /* needed for badges positioning */
   margin-top: 8px !important;
   border-radius: 14px;
-  overflow: hidden;                    /* keep badges inside */
+  overflow: hidden;
+  /* keep badges inside */
   border: 1px solid #eef0f4;
   background: #f3f4f6;
 }
 
 /* Keep swipe + remove the space */
-.post-media-track{
+.post-media-track {
   display: flex !important;
-  overflow-x: auto !important;         /* swipe */
+  overflow-x: auto !important;
+  /* swipe */
   overflow-y: hidden !important;
   -webkit-overflow-scrolling: touch;
   scroll-snap-type: x mandatory !important;
 
-  padding: 0 !important;               /* remove side space */
-  gap: 0 !important;                   /* remove gaps */
+  padding: 0 !important;
+  /* remove side space */
+  gap: 0 !important;
+  /* remove gaps */
 }
 
 /* Each slide fills full width */
-.post-media-item{
+.post-media-item {
   flex: 0 0 100% !important;
   scroll-snap-align: start !important;
 
@@ -3752,7 +4037,7 @@ body{
 }
 
 /* Image fills slide cleanly */
-.post-media-item img{
+.post-media-item img {
   width: 100% !important;
   height: auto !important;
   display: block !important;
@@ -3760,11 +4045,16 @@ body{
 }
 
 /* Optional: hide scrollbar but keep swipe */
-.post-media-track::-webkit-scrollbar{ height: 0; }
-.post-media-track{ scrollbar-width: none; }
+.post-media-track::-webkit-scrollbar {
+  height: 0;
+}
+
+.post-media-track {
+  scrollbar-width: none;
+}
 
 /* 3) Price badge: neat, RIGHT, not stretching */
-.post-price-badge{
+.post-price-badge {
   position: absolute !important;
   right: 12px !important;
   left: auto !important;
@@ -3778,7 +4068,7 @@ body{
 }
 
 /* 4) WhatsApp button: LEFT */
-.post-wa-icon{
+.post-wa-icon {
   position: absolute !important;
   left: 10px !important;
   right: auto !important;
@@ -3797,24 +4087,25 @@ body{
   cursor: pointer;
   padding: 0;
 
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
-.post-wa-icon img{
+.post-wa-icon img {
   width: 20px;
   height: 20px;
 }
 
 /* 5) Tighter post tile */
-.post-card{
+.post-card {
   padding-bottom: 10px !important;
 }
+
 /* =========================
    weSPACE Mobile Feed "FB-like" UI
    Paste at END of style.css
    ========================= */
 
-:root{
+:root {
   --fb-bg: #f0f2f5;
   --card: #ffffff;
   --text: #050505;
@@ -3823,14 +4114,19 @@ body{
 }
 
 /* Page background like FB */
-body{
+body {
   background: var(--fb-bg) !important;
   color: var(--text) !important;
 }
 
 /* If you have a main container/wrapper, remove big side padding on mobile */
-@media (max-width: 600px){
-  .container, .main, .page, .feed, .content{
+@media (max-width: 600px) {
+
+  .container,
+  .main,
+  .page,
+  .feed,
+  .content {
     width: 100% !important;
     max-width: 100% !important;
     padding-left: 0 !important;
@@ -3838,67 +4134,79 @@ body{
   }
 
   /* Make post card feel full-width like FB */
-  .post-card, .post, .feed-item{
+  .post-card,
+  .post,
+  .feed-item {
     width: 100% !important;
     max-width: 100% !important;
     margin: 10px 0 !important;
     border-radius: 14px !important;
     background: var(--card) !important;
     border: 1px solid var(--border) !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,.06) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .06) !important;
   }
 
   /* Tighter header spacing */
-  .post-header{
+  .post-header {
     padding: 12px 12px 6px !important;
   }
 
   /* Better text like FB */
-  .post-body{
+  .post-body {
     padding: 0 12px 10px !important;
     margin-top: 4px !important;
   }
-  .post-text{
+
+  .post-text {
     color: var(--text) !important;
     font-size: 16px !important;
     line-height: 1.35 !important;
     margin: 6px 0 10px !important;
     word-break: break-word;
   }
-  .post-meta, .post-subtitle, .post-time, .post-hint{
+
+  .post-meta,
+  .post-subtitle,
+  .post-time,
+  .post-hint {
     color: var(--muted) !important;
     font-size: 13px !important;
   }
 
   /* Media should be edge-to-edge inside the card */
-  .post-media{
+  .post-media {
     margin: 8px 0 8px !important;
     border-radius: 0 !important;
     overflow: hidden !important;
   }
-  .post-media-track{
+
+  .post-media-track {
     padding: 0 !important;
     gap: 0 !important;
   }
-  .post-media-item{
+
+  .post-media-item {
     flex: 0 0 100% !important;
     border-radius: 0 !important;
   }
-  .post-media img, .post-media video{
+
+  .post-media img,
+  .post-media video {
     width: 100% !important;
     height: auto !important;
     display: block !important;
     object-fit: cover !important;
   }
 }
+
 /* Action buttons should never break on mobile */
-.post-actions{
+.post-actions {
   display: flex !important;
   gap: 8px !important;
   padding: 8px 12px 12px !important;
 }
 
-.post-actions button{
+.post-actions button {
   flex: 1 1 0 !important;
   min-width: 0 !important;
   border-radius: 999px !important;
@@ -3910,21 +4218,23 @@ body{
 }
 
 /* If you have the count span */
-.post-actions .count{
+.post-actions .count {
   color: #65676b !important;
   font-weight: 600;
 }
+
 /* Hide connect button inside feed posts (show it only on profile page UI) */
 .post-card .connect-btn,
 .post .connect-btn,
-.feed-item .connect-btn{
+.feed-item .connect-btn {
   display: none !important;
 }
+
 /* =========================
    FB-like Media Edge-to-Edge
    ========================= */
 
-:root{
+:root {
   --fb-bg: #f0f2f5;
   --card: #ffffff;
   --text: #050505;
@@ -3932,23 +4242,25 @@ body{
   --border: #dadde1;
 }
 
-body{
+body {
   background: var(--fb-bg) !important;
   color: var(--text) !important;
 }
 
 /* Stronger “card pop” like FB */
-.post-card, .post, .feed-item{
+.post-card,
+.post,
+.feed-item {
   background: var(--card) !important;
   border: 1px solid var(--border) !important;
   border-radius: 14px !important;
-  box-shadow: 0 1px 2px rgba(0,0,0,.10) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .10) !important;
 }
 
 /* IMPORTANT:
    Your card has inner padding (often 12px).
    We make media “bleed” left/right by using negative margins. */
-.post-media{
+.post-media {
   margin-left: -12px !important;
   margin-right: -12px !important;
   border-radius: 0 !important;
@@ -3956,36 +4268,38 @@ body{
 }
 
 /* Ensure media truly fills */
-.post-media-track{
+.post-media-track {
   padding: 0 !important;
   gap: 0 !important;
 }
 
-.post-media-item{
+.post-media-item {
   flex: 0 0 100% !important;
   border-radius: 0 !important;
   overflow: hidden !important;
 }
 
 .post-media img,
-.post-media video{
+.post-media video {
   width: 100% !important;
   height: auto !important;
   display: block !important;
   object-fit: cover !important;
 }
+
 /* =========================
    Fix media to edge inside padded card
    Your card padding = 14px
    ========================= */
 
-.post-card{
+.post-card {
   padding: 14px;
-  overflow: hidden; /* important */
+  overflow: hidden;
+  /* important */
 }
 
 /* This is the KEY fix */
-.post-media{
+.post-media {
   margin-left: -14px !important;
   margin-right: -14px !important;
   margin-top: 8px !important;
@@ -3994,40 +4308,42 @@ body{
   overflow: hidden !important;
 }
 
-.post-media-track{
+.post-media-track {
   padding: 0 !important;
   gap: 0 !important;
 }
 
-.post-media-item{
-   position: relative;
+.post-media-item {
+  position: relative;
   flex: 0 0 100% !important;
 }
 
 .post-media img,
-.post-media video{
+.post-media video {
   width: 100% !important;
   display: block !important;
   object-fit: cover;
 }
-body{
+
+body {
   background: #f0f2f5 !important;
 }
 
-.post-card{
+.post-card {
   background: #ffffff !important;
   border: 1px solid #dadde1 !important;
-  box-shadow: 0 1px 2px rgba(0,0,0,.10) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .10) !important;
 }
 
-.post-text{
+.post-text {
   color: #050505 !important;
 }
 
-.post-meta{
+.post-meta {
   color: #65676b !important;
 }
-.post-actions{
+
+.post-actions {
   border-top: 1px solid #dadde1;
   margin-top: 6px;
   padding-top: 6px;
@@ -4036,38 +4352,42 @@ body{
   justify-content: space-around;
 }
 
-.post-actions button{
+.post-actions button {
   background: none !important;
   border: none !important;
   box-shadow: none !important;
   color: #65676b;
   font-weight: 600;
 }
+
 /* =========================
    weSPACE: Edge-to-edge media (your structure)
    post-body contains media
    ========================= */
 
 /* Card */
-.post-card{
+.post-card {
   background: #fff;
   border: 1px solid #dadde1;
   border-radius: 14px;
-  overflow: hidden; /* critical */
-  box-shadow: 0 1px 2px rgba(0,0,0,.10);
+  overflow: hidden;
+  /* critical */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .10);
 }
 
 /* Header + body padding like FB */
-.post-head{
+.post-head {
   padding: 10px 14px 6px !important;
 }
-.post-body{
-  padding: 0 17px 10px !important; /* left/right padding stays for text */
+
+.post-body {
+  padding: 0 17px 10px !important;
+  /* left/right padding stays for text */
   margin: 0 !important;
 }
 
 /* Make ONLY media escape the body padding */
-.post-body .post-media{
+.post-body .post-media {
   margin-left: -17px !important;
   margin-right: -17px !important;
   margin-top: 7px !important;
@@ -4077,31 +4397,44 @@ body{
 }
 
 /* Ensure no inner gaps */
-.post-media-track{ padding: 0 !important; gap: 0 !important; }
-.post-media-item{ flex: 0 0 100% !important; border-radius: 0 !important; }
-.post-media img, .post-media video{
+.post-media-track {
+  padding: 0 !important;
+  gap: 0 !important;
+}
+
+.post-media-item {
+  flex: 0 0 100% !important;
+  border-radius: 0 !important;
+}
+
+.post-media img,
+.post-media video {
   width: 100% !important;
   display: block !important;
   object-fit: cover !important;
 }
+
 /* Remove title line from UI (keep DB field) */
-.post-title{
+.post-title {
   display: none !important;
 }
-.post-text{
+
+.post-text {
   margin-top: 2px !important;
   margin-bottom: 8px !important;
   line-height: 1.35 !important;
   color: #050505 !important;
 }
-.sub-row{
+
+.sub-row {
   color: #65676b !important;
 }
+
 /* =========================
    FB-like action row alignment
    ========================= */
 
-.post-actions{
+.post-actions {
   display: flex !important;
   align-items: center !important;
   justify-content: space-around !important;
@@ -4111,7 +4444,7 @@ body{
   background: transparent !important;
 }
 
-.post-actions button{
+.post-actions button {
   flex: 1 1 0 !important;
   min-width: 0 !important;
 
@@ -4132,27 +4465,30 @@ body{
   border-radius: 10px !important;
 }
 
-.post-actions button:active{
+.post-actions button:active {
   transform: scale(0.98);
 }
 
 /* Optional: hide counts for a cleaner FB look */
-.post-actions .count{
+.post-actions .count {
   display: none !important;
 }
-.post-card .connect-btn{
+
+.post-card .connect-btn {
   display: none !important;
 }
+
 /* =========================
    weSPACE FB-like FIX (stable)
    Works with your HTML structure:
    .post-card > .post-head + .post-body + .post-actions
    ========================= */
 
-@media (max-width: 700px){
+@media (max-width: 700px) {
 
   /* make the page not look washed + remove side gutters */
-  html, body{
+  html,
+  body {
     margin: 0 !important;
     padding: 0 !important;
     background: #f0f2f5 !important;
@@ -4160,7 +4496,11 @@ body{
   }
 
   /* remove any outer container padding that creates side space */
-  .container, .main, .page, .feed, .content{
+  .container,
+  .main,
+  .page,
+  .feed,
+  .content {
     max-width: 100% !important;
     width: 100% !important;
     padding-left: 0 !important;
@@ -4168,11 +4508,11 @@ body{
   }
 
   /* Post card */
-  .post-card{
+  .post-card {
     background: #fff !important;
     border: 1px solid #dadde1 !important;
     border-radius: 14px !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,.12) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .12) !important;
     overflow: hidden !important;
 
     /* IMPORTANT: remove padding from the card */
@@ -4183,58 +4523,59 @@ body{
   }
 
   /* Header spacing like FB */
-  .post-head{
+  .post-head {
     padding: 12px 14px 6px !important;
   }
 
   /* Body: NO side padding so media can be full width */
-  .post-body{
+  .post-body {
     padding: 0 !important;
     margin: 0 !important;
   }
 
   /* You don’t want title showing */
-  .post-title{
+  .post-title {
     display: none !important;
   }
 
   /* Text gets padding (FB style) */
-  .post-text{
+  .post-text {
     padding: 4px 14px 10px !important;
     margin: 0 !important;
     font-size: 16px !important;
     line-height: 1.35 !important;
     color: #050505 !important;
-    text-align: left !important; /* fixes the “centered” look */
+    text-align: left !important;
+    /* fixes the “centered” look */
     word-break: break-word;
   }
 
-  .post-meta .sub-row{
+  .post-meta .sub-row {
     color: #65676b !important;
     font-size: 13px !important;
   }
 
   /* Media must be true full width INSIDE card */
-  .post-media{
+  .post-media {
     margin: 0 !important;
     padding: 0 !important;
     border-radius: 0 !important;
     overflow: hidden !important;
   }
 
-  .post-media-track{
+  .post-media-track {
     padding: 0 !important;
     gap: 0 !important;
   }
 
-  .post-media-item{
+  .post-media-item {
     flex: 0 0 100% !important;
     border-radius: 0 !important;
     overflow: hidden !important;
   }
 
   .post-media img,
-  .post-media video{
+  .post-media video {
     width: 100% !important;
     height: auto !important;
     display: block !important;
@@ -4243,7 +4584,7 @@ body{
   }
 
   /* Action buttons aligned + clean */
-  .post-actions{
+  .post-actions {
     display: flex !important;
     align-items: center !important;
     justify-content: space-around !important;
@@ -4254,7 +4595,7 @@ body{
     background: #fff !important;
   }
 
-  .post-actions button{
+  .post-actions button {
     flex: 1 1 0 !important;
     min-width: 0 !important;
 
@@ -4274,100 +4615,112 @@ body{
     font-weight: 600 !important;
     border-radius: 10px !important;
   }
-   /* ==================================
+
+  /* ==================================
    RESTORE NORMAL POST CARD PADDING
    ================================== */
 
-/* Card boxed again */
-.post-card{
-  padding: 14px !important;   /* restore original padding */
-}
+  /* Card boxed again */
+  .post-card {
+    padding: 14px !important;
+    /* restore original padding */
+  }
 
-/* Body should NOT remove card padding */
-.post-body{
-  padding: 0 !important;
-}
+  /* Body should NOT remove card padding */
+  .post-body {
+    padding: 0 !important;
+  }
 
-/* Remove any negative margins on media */
-.post-body .post-media{
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
+  /* Remove any negative margins on media */
+  .post-body .post-media {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
 
-/* Ensure media stays inside card */
-.post-media{
-  width: 100% !important;
-  border-radius: 12px !important; /* nice inner rounding */
-}
-/* =========================
+  /* Ensure media stays inside card */
+  .post-media {
+    width: 100% !important;
+    border-radius: 12px !important;
+    /* nice inner rounding */
+  }
+
+  /* =========================
    Fix: Name left, Visit Shop right (your real button)
    ========================= */
 
-.post-head{
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important;
-}
+  .post-head {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
 
-.avatar-img{
-  width: 38px !important;
-  height: 38px !important;
-  flex: 0 0 auto !important;
-}
+  .avatar-img {
+    width: 38px !important;
+    height: 38px !important;
+    flex: 0 0 auto !important;
+  }
 
-/* meta takes remaining space */
-.post-meta{
-  flex: 1 1 auto !important;
-  min-width: 0 !important; /* allow shrink */
-}
+  /* meta takes remaining space */
+  .post-meta {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    /* allow shrink */
+  }
 
-/* name row: keep in one line */
-.name-row{
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  flex-wrap: nowrap !important;
-}
+  /* name row: keep in one line */
+  .name-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-wrap: nowrap !important;
+  }
 
-/* name shrinks nicely instead of colliding */
-.poster-name{
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: nowrap !important;
-}
+  /* name shrinks nicely instead of colliding */
+  .poster-name {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
 
-/* Push Visit Shop to the far right */
-#visitShopBtn{
-  margin-left: auto !important;
-  flex: 0 0 auto !important;
-  white-space: nowrap !important;
-}
-/* === Make description start normally (no title space, no indent) === */
-.post-title{ 
-  display: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  height: 0 !important;
-}
+  /* Push Visit Shop to the far right */
+  #visitShopBtn {
+    margin-left: auto !important;
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+  }
 
-.post-text{
-  margin-top: 0 !important;      /* remove the 4px */
-  padding-top: 0 !important;
-  text-indent: 0 !important;
-  text-align: left !important;
-  white-space: normal !important;
-}
-/* =========================
+  /* === Make description start normally (no title space, no indent) === */
+  .post-title {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 0 !important;
+  }
+
+  .post-text {
+    margin-top: 0 !important;
+    /* remove the 4px */
+    padding-top: 0 !important;
+    text-indent: 0 !important;
+    text-align: left !important;
+    white-space: normal !important;
+  }
+
+  /* =========================
    Shift Visit Shop slightly further right
    ========================= */
 
-#visitShopBtn{
-  margin-left: auto !important;   /* pushes it to far right */
-  margin-right: 6px !important;   /* adds breathing space from edge */
+  #visitShopBtn {
+    margin-left: auto !important;
+    /* pushes it to far right */
+    margin-right: 6px !important;
+    /* adds breathing space from edge */
+  }
 }
-/* ===== Minimal Feed Brand Header ===== */
+
+
 .feed-brand {
   font-size: 16px;
   font-weight: 700;
@@ -4377,25 +4730,3 @@ body{
   letter-spacing: 0.3px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
