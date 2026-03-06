@@ -2224,14 +2224,18 @@ async function bootForCurrentSession() {
     }
 
     // 2) Load FEED first
-    try {
-        cachedFeedItems = await fetchFeedItemsMixed();
-renderFeed(cachedFeedItems);
+   try {
+  cachedFeedItems = await fetchFeedItemsMixed();
+  renderFeed(cachedFeedItems);
+} catch (e) {
+  console.warn("fetchFeedItemsMixed failed:", e);
+}
 
-cachedPosts = await fetchPosts();   // ✅ add
-    } catch (e) {
-      console.warn("fetchFeedItemsMixed failed:", e);
-    }
+try {
+  cachedPosts = await fetchPosts();
+} catch (e) {
+  console.warn("fetchPosts failed:", e);
+}
 
     // 3) Defer the rest
     queueMicrotask(async () => {
@@ -2303,6 +2307,7 @@ document.addEventListener("visibilitychange", async () => {
   }
 });
   
+
 
 
 
