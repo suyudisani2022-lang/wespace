@@ -73,6 +73,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const previewEmpty = document.getElementById("imagePreviewEmpty");
   const previewStrip = document.getElementById("imagePreviewStrip");
+
+  // LIGHTBOX ELEMENTS
+  const imageLightbox = document.getElementById("imageLightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+  const closeLightbox = document.getElementById("closeLightbox");
+
   let verifiedSellerSet = new Set();
 
   async function loadVerifiedSellers() {
@@ -2244,4 +2250,49 @@ document.addEventListener("DOMContentLoaded", () => {
     if (sessionUser) setupNotifRealtime();
   });
 
+  // LIGHTBOX LOGIC
+  const openLightbox = (src) => {
+    if (!imageLightbox || !lightboxImg) return;
+    lightboxImg.src = src;
+    imageLightbox.classList.add("show");
+    imageLightbox.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden"; // disable scroll
+  };
+
+  const closeLightboxFunc = () => {
+    if (!imageLightbox) return;
+    imageLightbox.classList.remove("show");
+    imageLightbox.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = ""; // enable scroll
+  };
+
+  // Delegate click on FEED_LIST for images
+  FEED_LIST?.addEventListener("click", (ev) => {
+    const img = ev.target.closest(".post-media-item img");
+    if (img) {
+      openLightbox(img.src);
+    }
+  });
+
+  // Delegate click on other lists for images (Market, Opps, Socials, Profile)
+  [marketList, oppsList, socialList, myPostsWrap, document.getElementById("visitorProfileBody")].forEach(list => {
+    list?.addEventListener("click", (ev) => {
+      const img = ev.target.closest(".post-media-item img");
+      if (img) {
+        openLightbox(img.src);
+      }
+    });
+  });
+
+  closeLightbox?.addEventListener("click", closeLightboxFunc);
+  imageLightbox?.addEventListener("click", (ev) => {
+    if (ev.target === imageLightbox) closeLightboxFunc();
+  });
+
+  // Escape key to close
+  window.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape") closeLightboxFunc();
+  });
+
 })
+
