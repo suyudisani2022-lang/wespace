@@ -354,18 +354,17 @@ async function bootAfterAuth() {
   } catch (err) {
 
     console.error("bootAfterAuth error:", err);
+finally {
 
-  } finally {
+  bootInProgress = false;   // VERY IMPORTANT
 
-  
-
-    if (pendingBoot) {
-      pendingBoot = false;
-      bootAfterAuth();
-    }
-
+  if (pendingBoot) {
+    pendingBoot = false;
+    bootAfterAuth();
   }
+
 }
+ 
 
 /* ---------------- APP STATE ---------------- */
  let myProfile = null;
@@ -2306,6 +2305,7 @@ document.addEventListener("visibilitychange", async () => {
   await initAuth();
   await bootAfterAuth();
 })();
+
 
 
 
