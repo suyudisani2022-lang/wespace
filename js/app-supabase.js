@@ -2212,35 +2212,35 @@ document.addEventListener("DOMContentLoaded", () => {
   init();
 
   // ==========================================
-  // 🚀 TAB SUSPENSION / WAKE UP FIX
+  // 🚀 TAB SUSPENSION / WAKE UP FIX (V2)
   // ==========================================
-  // When the browser tab wakes up from being minimized/sleeping, we MUST tell
-  // Supabase to forcefully re-check the session, otherwise requests queue forever.
+  // Using getSession() directly on wake can freeze the UI if the client is corrupted.
+  // Instead, use Supabase's non-blocking auto-refresh toggles.
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") {
-      console.log("Tab resumed: Re-checking Supabase connection...");
-
-      // Un-stick the queue by explicitly getting a fresh session
-      supabase.auth.getSession().catch(console.error);
+      console.log("Tab resumed: Starting Supabase Auto-Refresh...");
+      supabase.auth.startAutoRefresh();
 
       // If logged in, safely reconnect the realtime sockets if they dropped
       if (sessionUser) {
         setupNotifRealtime();
       }
+    } else {
+      console.log("Tab hidden: Stopping Supabase Auto-Refresh to prevent hanging...");
+      supabase.auth.stopAutoRefresh();
     }
   });
 
   // Also trigger a refresh when the device regains network connection
   window.addEventListener("online", () => {
-    supabase.auth.getSession().catch(console.error);
+    supabase.auth.startAutoRefresh();
     if (sessionUser) setupNotifRealtime();
   });
 
-  // (NEW) Desktop fix: sometimes switching windows doesn't trigger visibilitychange
-  // but it DOES trigger a 'focus' event when you click back into the window.
+  // Desktop fix: sometimes switching windows doesn't trigger visibilitychange
   window.addEventListener("focus", () => {
-    console.log("Window focused: Re-checking Supabase connection...");
-    supabase.auth.getSession().catch(console.error);
+    console.log("Window focused: Starting Supabase Auto-Refresh...");
+    supabase.auth.startAutoRefresh();
     if (sessionUser) setupNotifRealtime();
   });
 
