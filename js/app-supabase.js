@@ -73,7 +73,6 @@ const applyLink = document.getElementById("applyLink");
 
   const previewEmpty = document.getElementById("imagePreviewEmpty");
   const previewStrip = document.getElementById("imagePreviewStrip");
-  
   let verifiedSellerSet = new Set();
 
 async function loadVerifiedSellers() {
@@ -89,8 +88,12 @@ async function loadVerifiedSellers() {
   }
   verifiedSellerSet = new Set((data || []).map(r => r.user_id));
 }
- 
+  
 
+  (async function startApp() {
+  await initAuth();      // MUST be first
+  await bootAfterAuth(); // then render
+})();
 
   
 verifySellerBtn?.addEventListener("click", () => {
@@ -288,84 +291,73 @@ async function markNotificationsRead(ids) {
   // =========================
   // STATE
   // =========================
- let sessionUser = null; // auth user
-let authReady = false;
-let lastAuthUserId = null;
-
-let bootInProgress = false;
-let pendingBoot = false;
-let activeSectionId = "feed"; 
+  let sessionUser = null; // auth user
+  let authReady = false;
 
 async function initAuth() {
-
   const { data: { session }, error } = await supabase.auth.getSession();
   if (error) console.error("getSession error:", error);
 
   sessionUser = session?.user ?? null;
   authReady = true;
 
-  // Listen for login / logout changes
-  supabase.auth.onAuthStateChange(async (_event, newSession) => {
+  // Keep sessionUser synced forever
+  supabase.auth.onAuthStateChange((_event, session) => {
+    sessionUser = session?.user ?? null;
+     showSection(activeSectionId);
+     let lastAuthUserId = null;
 
-    const newUserId = newSession?.user?.id || null;
+supabase.auth.onAuthStateChange(async (_event, newSession) => {
+  const newUserId = newSession?.user?.id || null;
 
-    // prevent duplicate rerenders
-    if (newUserId === lastAuthUserId) return;
+  if (newUserId === lastAuthUserId) return; // prevents duplicate rerenders
 
-    lastAuthUserId = newUserId;
+  lastAuthUserId = newUserId;
 
-    sessionUser = newSession?.user || null;
+  sessionUser = newSession?.user || null;
 
-    await bootAfterAuth();
+  // ... your existing code
+});
 
+    // IMPORTANT: when auth changes, refresh UI
+    bootAfterAuth();
   });
 }
 
 function requireUser() {
   return sessionUser?.id ? sessionUser : null;
 }
-
 async function bootAfterAuth() {
-
-  if (bootInProgress) {
-    pendingBoot = true;
-    return;
+  // If you rely on profile / connections / shop owners, do them here
+  if (requireUser()) {
+    await loadMyProfile?.();          // if you have it
+    await loadMyConnections?.();      // if you have it
+    await loadShopOwners?.();         // you DO have this
+    await refreshNotifBadge?.();      // you DO have this
   }
 
-  bootInProgress = true;
-  pendingBoot = false;
-
-  try {
-
-    // re-check session (important after minimize)
-    const { data: { session } } = await supabase.auth.getSession();
-    sessionUser = session?.user || null;
-
-    if (requireUser()) {
-      await loadMyProfile?.();
-      await loadMyConnections?.();
-      await loadShopOwners?.();
-      await refreshNotifBadge?.();
-    }
-
-    // wake up UI
-    showSection(activeSectionId);
-
-  } catch (err) {
-
-    console.error("bootAfterAuth error:", err);
-  } finally {
-
-  bootInProgress = false;   // VERY IMPORTANT
-
-  if (pendingBoot) {
-    pendingBoot = false;
-    bootAfterAuth();
-  }
-
+  // Re-render current section so UI reflects login state
+  showSection(activeSectionId);
 }
- 
+  let myProfile = null; // profiles row
 
+  let activeSectionId = "feed";
+
+  // cachedPosts = raw posts list for category pages
+  let cachedPosts = [];
+
+  // cachedFeedItems = mixed feed list (posts + reshares)
+  let cachedFeedItems = [];
+
+  let myConnectionSet = new Set();
+  let shopOwnerSet = new Set();
+
+  const profileView = {
+    mode: "self", // "self" | "visitor"
+    userId: null,
+    returnSection: "profile",
+    returnScrollY: 0,
+  };
 
   
 
@@ -2125,7 +2117,8 @@ if (nItem) {
 // =========================
 
 let notifChannel = null;
-
+let bootInProgress = false;
+let pendingBoot = false;
 
 function setupNotifRealtime() {
   if (!sessionUser) return;
@@ -2189,18 +2182,14 @@ async function bootForCurrentSession() {
     }
 
     // 2) Load FEED first
-   try {
-  cachedFeedItems = await fetchFeedItemsMixed();
-  renderFeed(cachedFeedItems);
-} catch (e) {
-  console.warn("fetchFeedItemsMixed failed:", e);
-}
+    try {
+        cachedFeedItems = await fetchFeedItemsMixed();
+renderFeed(cachedFeedItems);
 
-try {
-  cachedPosts = await fetchPosts();
-} catch (e) {
-  console.warn("fetchPosts failed:", e);
-}
+cachedPosts = await fetchPosts();   // ✅ add
+    } catch (e) {
+      console.warn("fetchFeedItemsMixed failed:", e);
+    }
 
     // 3) Defer the rest
     queueMicrotask(async () => {
@@ -2258,19 +2247,11 @@ async function init() {
 
 // call once
 init();
-
-
- 
-
+})
 
 
 
-
-
-
-
-
-
+// call it once
 
 
 
