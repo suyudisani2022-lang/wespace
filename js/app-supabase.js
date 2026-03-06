@@ -5,10 +5,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================
   // ELEMENTS
   // =========================
-  
+
   const sections = document.querySelectorAll(".section");
   const profileWaBtn = document.getElementById("profileWaBtn");
-   const notifBtn = document.getElementById("notifBtn");
+  const notifBtn = document.getElementById("notifBtn");
 
   const FEED_LIST = document.getElementById("feedList");
   const marketList = document.getElementById("marketList");
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logoutBtn");
   const visitShopBtn = document.getElementById("visitShopBtn"); // ✅ NEW
   const verifySellerBtn = document.getElementById("verifySellerBtn");
-  
+
   const deleteAccountBtn =
     document.getElementById("deleteAccountBtn") || document.getElementById("resetAppBtn");
 
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const cancelPostBtn = document.getElementById("cancelPost");
   const postForm = document.getElementById("postForm");
   const applyLinkWrap = document.getElementById("applyLinkWrap");
-const applyLink = document.getElementById("applyLink");
+  const applyLink = document.getElementById("applyLink");
 
   const postType = document.getElementById("postType");
   const postCategory = document.getElementById("postCategory");
@@ -75,30 +75,27 @@ const applyLink = document.getElementById("applyLink");
   const previewStrip = document.getElementById("imagePreviewStrip");
   let verifiedSellerSet = new Set();
 
-async function loadVerifiedSellers() {
-  const { data, error } = await supabase
-    .from("seller_verifications")
-    .select("user_id")
-    .eq("status", "approved");
+  async function loadVerifiedSellers() {
+    const { data, error } = await supabase
+      .from("seller_verifications")
+      .select("user_id")
+      .eq("status", "approved");
 
-  if (error) {
-    console.error("loadVerifiedSellers error:", error);
-    verifiedSellerSet = new Set();
-    return;
+    if (error) {
+      console.error("loadVerifiedSellers error:", error);
+      verifiedSellerSet = new Set();
+      return;
+    }
+    verifiedSellerSet = new Set((data || []).map(r => r.user_id));
   }
-  verifiedSellerSet = new Set((data || []).map(r => r.user_id));
-}
-  
 
-  (async function startApp() {
-  await initAuth();      // MUST be first
-  await bootAfterAuth(); // then render
-})();
 
-  
-verifySellerBtn?.addEventListener("click", () => {
-  window.location.href = "/verify.html";
-});
+
+
+
+  verifySellerBtn?.addEventListener("click", () => {
+    window.location.href = "/verify.html";
+  });
 
   // =========================
   // SEARCH MODAL (WORKING)
@@ -136,11 +133,11 @@ verifySellerBtn?.addEventListener("click", () => {
     const filtered = !q
       ? posts
       : posts.filter((item) => {
-          const p = item.post;
-          const hay = `${p.title} ${p.description} ${p.category} ${p.type} ${p.author_name} ${p.author_campus} ${p.author_department}`
-            .toLowerCase();
-          return hay.includes(q);
-        });
+        const p = item.post;
+        const hay = `${p.title} ${p.description} ${p.category} ${p.type} ${p.author_name} ${p.author_campus} ${p.author_department}`
+          .toLowerCase();
+        return hay.includes(q);
+      });
 
     showSection("feed");
     renderFeed(filtered);
@@ -157,64 +154,64 @@ verifySellerBtn?.addEventListener("click", () => {
     closeSearchModal();
   });
   const setApplyVisibility = (type) => {
-  if (!applyLinkWrap) return;
+    if (!applyLinkWrap) return;
 
-  const show = type === "opportunity" || type === "social";
-  applyLinkWrap.style.display = show ? "block" : "none";
+    const show = type === "opportunity" || type === "social";
+    applyLinkWrap.style.display = show ? "block" : "none";
 
-  // clear when not needed
-  if (!show && applyLink) applyLink.value = "";
-};
+    // clear when not needed
+    if (!show && applyLink) applyLink.value = "";
+  };
 
   // =========================
   // NOTIFICATIONS PANEL (WORKING TOGGLE)
   // =========================
-  
- 
- 
- 
-  
+
+
+
+
+
   const notifPanel = document.getElementById("notifPanel");
   const closeNotif = document.getElementById("closeNotif");
 
- notifBtn?.addEventListener("click", async () => {
-  notifPanel?.classList.toggle("show");
+  notifBtn?.addEventListener("click", async () => {
+    notifPanel?.classList.toggle("show");
 
-  if (!notifPanel?.classList.contains("show")) return;
-  if (!sessionUser) {
-    notifPanel.innerHTML = `<div class="empty-state">Log in to see notifications.</div>`;
-    return;
-  }
+    if (!notifPanel?.classList.contains("show")) return;
+    if (!sessionUser) {
+      notifPanel.innerHTML = `<div class="empty-state">Log in to see notifications.</div>`;
+      return;
+    }
 
-  notifPanel.innerHTML = `<div class="empty-state">Loading…</div>`;
-  const list = await fetchNotifications();
+    notifPanel.innerHTML = `<div class="empty-state">Loading…</div>`;
+    const list = await fetchNotifications();
 
-  if (!list.length) {
-    notifPanel.innerHTML = `<div class="empty-state">No notifications yet.</div>`;
-    return;
-  }
+    if (!list.length) {
+      notifPanel.innerHTML = `<div class="empty-state">No notifications yet.</div>`;
+      return;
+    }
 
-  // show simple messages (we can enhance with names later)
- notifPanel.innerHTML = list.map(n => {
-  const when = new Date(n.created_at).toLocaleString();
-  const unread = !n.read_at;
+    // show simple messages (we can enhance with names later)
+    notifPanel.innerHTML = list.map(n => {
+      const when = new Date(n.created_at).toLocaleString();
+      const unread = !n.read_at;
 
-  const who = n.actor_name || "Someone";
-  const title = n.post_title ? `“${escapeHtml(n.post_title)}”` : "";
-  
-  let msg = "Notification";
-  if (n.type === "connect") msg = `${escapeHtml(who)} connected with you`;
-  if (n.type === "comment") msg = `${escapeHtml(who)} commented on your post ${title}`;
-  if (n.type === "reshare") msg = `${escapeHtml(who)} reshared your post ${title}`;
-  if (n.type === "new_post") msg = `New post from ${escapeHtml(who)} ${title}`;
-  if (n.type === "new_reshare") msg = `${escapeHtml(who)} reshared something ${title}`;
-  
+      const who = n.actor_name || "Someone";
+      const title = n.post_title ? `“${escapeHtml(n.post_title)}”` : "";
 
-  const avatar = n.actor_photo
-    ? `<img class="notif-avatar" src="${escapeHtml(n.actor_photo)}" alt="avatar" />`
-    : `<div class="notif-avatar fallback">👤</div>`;
+      let msg = "Notification";
+      if (n.type === "connect") msg = `${escapeHtml(who)} connected with you`;
+      if (n.type === "comment") msg = `${escapeHtml(who)} commented on your post ${title}`;
+      if (n.type === "reshare") msg = `${escapeHtml(who)} reshared your post ${title}`;
+      if (n.type === "new_post") msg = `New post from ${escapeHtml(who)} ${title}`;
+      if (n.type === "new_reshare") msg = `${escapeHtml(who)} reshared something ${title}`;
 
-  return `
+
+      const avatar = n.actor_photo
+        ? `<img class="notif-avatar" src="${escapeHtml(n.actor_photo)}" alt="avatar" />`
+        : `<div class="notif-avatar fallback">👤</div>`;
+
+      return `
   
     <div class="notif-item ${unread ? "unread" : ""}"
          data-nid="${n.id}"
@@ -226,25 +223,25 @@ verifySellerBtn?.addEventListener("click", () => {
       </div>
     </div>
   `;
-}).join("");
+    }).join("");
 
-  // mark unread as read
-  const unreadIds = list.filter(x => !x.read_at).map(x => x.id);
-  await markNotificationsRead(unreadIds);
-  await refreshNotifBadge();
-});
-async function markNotificationsRead(ids) {
-  const unique = [...new Set((ids || []).filter(Boolean))];
-  if (!sessionUser || unique.length === 0) return;
+    // mark unread as read
+    const unreadIds = list.filter(x => !x.read_at).map(x => x.id);
+    await markNotificationsRead(unreadIds);
+    await refreshNotifBadge();
+  });
+  async function markNotificationsRead(ids) {
+    const unique = [...new Set((ids || []).filter(Boolean))];
+    if (!sessionUser || unique.length === 0) return;
 
-  const { error } = await supabase
-    .from("notifications")
-    .update({ read_at: new Date().toISOString() })
-    .in("id", unique)
-    .eq("user_id", sessionUser.id);
+    const { error } = await supabase
+      .from("notifications")
+      .update({ read_at: new Date().toISOString() })
+      .in("id", unique)
+      .eq("user_id", sessionUser.id);
 
-  if (error) console.error("markNotificationsRead error:", error);
-}
+    if (error) console.error("markNotificationsRead error:", error);
+  }
   // =========================
   // HIDE NAVS ON SCROLL DOWN, SHOW ON SCROLL UP
   // =========================
@@ -294,51 +291,18 @@ async function markNotificationsRead(ids) {
   let sessionUser = null; // auth user
   let authReady = false;
 
-async function initAuth() {
-  const { data: { session }, error } = await supabase.auth.getSession();
-  if (error) console.error("getSession error:", error);
+  async function initAuth() {
+    if (authReady) return; // prevent duplicate runs
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) console.error("getSession error:", error);
 
-  sessionUser = session?.user ?? null;
-  authReady = true;
-
-  // Keep sessionUser synced forever
-  supabase.auth.onAuthStateChange((_event, session) => {
     sessionUser = session?.user ?? null;
-     showSection(activeSectionId);
-     let lastAuthUserId = null;
-
-supabase.auth.onAuthStateChange(async (_event, newSession) => {
-  const newUserId = newSession?.user?.id || null;
-
-  if (newUserId === lastAuthUserId) return; // prevents duplicate rerenders
-
-  lastAuthUserId = newUserId;
-
-  sessionUser = newSession?.user || null;
-
-  // ... your existing code
-});
-
-    // IMPORTANT: when auth changes, refresh UI
-    bootAfterAuth();
-  });
-}
-
-function requireUser() {
-  return sessionUser?.id ? sessionUser : null;
-}
-async function bootAfterAuth() {
-  // If you rely on profile / connections / shop owners, do them here
-  if (requireUser()) {
-    await loadMyProfile?.();          // if you have it
-    await loadMyConnections?.();      // if you have it
-    await loadShopOwners?.();         // you DO have this
-    await refreshNotifBadge?.();      // you DO have this
+    authReady = true;
   }
 
-  // Re-render current section so UI reflects login state
-  showSection(activeSectionId);
-}
+  function requireUser() {
+    return sessionUser?.id ? sessionUser : null;
+  }
   let myProfile = null; // profiles row
 
   let activeSectionId = "feed";
@@ -359,7 +323,7 @@ async function bootAfterAuth() {
     returnScrollY: 0,
   };
 
-  
+
 
   // =========================
   // HELPERS
@@ -371,62 +335,62 @@ async function bootAfterAuth() {
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
-      function setCarouselActive(mediaEl, activeIndex) {
-  const dotsWrap = mediaEl?.querySelector("[data-carousel-dots='1']");
-  if (!dotsWrap) return;
-  const dots = Array.from(dotsWrap.querySelectorAll(".dot"));
-  dots.forEach((d, i) => d.classList.toggle("active", i === activeIndex));
-}
-document.addEventListener("scroll", (e) => {
-  const track = e.target?.closest?.("[data-carousel-track='1']");
-  if (!track) return;
+  function setCarouselActive(mediaEl, activeIndex) {
+    const dotsWrap = mediaEl?.querySelector("[data-carousel-dots='1']");
+    if (!dotsWrap) return;
+    const dots = Array.from(dotsWrap.querySelectorAll(".dot"));
+    dots.forEach((d, i) => d.classList.toggle("active", i === activeIndex));
+  }
+  document.addEventListener("scroll", (e) => {
+    const track = e.target?.closest?.("[data-carousel-track='1']");
+    if (!track) return;
 
-  const media = track.closest(".post-media");
-  const idx = getCarouselIndex(track);
-  setCarouselActive(media, idx);
-}, true);
-function getShopLinkForUserId(uid) {
-  const base = window.location.origin; // your domain (or localhost)
-  return `${base}/shop.html?seller=${encodeURIComponent(uid)}`;
-}
+    const media = track.closest(".post-media");
+    const idx = getCarouselIndex(track);
+    setCarouselActive(media, idx);
+  }, true);
+  function getShopLinkForUserId(uid) {
+    const base = window.location.origin; // your domain (or localhost)
+    return `${base}/shop.html?seller=${encodeURIComponent(uid)}`;
+  }
 
-async function shareOrCopy(text) {
-  // Try native share (mobile)
-  if (navigator.share) {
+  async function shareOrCopy(text) {
+    // Try native share (mobile)
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "weSPACE Shop", text, url: text });
+        return true;
+      } catch (e) {
+        // user cancelled — fallback to copy
+      }
+    }
+
+    // Copy to clipboard
     try {
-      await navigator.share({ title: "weSPACE Shop", text, url: text });
+      await navigator.clipboard.writeText(text);
+      alert("Shop link copied ✅");
       return true;
     } catch (e) {
-      // user cancelled — fallback to copy
+      // Fallback for older browsers
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      ta.remove();
+      alert("Shop link copied ✅");
+      return true;
     }
   }
-
-  // Copy to clipboard
-  try {
-    await navigator.clipboard.writeText(text);
-    alert("Shop link copied ✅");
-    return true;
-  } catch (e) {
-    // Fallback for older browsers
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    ta.remove();
-    alert("Shop link copied ✅");
-    return true;
+  function getCarouselIndex(trackEl) {
+    const w = trackEl.clientWidth || 1;
+    return Math.round(trackEl.scrollLeft / w);
   }
-}
-function getCarouselIndex(trackEl) {
-  const w = trackEl.clientWidth || 1;
-  return Math.round(trackEl.scrollLeft / w);
-}
 
-function scrollCarouselTo(trackEl, index) {
-  const w = trackEl.clientWidth || 1;
-  trackEl.scrollTo({ left: index * w, behavior: "smooth" });
-}
+  function scrollCarouselTo(trackEl, index) {
+    const w = trackEl.clientWidth || 1;
+    trackEl.scrollTo({ left: index * w, behavior: "smooth" });
+  }
 
   const formatWaNumber = (raw) => {
     const v = String(raw || "").trim();
@@ -436,26 +400,26 @@ function scrollCarouselTo(trackEl, index) {
     if (n.startsWith("0")) n = "234" + n.slice(1);
     return n;
   };
- async function fetchNotifications(limit = 30) {
-  if (!authReady) await initAuth();
+  async function fetchNotifications(limit = 30) {
+    if (!authReady) await initAuth();
 
-  const user = requireUser();
-  if (!user) return [];
+    const user = requireUser();
+    if (!user) return [];
 
-  const { data, error } = await supabase
-    .from("notifications_view")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(limit);
+    const { data, error } = await supabase
+      .from("notifications_view")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(limit);
 
-  if (error) {
-    console.error("fetchNotifications error:", error);
-    return [];
+    if (error) {
+      console.error("fetchNotifications error:", error);
+      return [];
+    }
+
+    return data || [];
   }
-
-  return data || [];
-}
 
   async function loadShopOwners() {
     const { data, error } = await supabase.from("shop_catalogues").select("seller_id");
@@ -483,88 +447,88 @@ function scrollCarouselTo(trackEl, index) {
   };
 
   const setProfileMode = ({ mode, userId, returnSection, returnScrollY } = {}) => {
-  if (mode) profileView.mode = mode;
-  profileView.userId = userId ?? profileView.userId;
-  profileView.returnSection = returnSection ?? profileView.returnSection;
-  profileView.returnScrollY = returnScrollY ?? profileView.returnScrollY;
+    if (mode) profileView.mode = mode;
+    profileView.userId = userId ?? profileView.userId;
+    profileView.returnSection = returnSection ?? profileView.returnSection;
+    profileView.returnScrollY = returnScrollY ?? profileView.returnScrollY;
 
-  if (visitorBackBtn) {
-    visitorBackBtn.style.display = profileView.mode === "visitor" ? "inline-flex" : "none";
-  }
+    if (visitorBackBtn) {
+      visitorBackBtn.style.display = profileView.mode === "visitor" ? "inline-flex" : "none";
+    }
 
-  // ✅ ADD THIS HERE
-  if (verifySellerBtn) {
-    verifySellerBtn.style.display =
-      profileView.mode === "visitor" ? "none" : "inline-flex";
-  }
-};
+    // ✅ ADD THIS HERE
+    if (verifySellerBtn) {
+      verifySellerBtn.style.display =
+        profileView.mode === "visitor" ? "none" : "inline-flex";
+    }
+  };
 
   const showSection = async (id) => {
-  activeSectionId = id;
+    activeSectionId = id;
 
-  // Ensure auth is initialized before any UI that depends on sessionUser
-  if (!authReady) await initAuth();
+    // Ensure auth is initialized before any UI that depends on sessionUser
+    if (!authReady) await initAuth();
 
-  sections.forEach((s) => s.classList.remove("active-section"));
-  document.getElementById(id)?.classList.add("active-section");
+    sections.forEach((s) => s.classList.remove("active-section"));
+    document.getElementById(id)?.classList.add("active-section");
 
-  if (id === "feed") renderFeed(cachedFeedItems);
-  if (id === "market") renderMarket();
-  if (id === "opportunities") renderOpps();
-  if (id === "socials") renderSocials();
-  if (id === "profile") renderProfileUI();
-};
+    if (id === "feed") renderFeed(cachedFeedItems);
+    if (id === "market") renderMarket();
+    if (id === "opportunities") renderOpps();
+    if (id === "socials") renderSocials();
+    if (id === "profile") renderProfileUI();
+  };
   function ensureNotifBadge() {
-  if (!notifBtn) return null;
+    if (!notifBtn) return null;
 
-  // notifBtn must be position:relative for badge to sit correctly
-  notifBtn.style.position = "relative";
+    // notifBtn must be position:relative for badge to sit correctly
+    notifBtn.style.position = "relative";
 
-  let badge = document.getElementById("notifBadge");
-  if (!badge) {
-    badge = document.createElement("span");
-    badge.id = "notifBadge";
-    badge.className = "notif-badge";
-    notifBtn.appendChild(badge);
-  }
-  return badge;
-}
-
-async function fetchUnreadNotifCount() {
-  if (!sessionUser) return 0;
-
-  const { count, error } = await supabase
-    .from("notifications")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", sessionUser.id)
-    .is("read_at", null);
-
-  if (error) {
-    console.error("fetchUnreadNotifCount error:", error);
-    return 0;
-  }
-  return Number(count || 0);
-}
-
-async function refreshNotifBadge() {
-  const badge = ensureNotifBadge();
-  if (!badge) return;
-
-  if (!sessionUser) {
-    badge.style.display = "none";
-    return;
+    let badge = document.getElementById("notifBadge");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.id = "notifBadge";
+      badge.className = "notif-badge";
+      notifBtn.appendChild(badge);
+    }
+    return badge;
   }
 
-  const unread = await fetchUnreadNotifCount();
+  async function fetchUnreadNotifCount() {
+    if (!sessionUser) return 0;
 
-  if (unread <= 0) {
-    badge.style.display = "none";
-    return;
+    const { count, error } = await supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", sessionUser.id)
+      .is("read_at", null);
+
+    if (error) {
+      console.error("fetchUnreadNotifCount error:", error);
+      return 0;
+    }
+    return Number(count || 0);
   }
 
-  badge.textContent = unread > 99 ? "99+" : String(unread);
-  badge.style.display = "flex";
-}
+  async function refreshNotifBadge() {
+    const badge = ensureNotifBadge();
+    if (!badge) return;
+
+    if (!sessionUser) {
+      badge.style.display = "none";
+      return;
+    }
+
+    const unread = await fetchUnreadNotifCount();
+
+    if (unread <= 0) {
+      badge.style.display = "none";
+      return;
+    }
+
+    badge.textContent = unread > 99 ? "99+" : String(unread);
+    badge.style.display = "flex";
+  }
 
   // =========================
   // NAVS
@@ -587,30 +551,30 @@ async function refreshNotifBadge() {
     ] || "feed");
   };
 
-bottomButtons.forEach((btn) => {
-  btn.addEventListener("click", async () => {
-    setBottomActive(btn);
-    const target = mapSection(btn.textContent);
-    if (target === "profile") setProfileMode({ mode: "self", userId: null });
-    await showSection(target);
+  bottomButtons.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      setBottomActive(btn);
+      const target = mapSection(btn.textContent);
+      if (target === "profile") setProfileMode({ mode: "self", userId: null });
+      await showSection(target);
+    });
   });
-});
 
-tabButtons.forEach((btn) => {
-  btn.addEventListener("click", async () => {
-    setTabActive(btn);
-    const target = btn.dataset.section;
-    if (target === "profile") setProfileMode({ mode: "self", userId: null });
-    await showSection(target);
+  tabButtons.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      setTabActive(btn);
+      const target = btn.dataset.section;
+      if (target === "profile") setProfileMode({ mode: "self", userId: null });
+      await showSection(target);
+    });
   });
-});
 
-visitorBackBtn?.addEventListener("click", async () => {
-  setProfileMode({ mode: "self", userId: null });
-  const target = profileView.returnSection || "feed";
-  await showSection(target);
-  window.scrollTo({ top: profileView.returnScrollY || 0, behavior: "smooth" });
-});
+  visitorBackBtn?.addEventListener("click", async () => {
+    setProfileMode({ mode: "self", userId: null });
+    const target = profileView.returnSection || "feed";
+    await showSection(target);
+    window.scrollTo({ top: profileView.returnScrollY || 0, behavior: "smooth" });
+  });
   // =========================
   // CATEGORIES
   // =========================
@@ -671,7 +635,7 @@ visitorBackBtn?.addEventListener("click", async () => {
     const cls = type === "market" ? "market" : type === "opportunity" ? "opportunity" : "social";
     return `<span class="post-badge ${cls}">${icon} ${escapeHtml(category || type)}</span>`;
   };
- 
+
   const connectBtnHTML = (authorId) => {
     if (!sessionUser) return "";
     if (!authorId) return "";
@@ -705,20 +669,19 @@ visitorBackBtn?.addEventListener("click", async () => {
   };
 
   const postMediaHTML = (post) => {
-  const images = Array.isArray(post.image_urls) ? post.image_urls : [];
-  if (!images.length) return "";
+    const images = Array.isArray(post.image_urls) ? post.image_urls : [];
+    if (!images.length) return "";
 
-  const wa = post.type === "market" ? String(post.whatsapp || "").trim() : "";
-  const hasMany = images.length > 1;
+    const wa = post.type === "market" ? String(post.whatsapp || "").trim() : "";
+    const hasMany = images.length > 1;
 
-  return `
+    return `
     <div class="post-media" data-carousel="1">
       <div class="post-media-track" data-carousel-track="1">
         ${images.map((src, i) => `
           <div class="post-media-item" data-idx="${i}">
             <img src="${escapeHtml(src)}" alt="Post image ${i + 1}">
-            ${
-              wa ? `
+            ${wa ? `
                 <button
                   type="button"
                   class="post-wa-icon"
@@ -731,13 +694,12 @@ visitorBackBtn?.addEventListener("click", async () => {
                 <img src="/assets/whatsapp.png" alt="WhatsApp">
                 </button>
               ` : ""
-            }
+      }
           </div>
         `).join("")}
       </div>
 
-      ${
-        hasMany ? `
+      ${hasMany ? `
           <div class="carousel-dots" data-carousel-dots="1">
             ${images.map((_, i) => `
               <button class="dot ${i === 0 ? "active" : ""}"
@@ -754,18 +716,17 @@ visitorBackBtn?.addEventListener("click", async () => {
         ` : ""
       }
 
-     ${
-  post.type === "market" && post.price
-    ? `<div class="post-price-badge">${escapeHtml(post.price)}</div>`
-    : ((post.type === "opportunity" || post.type === "social") && post.apply_link
-        ? `<button class="post-apply-badge"
+     ${post.type === "market" && post.price
+        ? `<div class="post-price-badge">${escapeHtml(post.price)}</div>`
+        : ((post.type === "opportunity" || post.type === "social") && post.apply_link
+          ? `<button class="post-apply-badge"
                   type="button"
                   data-action="apply-link"
                   data-url="${escapeHtml(post.apply_link)}">Apply</button>`
-        : "")
-}
+          : "")
+      }
   `;
-};
+  };
 
   // item = { kind: "post" | "reshare", sort_time, post, reshared_by, reshared_by_name, reshared_at }
   const renderPostCard = (p, opts = {}) => {
@@ -795,7 +756,7 @@ visitorBackBtn?.addEventListener("click", async () => {
       `
       : "";
 
-      return `
+    return `
   <article class="post-card" data-postid="${p.id}" data-authorid="${p.author_id}">
     ${reshareBanner}
 
@@ -878,13 +839,14 @@ visitorBackBtn?.addEventListener("click", async () => {
 
     const list = Array.isArray(items) ? items : [];
     FEED_LIST.innerHTML = list.length
-      ? list.map((it) => renderPostCard(it.post, { feedMeta: it.kind === "reshare" ? {
-            isReshare: true,
-            reshared_by: it.reshared_by,
-            reshared_by_name: it.reshared_by_name,
-            reshared_at: it.reshared_at
-          } : null
-        })).join("")
+      ? list.map((it) => renderPostCard(it.post, {
+        feedMeta: it.kind === "reshare" ? {
+          isReshare: true,
+          reshared_by: it.reshared_by,
+          reshared_by_name: it.reshared_by_name,
+          reshared_at: it.reshared_at
+        } : null
+      })).join("")
       : `<p class="empty-state">No posts yet.</p>`;
   }
 
@@ -969,7 +931,7 @@ visitorBackBtn?.addEventListener("click", async () => {
   }
 
   // =========================
-async function fetchFeedItemsMixed() {
+  async function fetchFeedItemsMixed() {
     // base posts
     const posts = cachedPosts?.length ? cachedPosts : await fetchPosts();
 
@@ -1254,11 +1216,10 @@ async function fetchFeedItemsMixed() {
           </div>
         </div>
 
-        ${
-          profileView.mode === "self" && sessionUser
+        ${profileView.mode === "self" && sessionUser
             ? `<button class="btn ghost" type="button" data-action="disconnect" data-targetid="${u.id}">Remove</button>`
             : ``
-        }
+          }
       </div>
     `
       )
@@ -1273,15 +1234,15 @@ async function fetchFeedItemsMixed() {
     if (profileView.mode === "visitor" && profileView.userId) {
       setDisabledProfileInputs(true);
 
-     if (goRegisterBtn) goRegisterBtn.style.display = "none";
+      if (goRegisterBtn) goRegisterBtn.style.display = "none";
 
-// ❌ hide logout in visitor mode
-if (logoutBtn) logoutBtn.style.display = "none";
+      // ❌ hide logout in visitor mode
+      if (logoutBtn) logoutBtn.style.display = "none";
 
-if (deleteAccountBtn) deleteAccountBtn.style.display = "none";
+      if (deleteAccountBtn) deleteAccountBtn.style.display = "none";
 
-// ✅ show WhatsApp button instead
-if (profileWaBtn) profileWaBtn.style.display = "";
+      // ✅ show WhatsApp button instead
+      if (profileWaBtn) profileWaBtn.style.display = "";
       if (changePhotoWrap) changePhotoWrap.style.display = "none";
       if (visitShopBtn) visitShopBtn.style.display = "";
       if (shareShopBtn) shareShopBtn.style.display = "";
@@ -1298,25 +1259,25 @@ if (profileWaBtn) profileWaBtn.style.display = "";
           return;
         }
         // WhatsApp contact button
-if (profileWaBtn) {
-  if (u?.wa) {
-    profileWaBtn.style.display = "";
+        if (profileWaBtn) {
+          if (u?.wa) {
+            profileWaBtn.style.display = "";
 
-    profileWaBtn.onclick = () => {
-      const phone = formatWaNumber(u.wa);
-      if (!phone) {
-        alert("No WhatsApp number available.");
-        return;
-      }
+            profileWaBtn.onclick = () => {
+              const phone = formatWaNumber(u.wa);
+              if (!phone) {
+                alert("No WhatsApp number available.");
+                return;
+              }
 
-      const msg = encodeURIComponent("Hello, I viewed your profile on weSPACE.");
-      window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
-    };
+              const msg = encodeURIComponent("Hello, I viewed your profile on weSPACE.");
+              window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
+            };
 
-  } else {
-    profileWaBtn.style.display = "none";
-  }
-}
+          } else {
+            profileWaBtn.style.display = "none";
+          }
+        }
 
         profileName && (profileName.textContent = u.name || "User");
         profileMeta && (profileMeta.textContent = `${u.campus || ""} • ${u.department || ""}`);
@@ -1354,7 +1315,7 @@ if (profileWaBtn) {
     }
 
     if (visitShopBtn) visitShopBtn.style.display = "";
-    
+
     if (profileWaBtn) profileWaBtn.style.display = "none";
 
     setDisabledProfileInputs(false);
@@ -1499,80 +1460,80 @@ if (profileWaBtn) {
     if (e.target === postModal) closePostModal();
   });
 
- postType?.addEventListener("change", () => {
-  const t = postType.value || "market";
-  setCategoryOptions(t);
-  setPriceVisibility(t);
-  setApplyVisibility(t);
-});
-
- postImages?.addEventListener("change", () => {
-
-  const files = Array.from(postImages.files || []);
-
-  console.log("Selected files:", files.length); // debug
-
-  if (previewStrip) previewStrip.innerHTML = "";
-
-  if (!files.length) {
-
-    if (previewEmpty) previewEmpty.style.display = "block";
-
-    return;
-
-  }
-
-  if (previewEmpty) previewEmpty.style.display = "none";
-
-  files.forEach((file) => {
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-
-      const img = document.createElement("img");
-
-      img.src = reader.result;
-
-      img.style.width = "70px";
-
-      img.style.height = "70px";
-
-      img.style.objectFit = "cover";
-
-      img.style.borderRadius = "6px";
-
-      previewStrip.appendChild(img);
-
-    };
-
-    reader.readAsDataURL(file);
-
+  postType?.addEventListener("change", () => {
+    const t = postType.value || "market";
+    setCategoryOptions(t);
+    setPriceVisibility(t);
+    setApplyVisibility(t);
   });
 
-});
-async function applyProfileVerifiedBadge(userId){
-  const badge = document.getElementById("profileVerifiedBadge");
-  if(!badge) return;
+  postImages?.addEventListener("change", () => {
 
-  if(!userId){
-    badge.style.display = "none";
-    return;
+    const files = Array.from(postImages.files || []);
+
+    console.log("Selected files:", files.length); // debug
+
+    if (previewStrip) previewStrip.innerHTML = "";
+
+    if (!files.length) {
+
+      if (previewEmpty) previewEmpty.style.display = "block";
+
+      return;
+
+    }
+
+    if (previewEmpty) previewEmpty.style.display = "none";
+
+    files.forEach((file) => {
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+
+        const img = document.createElement("img");
+
+        img.src = reader.result;
+
+        img.style.width = "70px";
+
+        img.style.height = "70px";
+
+        img.style.objectFit = "cover";
+
+        img.style.borderRadius = "6px";
+
+        previewStrip.appendChild(img);
+
+      };
+
+      reader.readAsDataURL(file);
+
+    });
+
+  });
+  async function applyProfileVerifiedBadge(userId) {
+    const badge = document.getElementById("profileVerifiedBadge");
+    if (!badge) return;
+
+    if (!userId) {
+      badge.style.display = "none";
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("seller_verifications")
+      .select("status")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error) {
+      badge.style.display = "none";
+      return;
+    }
+
+    badge.style.display = (data?.status === "approved") ? "inline-block" : "none";
   }
-
-  const { data, error } = await supabase
-    .from("seller_verifications")
-    .select("status")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if(error){
-    badge.style.display = "none";
-    return;
-  }
-
-  badge.style.display = (data?.status === "approved") ? "inline-block" : "none";
-}
 
   postForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -1580,15 +1541,15 @@ async function applyProfileVerifiedBadge(userId){
 
     const type = postType?.value || "market";
     const category = postCategory?.value || "";
-   
+
     const description = postDesc?.value.trim();
     const price = type === "market" ? postPrice?.value.trim() || "" : "";
     const apply_link =
-  (type === "opportunity" || type === "social")
-    ? (applyLink?.value || "").trim()
-    : "";
+      (type === "opportunity" || type === "social")
+        ? (applyLink?.value || "").trim()
+        : "";
     const files = Array.from(postImages?.files || []);
-   
+
     if (!description) return alert("Please enter a description.");
     if (!files.length) return alert("Please select at least one image.");
 
@@ -1598,14 +1559,14 @@ async function applyProfileVerifiedBadge(userId){
     try {
       const image_urls = await uploadPostImages(sessionUser.id, files.slice(0, 5));
       if ((type === "opportunity" || type === "social") && !apply_link) {
-  return alert("Please paste an apply link.");
-}
+        return alert("Please paste an apply link.");
+      }
 
       const { error } = await supabase.from("posts").insert({
         author_id: sessionUser.id,
         type,
         category,
-        
+
         description,
         price,
         apply_link,
@@ -1689,81 +1650,81 @@ async function applyProfileVerifiedBadge(userId){
     }
   }
   // ✅ Update dots while swiping
-document.addEventListener("scroll", (e) => {
-  const track = e.target?.closest?.(".post-media-track");
-  if (!track) return;
+  document.addEventListener("scroll", (e) => {
+    const track = e.target?.closest?.(".post-media-track");
+    if (!track) return;
 
-  const media = track.closest(".post-media");
-  const dotsWrap = media?.querySelector(".post-dots");
-  if (!dotsWrap) return;
+    const media = track.closest(".post-media");
+    const dotsWrap = media?.querySelector(".post-dots");
+    if (!dotsWrap) return;
 
-  const slides = Array.from(track.children || []);
-  if (!slides.length) return;
+    const slides = Array.from(track.children || []);
+    if (!slides.length) return;
 
-  // find active slide based on scrollLeft
-  const idx = Math.round(track.scrollLeft / track.clientWidth);
+    // find active slide based on scrollLeft
+    const idx = Math.round(track.scrollLeft / track.clientWidth);
 
-  dotsWrap.querySelectorAll(".post-dot").forEach((d, i) => {
-    d.classList.toggle("active", i === idx);
-  });
-}, true);
+    dotsWrap.querySelectorAll(".post-dot").forEach((d, i) => {
+      d.classList.toggle("active", i === idx);
+    });
+  }, true);
 
   // =========================
   // GLOBAL CLICKS (ONE CLEAN HANDLER)
   // =========================
   document.addEventListener("click", async (e) => {
     const applyBtn = e.target.closest("[data-action='apply-link']");
-if (applyBtn) {
-  let url = applyBtn.getAttribute("data-url") || "";
-  url = url.trim();
-  if (!url) return;
+    if (applyBtn) {
+      let url = applyBtn.getAttribute("data-url") || "";
+      url = url.trim();
+      if (!url) return;
 
-  // add https:// if user pasted without it
-  const safe = url.startsWith("http://") || url.startsWith("https://")
-    ? url
-    : `https://${url}`;
+      // add https:// if user pasted without it
+      const safe = url.startsWith("http://") || url.startsWith("https://")
+        ? url
+        : `https://${url}`;
 
-  window.open(safe, "_blank", "noopener");
-  return;
-}
+      window.open(safe, "_blank", "noopener");
+      return;
+    }
     // Carousel dot/nav controls
-const dotBtn = e.target.closest("[data-action='carousel-dot']");
-const prevBtn = e.target.closest("[data-action='carousel-prev']");
-const nextBtn = e.target.closest("[data-action='carousel-next']");
+    const dotBtn = e.target.closest("[data-action='carousel-dot']");
+    const prevBtn = e.target.closest("[data-action='carousel-prev']");
+    const nextBtn = e.target.closest("[data-action='carousel-next']");
 
-if (dotBtn || prevBtn || nextBtn) {
-  const media = e.target.closest(".post-media");
-  const track = media?.querySelector("[data-carousel-track='1']");
-  if (!media || !track) return;
+    if (dotBtn || prevBtn || nextBtn) {
+      const media = e.target.closest(".post-media");
+      const track = media?.querySelector("[data-carousel-track='1']");
+      if (!media || !track) return;
 
-  const max = track.children.length - 1;
-  let idx = getCarouselIndex(track);
+      const max = track.children.length - 1;
+      let idx = getCarouselIndex(track);
 
-  if (dotBtn) idx = Number(dotBtn.getAttribute("data-index") || "0");
-  if (prevBtn) idx = Math.max(0, idx - 1);
-  if (nextBtn) idx = Math.min(max, idx + 1);
+      if (dotBtn) idx = Number(dotBtn.getAttribute("data-index") || "0");
+      if (prevBtn) idx = Math.max(0, idx - 1);
+      if (nextBtn) idx = Math.min(max, idx + 1);
 
-  scrollCarouselTo(track, idx);
-  setCarouselActive(media, idx);
-  return;
-}
- shareShopBtn?.addEventListener("click", async () => {
-  // visitor profile → share that user's shop
-  if (profileView.mode === "visitor" && profileView.userId) {
-    const link = getShopLinkForUserId(profileView.userId);
-    await shareOrCopy(link);
-    return;
-  }
+      scrollCarouselTo(track, idx);
+      setCarouselActive(media, idx);
+      return;
+    }
+    shareShopBtn?.addEventListener("click", async () => {
+      // visitor profile → share that user's shop
+      if (profileView.mode === "visitor" && profileView.userId) {
+        const link = getShopLinkForUserId(profileView.userId);
+        await shareOrCopy(link);
+        return;
+      }
 
-  // self → share my shop
-  if (sessionUser?.id) {
-    const link = getShopLinkForUserId(sessionUser.id);
-    await shareOrCopy(link);
-    return;
-  }
+      // self → share my shop
+      if (sessionUser?.id) {
+        const link = getShopLinkForUserId(sessionUser.id);
+        await shareOrCopy(link);
+        return;
+      }
 
-  alert("Log in to share your shop link.");
-});
+      alert("Log in to share your shop link.");
+    });
     // WhatsApp icon
     const waBtn = e.target.closest("[data-action='contact']");
     if (waBtn) {
@@ -1776,24 +1737,24 @@ if (dotBtn || prevBtn || nextBtn) {
       return;
     }
     // ✅ Carousel dots click: jump to image
-const dot = e.target.closest(".post-dot");
-if (dot) {
-  const dotsWrap = dot.closest(".post-dots");
-  const media = dot.closest(".post-media");
-  const track = media?.querySelector(".post-media-track");
-  if (!track) return;
+    const dot = e.target.closest(".post-dot");
+    if (dot) {
+      const dotsWrap = dot.closest(".post-dots");
+      const media = dot.closest(".post-media");
+      const track = media?.querySelector(".post-media-track");
+      if (!track) return;
 
-  const idx = Number(dot.getAttribute("data-dot") || 0);
-  const slide = track.children?.[idx];
-  if (!slide) return;
+      const idx = Number(dot.getAttribute("data-dot") || 0);
+      const slide = track.children?.[idx];
+      if (!slide) return;
 
-  slide.scrollIntoView({ behavior: "smooth", inline: "start" });
+      slide.scrollIntoView({ behavior: "smooth", inline: "start" });
 
-  // update active immediately
-  dotsWrap.querySelectorAll(".post-dot").forEach(d => d.classList.remove("active"));
-  dot.classList.add("active");
-  return;
-}
+      // update active immediately
+      dotsWrap.querySelectorAll(".post-dot").forEach(d => d.classList.remove("active"));
+      dot.classList.add("active");
+      return;
+    }
 
     // Visit shop button
     const shopBtn = e.target.closest("[data-action='visit-shop']");
@@ -1839,18 +1800,18 @@ if (dot) {
       await connectTo(targetId);
       return;
     }
-   const nItem = e.target.closest(".notif-item");
-if (nItem) {
-  const postId = nItem.getAttribute("data-postid");
-  if (postId) {
-    showSection("feed");
-    // optional: scroll to post
-    setTimeout(() => {
-      const card = document.querySelector(`.post-card[data-postid="${postId}"]`);
-      card?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 100);
-  }
-}
+    const nItem = e.target.closest(".notif-item");
+    if (nItem) {
+      const postId = nItem.getAttribute("data-postid");
+      if (postId) {
+        showSection("feed");
+        // optional: scroll to post
+        setTimeout(() => {
+          const card = document.querySelector(`.post-card[data-postid="${postId}"]`);
+          card?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+    }
     // Delete post
     const delBtn = e.target.closest("[data-action='delete-post']");
     if (delBtn) {
@@ -2020,30 +1981,30 @@ if (nItem) {
   });
 
   visitShopBtn?.addEventListener("click", () => {
-  // visitor profile: always view-only
-  if (profileView.mode === "visitor" && profileView.userId) {
-    window.location.href = `shop.html?seller=${encodeURIComponent(profileView.userId)}`;
-    return;
-  }
-  verifySellerBtn?.addEventListener("click", (e) => {
+    // visitor profile: always view-only
+    if (profileView.mode === "visitor" && profileView.userId) {
+      window.location.href = `shop.html?seller=${encodeURIComponent(profileView.userId)}`;
+      return;
+    }
+    verifySellerBtn?.addEventListener("click", (e) => {
 
-  if (profileView.mode === "visitor") {
-    e.preventDefault();
-    return;
-  }
+      if (profileView.mode === "visitor") {
+        e.preventDefault();
+        return;
+      }
 
-  window.location.href = "/verify.html";
+      window.location.href = "/verify.html";
 
-});
+    });
 
-  // self profile: open manage mode
-  if (sessionUser?.id) {
-    window.location.href = `shop.html?seller=${encodeURIComponent(sessionUser.id)}&mode=manage`;
-    return;
-  }
+    // self profile: open manage mode
+    if (sessionUser?.id) {
+      window.location.href = `shop.html?seller=${encodeURIComponent(sessionUser.id)}&mode=manage`;
+      return;
+    }
 
-  alert("Log in to view your shop.");
-});
+    alert("Log in to view your shop.");
+  });
 
   // =========================
   // AUTH ACTIONS
@@ -2061,206 +2022,218 @@ if (nItem) {
   });
 
   deleteAccountBtn?.addEventListener("click", async () => {
-  if (!sessionUser) return alert("Log in first ✅");
+    if (!sessionUser) return alert("Log in first ✅");
 
-  const ok = confirm("Delete your account? This cannot be undone.");
-  if (!ok) return;
+    const ok = confirm("Delete your account? This cannot be undone.");
+    if (!ok) return;
 
-  let shouldRedirect = false;
+    let shouldRedirect = false;
 
-  try {
-    const { data: sessionData } = await supabase.auth.getSession();
-    const access = sessionData?.session?.access_token;
-    if (!access) return alert("Session expired. Please log in again.");
-
-    const { data, error } = await supabase.functions.invoke("delete-account", {
-      headers: { Authorization: `Bearer ${access}` },
-    });
-
-    console.log("delete-account:", { data, error });
-
-    if (error) throw error;
-    if (!data?.ok) throw new Error(data?.error || "Delete failed.");
-
-    shouldRedirect = true;
-
-    // Try sign out (but don't allow it to block redirect)
     try {
-      await supabase.auth.signOut();
-    } catch (e) {
-      console.warn("signOut failed (ignoring):", e);
-    }
+      const { data: sessionData } = await supabase.auth.getSession();
+      const access = sessionData?.session?.access_token;
+      if (!access) return alert("Session expired. Please log in again.");
 
-    // reset app state
-    sessionUser = null;
-    myProfile = null;
-    myConnectionSet = new Set();
-    if (typeof myResharedSet !== "undefined") myResharedSet = new Set();
-    cachedPosts = [];
-    cachedFeedItems = [];
-    setProfileMode({ mode: "self", userId: null });
+      const { data, error } = await supabase.functions.invoke("delete-account", {
+        headers: { Authorization: `Bearer ${access}` },
+      });
 
-    alert("Account deleted ✅");
-  } catch (err) {
-    console.error(err);
-    alert("Delete failed: " + (err?.message || "Unknown error"));
-  } finally {
-    if (shouldRedirect) {
-      // ✅ guaranteed redirect
-      setTimeout(() => window.location.replace("index.html"), 50);
-    }
-  }
-});
+      console.log("delete-account:", { data, error });
 
-  // =========================
-// INIT (REPLACE your whole current init block with this)
-// =========================
+      if (error) throw error;
+      if (!data?.ok) throw new Error(data?.error || "Delete failed.");
 
-let notifChannel = null;
-let bootInProgress = false;
-let pendingBoot = false;
+      shouldRedirect = true;
 
-function setupNotifRealtime() {
-  if (!sessionUser) return;
-
-  if (notifChannel) {
-    supabase.removeChannel(notifChannel);
-    notifChannel = null;
-  }
-
-  notifChannel = supabase
-    .channel("notif-badge")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "notifications",
-        filter: `user_id=eq.${sessionUser.id}`,
-      },
-      () => refreshNotifBadge()
-    )
-    .subscribe();
-}
-
-async function bootForCurrentSession() {
-  // if a boot is already running, schedule one more run and exit
-  if (bootInProgress) {
-    pendingBoot = true;
-    return;
-  }
-
-  bootInProgress = true;
-
-  try {
-    // 0) If logged in, load minimal identity FIRST so UI won't show Guest
-    if (sessionUser) {
+      // Try sign out (but don't allow it to block redirect)
       try {
-        myProfile = await loadMyProfile(); // this is the key fix
+        await supabase.auth.signOut();
       } catch (e) {
-        console.warn("loadMyProfile failed:", e);
-        // still continue; at least sessionUser exists
+        console.warn("signOut failed (ignoring):", e);
       }
-    } else {
+
+      // reset app state
+      sessionUser = null;
       myProfile = null;
       myConnectionSet = new Set();
+      if (typeof myResharedSet !== "undefined") myResharedSet = new Set();
+      cachedPosts = [];
+      cachedFeedItems = [];
       setProfileMode({ mode: "self", userId: null });
-    }
 
-    // 1) Render immediately (now it should show logged-in correctly)
-    setProfileMode({ mode: "self", userId: null });
-    renderProfileUI();
-
-    showSection("feed");
-    if (bottomButtons.length) setBottomActive(bottomButtons[0]);
-    if (tabButtons.length) setTabActive(tabButtons[0]);
-
-    if (postType) {
-      postType.value = "market";
-      setCategoryOptions("market");
-      setPriceVisibility("market");
-    }
-
-    // 2) Load FEED first
-    try {
-        cachedFeedItems = await fetchFeedItemsMixed();
-renderFeed(cachedFeedItems);
-
-cachedPosts = await fetchPosts();   // ✅ add
-    } catch (e) {
-      console.warn("fetchFeedItemsMixed failed:", e);
-    }
-
-    // 3) Defer the rest
-    queueMicrotask(async () => {
-      try {
-        if (sessionUser) {
-          await Promise.allSettled([
-            loadMyConnections(),
-            loadShopOwners(),
-            loadVerifiedSellers(),
-          ]);
-        } else {
-          await Promise.allSettled([
-            loadShopOwners(),
-            loadVerifiedSellers(),
-          ]);
-        }
-
-        renderProfileUI();
-        renderMarket();
-        renderOpps();
-        renderSocials();
-
-        setupNotifRealtime();
-        await refreshNotifBadge();
-      } catch (e) {
-        console.warn("deferred boot failed:", e);
+      alert("Account deleted ✅");
+    } catch (err) {
+      console.error(err);
+      alert("Delete failed: " + (err?.message || "Unknown error"));
+    } finally {
+      if (shouldRedirect) {
+        // ✅ guaranteed redirect
+        setTimeout(() => window.location.replace("index.html"), 50);
       }
-    });
-  } finally {
-    bootInProgress = false;
+    }
+  });
 
-    // if something changed while booting (login/logout), run once more
-    if (pendingBoot) {
-      pendingBoot = false;
-      bootForCurrentSession();
+  // =========================
+  // INIT (REPLACE your whole current init block with this)
+  // =========================
+
+  let notifChannel = null;
+  let bootInProgress = false;
+  let pendingBoot = false;
+
+  function setupNotifRealtime() {
+    if (!sessionUser) return;
+
+    if (notifChannel) {
+      supabase.removeChannel(notifChannel);
+      notifChannel = null;
+    }
+
+    notifChannel = supabase
+      .channel("notif-badge")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${sessionUser.id}`,
+        },
+        () => refreshNotifBadge()
+      )
+      .subscribe();
+  }
+
+  async function bootForCurrentSession() {
+    // if a boot is already running, schedule one more run and exit
+    if (bootInProgress) {
+      pendingBoot = true;
+      return;
+    }
+
+    bootInProgress = true;
+
+    try {
+      // 0) If logged in, load minimal identity FIRST so UI won't show Guest
+      if (sessionUser) {
+        try {
+          myProfile = await loadMyProfile(); // this is the key fix
+        } catch (e) {
+          console.warn("loadMyProfile failed:", e);
+          // still continue; at least sessionUser exists
+        }
+      } else {
+        myProfile = null;
+        myConnectionSet = new Set();
+        setProfileMode({ mode: "self", userId: null });
+      }
+
+      // 1) Render immediately (now it should show logged-in correctly)
+      setProfileMode({ mode: "self", userId: null });
+      renderProfileUI();
+
+      showSection("feed");
+      if (bottomButtons.length) setBottomActive(bottomButtons[0]);
+      if (tabButtons.length) setTabActive(tabButtons[0]);
+
+      if (postType) {
+        postType.value = "market";
+        setCategoryOptions("market");
+        setPriceVisibility("market");
+      }
+
+      // 2) Load FEED first
+      try {
+        cachedFeedItems = await fetchFeedItemsMixed();
+        renderFeed(cachedFeedItems);
+
+        cachedPosts = await fetchPosts();   // ✅ add
+      } catch (e) {
+        console.warn("fetchFeedItemsMixed failed:", e);
+      }
+
+      // 3) Defer the rest
+      queueMicrotask(async () => {
+        try {
+          if (sessionUser) {
+            await Promise.allSettled([
+              loadMyConnections(),
+              loadShopOwners(),
+              loadVerifiedSellers(),
+            ]);
+          } else {
+            await Promise.allSettled([
+              loadShopOwners(),
+              loadVerifiedSellers(),
+            ]);
+          }
+
+          renderProfileUI();
+          renderMarket();
+          renderOpps();
+          renderSocials();
+
+          setupNotifRealtime();
+          await refreshNotifBadge();
+        } catch (e) {
+          console.warn("deferred boot failed:", e);
+        }
+      });
+    } finally {
+      bootInProgress = false;
+
+      // if something changed while booting (login/logout), run once more
+      if (pendingBoot) {
+        pendingBoot = false;
+        bootForCurrentSession();
+      }
     }
   }
-}
-  
 
-async function init() {
-  // initial session
-  const { data: { session }, error } = await supabase.auth.getSession();
-  if (error) console.warn("getSession error:", error);
 
-  sessionUser = session?.user || null;
-  await bootForCurrentSession();
+  async function init() {
+    // initial session
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) console.warn("getSession error:", error);
 
-  // keep synced on login/logout
-  supabase.auth.onAuthStateChange(async (_event, newSession) => {
-    sessionUser = newSession?.user || null;
+    sessionUser = session?.user || null;
+    authReady = true; // explicitly mark as ready
+
     await bootForCurrentSession();
+
+    // keep synced on login/logout
+    supabase.auth.onAuthStateChange(async (_event, newSession) => {
+      sessionUser = newSession?.user || null;
+      await bootForCurrentSession();
+    });
+  }
+
+  // call once to start everything
+  init();
+
+  // ==========================================
+  // 🚀 TAB SUSPENSION / WAKE UP FIX
+  // ==========================================
+  // When the browser tab wakes up from being minimized/sleeping, we MUST tell
+  // Supabase to forcefully re-check the session, otherwise requests queue forever.
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      console.log("Tab resumed: Re-checking Supabase connection...");
+
+      // Un-stick the queue by explicitly getting a fresh session
+      supabase.auth.getSession().catch(console.error);
+
+      // If logged in, safely reconnect the realtime sockets if they dropped
+      if (sessionUser) {
+        setupNotifRealtime();
+      }
+    }
   });
-}
 
-// call once
-init();
+  // Also trigger a refresh when the device regains network connection
+  window.addEventListener("online", () => {
+    supabase.auth.getSession().catch(console.error);
+    if (sessionUser) setupNotifRealtime();
+  });
+
 })
-
-
-
-// call it once
-
-
-
-
-
-
-
-
-
-
-
-
