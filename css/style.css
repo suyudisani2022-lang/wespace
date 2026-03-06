@@ -3902,66 +3902,7 @@ body.auth .link2:hover {
   display: block;
 }
 
-.post-wa-icon {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, .8);
-  background: rgba(255, 255, 255, .92);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
-.post-wa-icon img {
-  width: 22px;
-  height: 22px;
-}
-
-.post-price-badge {
-  position: absolute;
-  left: 12px;
-  bottom: 12px;
-  background: rgba(17, 24, 39, .92);
-  color: #fff;
-  font-weight: 800;
-  font-size: 12px;
-  padding: 6px 10px;
-  border-radius: 999px;
-}
-
-.post-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px solid #eef0f4;
-}
-
-.post-actions button {
-  border: 1px solid #e7e9ee;
-  background: #fff;
-  color: #111827;
-  border-radius: 999px;
-  padding: 8px 12px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.post-actions button:hover {
-  background: #f7f8fb;
-}
-
-.post-actions button:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
+/* (Legacy styles removed - consolidated at end of file) */
 
 /* Make the page background “premium” (optional but recommended) */
 body {
@@ -3969,158 +3910,203 @@ body {
   color: #111827;
 }
 
-/* Mobile polish */
-@media (max-width:480px) {
-  .post-card {
-    border-radius: 14px;
-    padding: 12px;
-  }
-
-  .post-media-item {
-    flex-basis: 92%;
-  }
-
-  .post-text {
-    font-size: 14px;
-  }
-}
-
 /* =========================
-   weSPACE: Stable Edge-to-Edge Media
+   weSPACE: FULL-WIDTH FB-STYLE MOBILE
    ========================= */
 
-/* Ensure the card allows media to bleed to the edges */
+@media (max-width: 600px) {
+
+  /* Remove page-level side padding */
+  .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Full-width card with no side borders on mobile */
+  .post-card {
+    border-left: none !important;
+    border-right: none !important;
+    border-radius: 0 !important;
+    margin: 8px 0 !important;
+    padding: 14px 0 !important;
+    /* Side padding is 0 for media to fit */
+  }
+
+  /* Text and header need their own padding to stay indented */
+  .post-head,
+  .post-text,
+  .post-actions {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  /* Media hits the edge exactly */
+  .post-media {
+    margin: 8px 0 !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* Base Post Styling (Desktop & Mobile) */
 .post-card {
-  padding: 14px !important;
-  overflow: hidden !important;
-  background: #fff !important;
-  border: 1px solid #dadde1 !important;
-  border-radius: 14px !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, .1) !important;
-  margin: 10px 0 !important;
+  background: #fff;
+  border: 1px solid #dadde1;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Header needs its own padding */
 .post-head {
-  padding: 0 0 10px 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-bottom: 10px;
 }
 
-/* Body contains text and media */
-.post-body {
-  padding: 0 !important;
-  margin: 0 !important;
+.avatar-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
-/* Text gets standard horizontal padding */
-.post-text {
-  padding: 0 4px 10px 4px !important;
-  margin: 0 !important;
-  font-size: 16px !important;
-  line-height: 1.4 !important;
-  color: #050505 !important;
-  word-break: break-word;
+.post-meta {
+  flex: 1;
+  min-width: 0;
 }
 
-/* Media escapes card padding with negative margins */
+.poster-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: #050505;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* 2. Identity & Verified */
+.name-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.name-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.verified-badge {
+  color: #1877f2;
+  font-size: 15px;
+  display: inline-flex;
+}
+
+/* 3. Media: Edge-to-Edge Logic */
 .post-media {
-  margin-left: -14px !important;
-  margin-right: -14px !important;
-  margin-top: 4px !important;
-  margin-bottom: 10px !important;
-  border-radius: 0 !important;
-  overflow: hidden !important;
-  background: #f0f2f5 !important;
-  position: relative !important;
-
-  /* Praise-worthy height limit */
-  max-height: 520px !important;
+  position: relative;
+  background: #f0f2f5;
+  max-height: 520px;
+  margin: 10px 0;
+  overflow: hidden;
 }
 
 .post-media-track {
-  display: flex !important;
-  overflow-x: auto !important;
-  scroll-snap-type: x mandatory !important;
-  padding: 0 !important;
-  gap: 0 !important;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
 }
 
 .post-media-track::-webkit-scrollbar {
-  height: 0;
+  display: none;
 }
 
 .post-media-item {
-  flex: 0 0 100% !important;
-  scroll-snap-align: start !important;
-  position: relative !important;
-  height: 520px !important;
-  /* Fixed height for consistency */
+  flex: 0 0 100%;
+  height: 520px;
+  position: relative;
 }
 
 .post-media-item img {
   width: 100% !important;
   height: 100% !important;
-  display: block !important;
   object-fit: cover !important;
-  /* No more side spaces */
+  /* FILL WIDTH AND HEIGHT */
+  display: block;
+}
+
+/* Restored: Badges on Image */
+.post-price-badge {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  z-index: 5;
+}
+
+.post-wa-icon {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  width: 36px;
+  height: 36px;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 5;
 }
 
 /* Post Actions */
 .post-actions {
-  display: flex !important;
-  justify-content: space-around !important;
-  padding: 8px 0 0 0 !important;
-  border-top: 1px solid #dadde1 !important;
+  display: flex;
+  justify-content: space-around;
+  border-top: 1px solid #ebedf0;
+  padding-top: 8px;
 }
 
 .post-actions button {
-  flex: 1 !important;
-  background: transparent !important;
-  border: none !important;
-  color: #65676b !important;
-  font-weight: 600 !important;
-  padding: 10px !important;
-  font-size: 14px !important;
+  flex: 1;
+  background: none;
+  border: none;
+  font-weight: 600;
+  color: #65676b;
+  padding: 8px;
+  font-size: 14px;
+}
+
+/* Carousel/Identity Polishes */
+.visit-shop-btn {
+  background: #e7f3ff;
+  color: #1877f2;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
   cursor: pointer;
-  border-radius: 6px !important;
-}
-
-.post-actions button:hover {
-  background: #f2f2f2 !important;
-}
-
-/* Hide utility elements as requested previously */
-.post-title,
-.post-card .connect-btn {
-  display: none !important;
-}
-
-/* =========================
-   weSPACE: Layout Polishes
-   ========================= */
-
-.post-text {
-  margin-top: 0 !important;
-  /* remove the 4px */
-  padding-top: 0 !important;
-  text-indent: 0 !important;
-  text-align: left !important;
-  white-space: normal !important;
 }
 
 #visitShopBtn {
   margin-left: auto !important;
-  /* pushes it to far right */
-  margin-right: 6px !important;
-  /* adds breathing space from edge */
 }
 
-
 .feed-brand {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   color: #1877f2;
-  padding: 8px 16px 6px 16px;
-  margin: 0;
-  letter-spacing: 0.3px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 10px 14px;
 }
