@@ -366,7 +366,21 @@ async function bootAfterAuth() {
 
   }
 }
-
+document.addEventListener("visibilitychange", async () => {
+  if (document.visibilityState === "visible") {
+    const { data } = await supabase.auth.getSession();
+    sessionUser = data?.session?.user || null;
+  }
+});
+  window.addEventListener("focus", () => {
+  if (typeof showSection === "function") {
+    showSection(activeSectionId || "feed");
+  }
+});
+  (async function startApp() {
+  await initAuth();
+  await bootAfterAuth();
+})();
 /* ---------------- APP STATE ---------------- */
  let myProfile = null;
 let cachedPosts = [];
@@ -2294,6 +2308,7 @@ init();
 
 
 // call it once
+
 
 
 
