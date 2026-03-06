@@ -366,42 +366,7 @@ async function bootAfterAuth() {
 }
  
 
-/* ---------------- APP STATE ---------------- */
- let myProfile = null;
-let cachedPosts = [];
-let cachedFeedItems = [];
 
-let myConnectionSet = new Set();
-let shopOwnerSet = new Set();
-
-const profileView = {
-  mode: "self",
-  userId: null,
-  returnSection: "profile",
-  returnScrollY: 0,
-};
-
-/* ---------------- RESUME FIX (MINIMIZE BUG) ---------------- */
-let resumeTimer = null;
-
-function onAppResume() {
-  clearTimeout(resumeTimer);
-  resumeTimer = setTimeout(() => {
-    bootAfterAuth();
-  }, 150);
-}
-
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") onAppResume();
-});
-
-window.addEventListener("focus", onAppResume);
-
-window.addEventListener("pageshow", (e) => {
-  if (e.persisted) onAppResume();
-});
-
-window.addEventListener("online", onAppResume);
   
 
   // =========================
@@ -2296,6 +2261,7 @@ init();
 
 
  
+
 
 
 
