@@ -346,19 +346,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
   function setCarouselActive(mediaEl, activeIndex) {
-    const dotsWrap = mediaEl?.querySelector("[data-carousel-dots='1']");
+    const dotsWrap = mediaEl?.querySelector(".carousel-dots");
     if (!dotsWrap) return;
     const dots = Array.from(dotsWrap.querySelectorAll(".dot"));
     dots.forEach((d, i) => d.classList.toggle("active", i === activeIndex));
   }
-  document.addEventListener("scroll", (e) => {
-    const track = e.target?.closest?.("[data-carousel-track='1']");
-    if (!track) return;
-
-    const media = track.closest(".post-media");
-    const idx = getCarouselIndex(track);
-    setCarouselActive(media, idx);
-  }, true);
   function getShopLinkForUserId(uid) {
     const base = window.location.origin; // your domain (or localhost)
     return `${base}/shop.html?seller=${encodeURIComponent(uid)}`;
@@ -393,13 +385,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
   function getCarouselIndex(trackEl) {
-    const w = trackEl.clientWidth || 1;
-    return Math.round(trackEl.scrollLeft / w);
+    const currentTransform = trackEl.style.transform || "translateX(0%)";
+    const match = currentTransform.match(/translateX\(([-\d.]+)%\)/);
+    if (!match) return 0;
+    return Math.abs(Math.round(parseFloat(match[1]) / 100));
   }
 
   function scrollCarouselTo(trackEl, index) {
-    const w = trackEl.clientWidth || 1;
-    trackEl.scrollTo({ left: index * w, behavior: "smooth" });
+    trackEl.style.transform = `translateX(-${index * 100}%)`;
   }
 
   const formatWaNumber = (raw) => {
@@ -702,20 +695,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   const connectBtnHTML = (authorId) => {
-    if (!sessionUser) return "";
-    if (!authorId) return "";
-    if (authorId === sessionUser.id) return "";
-
-    const connected = myConnectionSet.has(authorId);
-
-    return `
-      <button class="connect-btn ${connected ? "connected" : ""}"
-              data-action="connect"
-              data-authorid="${authorId}"
-              type="button">
-        ${connected ? "Connected" : "Connect"}
-      </button>
-    `;
+    return "";
   };
 
   // IMPORTANT: Always uses ORIGINAL author_id (even for reshared items)
@@ -1728,25 +1708,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       await renderProfilePostsList();
     }
   }
-  // ✅ Update dots while swiping
-  document.addEventListener("scroll", (e) => {
-    const track = e.target?.closest?.(".post-media-track");
-    if (!track) return;
-
-    const media = track.closest(".post-media");
-    const dotsWrap = media?.querySelector(".post-dots");
-    if (!dotsWrap) return;
-
-    const slides = Array.from(track.children || []);
-    if (!slides.length) return;
-
-    // find active slide based on scrollLeft
-    const idx = Math.round(track.scrollLeft / track.clientWidth);
-
-    dotsWrap.querySelectorAll(".post-dot").forEach((d, i) => {
-      d.classList.toggle("active", i === idx);
-    });
-  }, true);
+  /* ✅ Redundant scroll listener removed to prevent "movable" artifacting */
 
   // =========================
   // GLOBAL CLICKS (ONE CLEAN HANDLER)
@@ -1815,23 +1777,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
       return;
     }
-    // ✅ Carousel dots click: jump to image
-    const dot = e.target.closest(".post-dot");
+    // ✅ Carousel dots click: jump to image (updated for transform)
+    const dot = e.target.closest(".dot");
     if (dot) {
-      const dotsWrap = dot.closest(".post-dots");
+      const dotsWrap = dot.closest(".carousel-dots");
       const media = dot.closest(".post-media");
       const track = media?.querySelector(".post-media-track");
-      if (!track) return;
+      if (!track || !dotsWrap) return;
 
-      const idx = Number(dot.getAttribute("data-dot") || 0);
-      const slide = track.children?.[idx];
-      if (!slide) return;
-
-      slide.scrollIntoView({ behavior: "smooth", inline: "start" });
-
-      // update active immediately
-      dotsWrap.querySelectorAll(".post-dot").forEach(d => d.classList.remove("active"));
-      dot.classList.add("active");
+      const idx = Number(dot.getAttribute("data-index") || 0);
+      scrollCarouselTo(track, idx);
+      setCarouselActive(media, idx);
       return;
     }
 
