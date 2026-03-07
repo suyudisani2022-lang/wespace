@@ -410,6 +410,61 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (n.startsWith("0")) n = "234" + n.slice(1);
     return n;
   };
+
+  /**
+   * ✅ Client-side image compression
+   * Reduces file size before upload for "big tech" efficiency.
+   */
+  async function compressImage(file, { maxWidth = 1200, maxHeight = 1200, quality = 0.7 } = {}) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height *= maxWidth / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width *= maxHeight / height;
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                const compressedFile = new File([blob], file.name, {
+                  type: "image/jpeg",
+                  lastModified: Date.now(),
+                });
+                resolve(compressedFile);
+              } else {
+                reject(new Error("Canvas toBlob failed"));
+              }
+            },
+            "image/jpeg",
+            quality
+          );
+        };
+        img.onerror = reject;
+      };
+      reader.onerror = reject;
+    });
+  }
   async function fetchNotifications(limit = 30) {
     if (!authReady) await initAuth();
 
@@ -690,7 +745,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="post-media-track" data-carousel-track="1">
         ${images.map((src, i) => `
           <div class="post-media-item" data-idx="${i}">
-            <img src="${escapeHtml(src)}" alt="Post image ${i + 1}">
+            <img src="${escapeHtml(src)}" alt="Post image ${i + 1}" loading="lazy">
             ${wa ? `
                 <button
                   type="button"
@@ -1388,12 +1443,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
     const filePath = `${userId}/avatar.${ext}`;
 
-    const { error: upErr } = await supabase.storage.from("avatars").upload(filePath, file, {
-      upsert: true,
-      contentType: file.type,
-    });
+    try {
+      const compressed = await compressImage(file, { maxWidth: 400, maxHeight: 400, quality: 0.8 });
+      const filePath = `${userId}/avatar.jpg`;
 
-    if (upErr) throw upErr;
+      const { error: upErr } = await supabase.storage.from("avatars").upload(filePath, compressed, {
+        upsert: true,
+        contentType: "image/jpeg",
+      });
+      if (upErr) throw upErr;
+    } catch (err) {
+      console.error("Avatar upload error:", err);
+      throw err;
+    }
 
     const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
     return data?.publicUrl || "";
@@ -1428,14 +1490,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function uploadPostImages(userId, files) {
     const urls = [];
     for (const file of files) {
-      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-      const filePath = `${userId}/${crypto.randomUUID?.() || Date.now()}-${Math.random().toString(16).slice(2)}.${ext}`;
+      try {
+        // ✅ Compress before upload
+        const compressed = await compressImage(file);
+        const ext = "jpg"; // compressed is always jpeg
+        const filePath = `${userId}/${crypto.randomUUID?.() || Date.now()}-${Math.random().toString(16).slice(2)}.${ext}`;
 
-      const { error: upErr } = await supabase.storage.from("post-images").upload(filePath, file, { contentType: file.type });
-      if (upErr) throw upErr;
+        const { error: upErr } = await supabase.storage.from("post-images").upload(filePath, compressed, { contentType: "image/jpeg" });
+        if (upErr) throw upErr;
 
-      const { data } = supabase.storage.from("post-images").getPublicUrl(filePath);
-      urls.push(data?.publicUrl || "");
+        const { data } = supabase.storage.from("post-images").getPublicUrl(filePath);
+        urls.push(data?.publicUrl || "");
+      } catch (err) {
+        console.error("Compression/Upload error:", err);
+        // Fallback or skip
+      }
     }
     return urls.filter(Boolean);
   }
