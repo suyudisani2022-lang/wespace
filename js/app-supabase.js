@@ -806,7 +806,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ${reshareBanner}
 
     <div class="post-head">
-      <img class="avatar-img" src="${escapeHtml(p.author_photo_url || "")}" alt="avatar loading="lazy">
+      <img class="avatar-img" src="${escapeHtml(p.author_photo_url || "")}" alt="avatar" loading="lazy">
 
       <div class="post-meta">
         <div class="name-row">
