@@ -4511,257 +4511,32 @@ body {
   display: none !important;
 }
 
-/* =========================
-   weSPACE FB-like FIX (stable)
-   Works with your HTML structure:
-   .post-card > .post-head + .post-body + .post-actions
-   ========================= */
-
-@media (max-width: 700px) {
-
-  /* make the page not look washed + remove side gutters */
-  html,
-  body {
-    margin: 0 !important;
-    padding: 0 !important;
-    background: #f0f2f5 !important;
-    color: #050505 !important;
-  }
-
-  /* remove any outer container padding that creates side space */
-  .container,
-  .main,
-  .page,
-  .feed,
-  .content {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-  }
-
-  /* Post card */
-  .post-card {
-    background: #fff !important;
-    border: 1px solid #dadde1 !important;
-    border-radius: 14px !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .12) !important;
-    overflow: hidden !important;
-
-    /* IMPORTANT: remove padding from the card */
-    padding: 0 !important;
-
-    /* FB style: full width card */
-    margin: 10px 0 !important;
-  }
-
-  /* Header spacing like FB */
-  .post-head {
-    padding: 12px 14px 6px !important;
-  }
-
-  /* Body: NO side padding so media can be full width */
-  .post-body {
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  /* You don’t want title showing */
-  .post-title {
-    display: none !important;
-  }
-
-  /* Text gets padding (FB style) */
-  .post-text {
-    padding: 4px 14px 10px !important;
-    margin: 0 !important;
-    font-size: 16px !important;
-    line-height: 1.35 !important;
-    color: #050505 !important;
-    text-align: left !important;
-    /* fixes the “centered” look */
-    word-break: break-word;
-  }
-
-  .post-meta .sub-row {
-    color: #65676b !important;
-    font-size: 13px !important;
-  }
-
-  /* Media must be true full width INSIDE card */
-  .post-media {
-    margin: 0 !important;
-    padding: 0 !important;
-    border-radius: 0 !important;
-    overflow: hidden !important;
-  }
-
-  .post-media-track {
-    padding: 0 !important;
-    gap: 0 !important;
-  }
-
-  .post-media-item {
-    flex: 0 0 100% !important;
-    border-radius: 0 !important;
-    overflow: hidden !important;
-  }
-
-  .post-media img,
-  .post-media video {
-    width: 100% !important;
-    height: auto !important;
-    display: block !important;
-    border-radius: 0 !important;
-    object-fit: cover !important;
-  }
-
-  /* Action buttons aligned + clean */
-  .post-actions {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-around !important;
-    gap: 0 !important;
-
-    padding: 8px 10px !important;
-    border-top: 1px solid #dadde1 !important;
-    background: #fff !important;
-  }
-
-  .post-actions button {
-    flex: 1 1 0 !important;
-    min-width: 0 !important;
-
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 6px !important;
-
-    background: transparent !important;
-    border: 0 !important;
-    box-shadow: none !important;
-
-    padding: 10px 6px !important;
-    font-size: 14px !important;
-    line-height: 1 !important;
-    color: #65676b !important;
-    font-weight: 600 !important;
-    border-radius: 10px !important;
-  }
-
-  /* ==================================
-   RESTORE NORMAL POST CARD PADDING
-   ================================== */
-
-  /* Card boxed again */
-  .post-card {
-    padding: 14px !important;
-    /* restore original padding */
-  }
-
-  /* Body should NOT remove card padding */
-  .post-body {
-    padding: 0 !important;
-  }
-
-  /* Remove any negative margins on media */
-  .post-body .post-media {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-
-  /* Ensure media stays inside card */
-  .post-media {
-    width: 100% !important;
-    border-radius: 12px !important;
-    /* nice inner rounding */
-  }
-
-  /* =========================
-   Fix: Name left, Visit Shop right (your real button)
-   ========================= */
-
-  .post-head {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
-  }
-
-  .avatar-img {
-    width: 38px !important;
-    height: 38px !important;
-    flex: 0 0 auto !important;
-  }
-
-  /* meta takes remaining space */
-  .post-meta {
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    /* allow shrink */
-  }
-
-  /* name row: keep in one line */
-  .name-row {
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    flex-wrap: nowrap !important;
-  }
-
-  /* name shrinks nicely instead of colliding */
-  .poster-name {
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-
-  /* Push Visit Shop to the far right */
-  #visitShopBtn {
-    margin-left: auto !important;
-    flex: 0 0 auto !important;
-    white-space: nowrap !important;
-  }
-
-  /* === Make description start normally (no title space, no indent) === */
-  .post-title {
-    display: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: 0 !important;
-  }
-
-  .post-text {
-    margin-top: 0 !important;
-    /* remove the 4px */
-    padding-top: 0 !important;
-    text-indent: 0 !important;
-    text-align: left !important;
-    white-space: normal !important;
-  }
-
-  /* =========================
-   Shift Visit Shop slightly further right
-   ========================= */
-
-  #visitShopBtn {
-    margin-left: auto !important;
-    /* pushes it to far right */
-    margin-right: 6px !important;
-    /* adds breathing space from edge */
-  }
+/* --- CONFIRMED FB STYLE CLEANUP --- */
+.reshare-banner {
+  padding: 10px 14px 4px;
+  font-size: 13px;
+  color: #65676b;
+  font-weight: 800;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-
-.feed-brand {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1877f2;
-  padding: 8px 16px 6px 16px;
+.post-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  max-height: 600px;
+  /* ✅ Increased slightly for better mobile impact */
+  background: #000;
+  /* Black background for any tiny gaps */
+  overflow: hidden;
   margin: 0;
-  letter-spacing: 0.3px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.post-media-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover !important;
+  /* ✅ FORCE coverage to eliminate side bars */
 }
 
 /* IMAGE LIGHTBOX */
