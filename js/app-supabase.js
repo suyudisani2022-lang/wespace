@@ -2,6 +2,21 @@
 import { supabase } from "./supabaseClient.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // =========================
+  // STATE
+  // =========================
+  let sessionUser = null; // auth user
+  let authReady = false;
+
+  async function initAuth() {
+    if (authReady) return; // prevent duplicate runs
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) console.error("getSession error:", error);
+
+    sessionUser = session?.user ?? null;
+    authReady = true;
+  }
+
   // ✅ Initialize auth as early as possible
   await initAuth();
 
@@ -294,20 +309,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     { passive: true }
   );
 
-  // =========================
-  // STATE
-  // =========================
-  let sessionUser = null; // auth user
-  let authReady = false;
-
-  async function initAuth() {
-    if (authReady) return; // prevent duplicate runs
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (error) console.error("getSession error:", error);
-
-    sessionUser = session?.user ?? null;
-    authReady = true;
-  }
 
   function requireUser() {
     return sessionUser?.id ? sessionUser : null;
