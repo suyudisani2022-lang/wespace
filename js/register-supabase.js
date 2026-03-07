@@ -1,5 +1,12 @@
-// js/register-supabase.js
 import { supabase } from "./supabaseClient.js";
+
+// ✅ Auto-redirect if already logged in
+(async function checkSession() {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    window.location.href = "../home.html";
+  }
+})();
 
 const form = document.getElementById("registerForm");
 
