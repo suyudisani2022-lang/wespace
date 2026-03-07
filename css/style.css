@@ -3744,11 +3744,9 @@ body.auth .link2:hover {
   margin: 0 !important;
   padding: 0 !important;
   height: auto !important;
-  /* Adapt naturally */
-  aspect-ratio: auto !important;
-  /* Force zoom-in effect for short images */
-  max-height: 800px !important;
-  /* Limit giant tall posts */
+  /* Adaptive for short images */
+  max-height: 520px !important;
+  /* Facebook standard cap for tall images */
   background: transparent !important;
   overflow: hidden !important;
   border-radius: 0 !important;
@@ -3777,10 +3775,10 @@ body.auth .link2:hover {
 .post-media-item video {
   width: 100% !important;
   height: auto !important;
-  /* No cropping */
-  object-fit: contain !important;
-  /* Best for 'intact' view */
-  /* Force touch edges */
+  max-height: 520px !important;
+  /* Cap tall images */
+  object-fit: cover !important;
+  /* Fill edges even when capped */
   display: block !important;
   border-radius: 0 !important;
 }
@@ -3791,7 +3789,7 @@ body.auth .link2:hover {
   align-items: center !important;
   justify-content: space-around !important;
   padding: 8px 12px !important;
-  border-top: 1px solid #dadde1 !important;
+  border-top: 1px solid #eef0f4 !important;
   background: transparent !important;
 }
 
@@ -3804,7 +3802,54 @@ body.auth .link2:hover {
   padding: 8px !important;
 }
 
-/* 5. Safety: Hide the "Connect" button globally in posts */
+/* 5. Mobile Edge-to-Edge Screen Fix (Facebook Standard) */
+@media (max-width: 600px) {
+  .container {
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .post-card {
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    margin-bottom: 10px !important;
+    width: 100% !important;
+    box-shadow: none !important;
+  }
+
+  /* Ensure text elements still have breathing room */
+  .feed-brand,
+  .section h2,
+  .section-filterbar,
+  #feed h2 {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+  }
+}
+
+/* 6. Beautiful Overlays (WhatsApp & Price) */
+.post-wa-icon {
+  position: absolute !important;
+  left: 12px !important;
+  bottom: 12px !important;
+  z-index: 20 !important;
+}
+
+.post-price-badge {
+  position: absolute !important;
+  right: 12px !important;
+  bottom: 12px !important;
+  background: rgba(0, 0, 0, 0.75) !important;
+  color: #fff !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  font-weight: 700 !important;
+  z-index: 20 !important;
+}
+
+/* 7. Safety: Hide the "Connect" button globally in posts */
 .post-card .connect-btn {
   display: none !important;
 }
