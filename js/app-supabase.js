@@ -729,23 +729,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         ${images.map((src, i) => `
           <div class="post-media-item" data-idx="${i}">
             <img src="${escapeHtml(src)}" alt="Post image ${i + 1}" loading="lazy">
-            ${wa ? `
-                <button
-                  type="button"
-                  class="post-wa-icon"
-                  data-action="contact"
-                  data-phone="${escapeHtml(wa)}"
-                  data-title="${escapeHtml((post.description || "").slice(0, 40))}"
-                  aria-label="Contact on WhatsApp"
-                  title="Contact on WhatsApp"
-                >
-                <img src="/assets/whatsapp.png" alt="WhatsApp">
-                </button>
-              ` : ""
-      }
           </div>
         `).join("")}
       </div>
+
+      ${wa ? `
+          <button
+            type="button"
+            class="post-wa-icon"
+            data-action="contact"
+            data-phone="${escapeHtml(wa)}"
+            data-title="${escapeHtml((post.description || "").slice(0, 40))}"
+            aria-label="Contact on WhatsApp"
+            title="Contact on WhatsApp"
+          >
+            <img src="/assets/whatsapp.png" alt="WhatsApp">
+          </button>
+        ` : ""
+      }
 
       ${hasMany ? `
           <div class="carousel-dots" data-carousel-dots="1">
@@ -1426,9 +1427,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   saveProfileBtn2?.addEventListener("click", saveProfile);
 
   async function uploadAvatar(userId, file) {
-    const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-    const filePath = `${userId}/avatar.${ext}`;
-
     try {
       const compressed = await compressImage(file, { maxWidth: 400, maxHeight: 400, quality: 0.8 });
       const filePath = `${userId}/avatar.jpg`;
