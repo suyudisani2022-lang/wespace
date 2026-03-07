@@ -1334,7 +1334,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         profileName && (profileName.textContent = u.name || "User");
         profileMeta && (profileMeta.textContent = `${u.campus || ""} • ${u.department || ""}`);
         profileUsername && (profileUsername.textContent = `@${u.username || "user"}`);
-        if (profileAvatar) profileAvatar.src = u.photo_url || "";
+        if (profileAvatar) {
+          if (u.photo_url) {
+            profileAvatar.src = u.photo_url;
+            profileAvatar.removeAttribute("data-no-photo");
+          } else {
+            profileAvatar.removeAttribute("src");
+            profileAvatar.setAttribute("data-no-photo", "1");
+          }
+        }
 
         if (pAbout) pAbout.value = u.about || "";
         if (pSkills) pSkills.value = u.skills || "";
@@ -1375,7 +1383,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     profileName && (profileName.textContent = myProfile.name || "User");
     profileMeta && (profileMeta.textContent = `${myProfile.campus || ""} • ${myProfile.department || ""}`);
     profileUsername && (profileUsername.textContent = `@${myProfile.username || "user"}`);
-    if (profileAvatar) profileAvatar.src = myProfile.photo_url || "";
+    if (profileAvatar) {
+      // ✅ Only set src if we have a real URL; otherwise let CSS background show
+      if (myProfile.photo_url) {
+        profileAvatar.src = myProfile.photo_url;
+        profileAvatar.removeAttribute("data-no-photo");
+      } else {
+        profileAvatar.removeAttribute("src");
+        profileAvatar.setAttribute("data-no-photo", "1");
+      }
+    }
 
     if (pAbout) pAbout.value = myProfile.about || "";
     if (pSkills) pSkills.value = myProfile.skills || "";
@@ -1427,9 +1444,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   saveProfileBtn2?.addEventListener("click", saveProfile);
 
   async function uploadAvatar(userId, file) {
+    const filePath = `${userId}/avatar.jpg`;
     try {
       const compressed = await compressImage(file, { maxWidth: 400, maxHeight: 400, quality: 0.8 });
-      const filePath = `${userId}/avatar.jpg`;
 
       const { error: upErr } = await supabase.storage.from("avatars").upload(filePath, compressed, {
         upsert: true,
@@ -1442,7 +1459,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-    return data?.publicUrl || "";
+    const baseUrl = data?.publicUrl || "";
+    // Add cache-buster so browser always loads the new version
+    return baseUrl ? `${baseUrl}?t=${Date.now()}` : "";
   }
 
   changePhotoInput?.addEventListener("change", async () => {
@@ -1451,18 +1470,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!file) return;
 
     try {
+      // ✅ Show loading state
+      if (profileAvatar) profileAvatar.style.opacity = "0.4";
+
       const url = await uploadAvatar(sessionUser.id, file);
+      if (!url) throw new Error("Upload succeeded but no URL was returned. Check storage bucket policies.");
 
       const { error } = await supabase.from("profiles").update({ photo_url: url }).eq("id", sessionUser.id);
       if (error) throw error;
 
       myProfile = { ...myProfile, photo_url: url };
-      if (profileAvatar) profileAvatar.src = url;
+      if (profileAvatar) {
+        profileAvatar.src = url;
+        profileAvatar.style.opacity = "";
+      }
 
       alert("Photo updated ✅");
     } catch (err) {
-      console.error(err);
-      alert(err?.message || "Could not update photo.");
+      console.error("changePhotoInput error:", err);
+      if (profileAvatar) profileAvatar.style.opacity = "";
+      alert("Could not update photo: " + (err?.message || "Unknown error"));
     } finally {
       changePhotoInput.value = "";
     }
