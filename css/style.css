@@ -317,31 +317,36 @@ body.landing {
 .post-media {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 5;
-  /* Dynamic height usually better, but let's stick to consistent max-height */
-  max-height: 520px;
   background: #f1f5f9;
-  overflow: hidden;
 }
 
 .post-media-track {
-  display: flex;
-  height: 100%;
-  transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  display: flex !important;
+  width: 100% !important;
+  height: auto !important;
+  overflow-x: auto !important;
+  scroll-snap-type: x mandatory !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none;
+}
+
+.post-media-track::-webkit-scrollbar {
+  display: none;
 }
 
 .post-media-item {
-  flex: 0 0 100%;
-  width: 100%;
-  height: 100%;
+  flex: 0 0 100% !important;
+  width: 100% !important;
+  scroll-snap-align: start !important;
   position: relative;
 }
 
 .post-media-item img {
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: auto !important;
+  max-height: 520px !important;
   object-fit: cover;
-  /* ✅ Edge-to-edge full width/height */
+  display: block;
 }
 
 /* Dots & Nav Overlays */
@@ -2333,6 +2338,13 @@ body.landing {
   border: 1px solid rgba(15, 23, 42, .10);
 }
 
+.btn:disabled {
+  opacity: 0.6;
+  filter: grayscale(0.5);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .auth-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -3718,14 +3730,13 @@ body.auth .link2:hover {
   box-shadow: 0 1px 2px rgba(0, 0, 0, .10) !important;
 }
 
-/* 2. Header & Text Padding (Readable space for labels) */
+/* 2. Header & Text Padding */
 .post-head {
   padding: 12px 16px 8px !important;
 }
 
 .post-text {
   padding: 0 16px 4px !important;
-  /* Tighter bottom gap */
   margin: 0 !important;
   font-size: 15px !important;
   line-height: 1.5 !important;
@@ -3744,46 +3755,47 @@ body.auth .link2:hover {
   margin: 0 !important;
   padding: 0 !important;
   height: auto !important;
-  /* Adaptive for short images */
-  max-height: 520px !important;
-  /* Facebook standard cap for tall images */
   background: transparent !important;
   overflow: hidden !important;
   border-radius: 0 !important;
   border: none !important;
 }
 
-/* Ensure track fills the container */
 .post-media-track {
   display: flex !important;
   padding: 0 !important;
   gap: 0 !important;
   margin: 0 !important;
+  overflow-x: auto !important;
+  scroll-snap-type: x mandatory !important;
+  -webkit-overflow-scrolling: touch !important;
+  scrollbar-width: none !important;
 }
 
-/* Each slide is exactly 100% wide */
+.post-media-track::-webkit-scrollbar {
+  display: none !important;
+}
+
 .post-media-item {
   flex: 0 0 100% !important;
   width: 100% !important;
+  scroll-snap-align: start !important;
   border-radius: 0 !important;
   margin: 0 !important;
   padding: 0 !important;
+  position: relative !important;
 }
 
-/* Image fills the slide completely */
-.post-media-item img,
-.post-media-item video {
+.post-media-item img {
   width: 100% !important;
   height: auto !important;
   max-height: 520px !important;
-  /* Cap tall images */
   object-fit: cover !important;
-  /* Fill edges even when capped */
   display: block !important;
   border-radius: 0 !important;
 }
 
-/* 4. Action Row Alignment */
+/* 4. Action Row & Mobile Labels */
 .post-actions {
   display: flex !important;
   align-items: center !important;
@@ -3800,9 +3812,19 @@ body.auth .link2:hover {
   font-weight: 600 !important;
   color: #65676b !important;
   padding: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
 }
 
-/* 5. Mobile Edge-to-Edge Screen Fix (Facebook Standard) */
+@media (max-width: 600px) {
+  .post-actions .btn-label {
+    display: none !important;
+  }
+}
+
+/* 5. Mobile Edge-to-Edge Screen Fix */
 @media (max-width: 600px) {
   .container {
     padding: 0 !important;
@@ -3815,11 +3837,9 @@ body.auth .link2:hover {
     border-left: none !important;
     border-right: none !important;
     margin-bottom: 10px !important;
-    width: 100% !important;
     box-shadow: none !important;
   }
 
-  /* Ensure text elements still have breathing room */
   .feed-brand,
   .section h2,
   .section-filterbar,
@@ -3829,7 +3849,7 @@ body.auth .link2:hover {
   }
 }
 
-/* 6. Beautiful Overlays (WhatsApp & Price) */
+/* 6. Overlays */
 .post-wa-icon {
   position: absolute !important;
   left: 12px !important;
@@ -3849,9 +3869,20 @@ body.auth .link2:hover {
   z-index: 20 !important;
 }
 
-/* 7. Safety: Hide the "Connect" button globally in posts */
+/* 7. Lightbox Original Size */
+.lightbox-overlay {
+  background: rgba(0, 0, 0, 0.95) !important;
+}
+
+#lightboxImg {
+  max-width: 95vw !important;
+  max-height: 95vh !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  border-radius: 2px !important;
+}
+
 .post-card .connect-btn {
   display: none !important;
 }
-
-/* --- ALL REDUNDANT OVERRIDES PURGED --- */
