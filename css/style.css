@@ -3724,7 +3724,8 @@ body.auth .link2:hover {
 }
 
 .post-text {
-  padding: 0 16px 8px !important;
+  padding: 0 16px 4px !important;
+  /* Tighter bottom gap */
   margin: 0 !important;
   font-size: 15px !important;
   line-height: 1.5 !important;
@@ -3742,10 +3743,13 @@ body.auth .link2:hover {
   width: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
+  height: auto !important;
+  /* Adapt naturally */
   aspect-ratio: auto !important;
-  /* Allow natural height */
-  max-height: 600px !important;
-  background: #000 !important;
+  /* Force zoom-in effect for short images */
+  max-height: 800px !important;
+  /* Limit giant tall posts */
+  background: transparent !important;
   overflow: hidden !important;
   border-radius: 0 !important;
   border: none !important;
@@ -3772,8 +3776,10 @@ body.auth .link2:hover {
 .post-media-item img,
 .post-media-item video {
   width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
+  height: auto !important;
+  /* No cropping */
+  object-fit: contain !important;
+  /* Best for 'intact' view */
   /* Force touch edges */
   display: block !important;
   border-radius: 0 !important;
