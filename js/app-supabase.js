@@ -385,14 +385,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
   function getCarouselIndex(trackEl) {
-    const currentTransform = trackEl.style.transform || "translateX(0%)";
-    const match = currentTransform.match(/translateX\(([-\d.]+)%\)/);
-    if (!match) return 0;
-    return Math.abs(Math.round(parseFloat(match[1]) / 100));
+    const width = trackEl.offsetWidth;
+    if (width <= 0) return 0;
+    return Math.round(trackEl.scrollLeft / width);
   }
 
   function scrollCarouselTo(trackEl, index) {
-    trackEl.style.transform = `translateX(-${index * 100}%)`;
+    const width = trackEl.offsetWidth;
+    trackEl.scrollTo({
+      left: index * width,
+      behavior: "smooth"
+    });
   }
 
   const formatWaNumber = (raw) => {
@@ -785,7 +788,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const short = fullDesc.length > 170 ? fullDesc.slice(0, 170) + "…" : fullDesc;
 
     const deleteBtn =
-      showDelete && sessionUser && p.author_id === sessionUser.id
+      showDelete && sessionUser && (p.author_id === sessionUser.id || resharedByMe)
         ? `<button class="danger mini-del" data-action="delete-post" type="button">Delete</button>`
         : "";
 
@@ -802,7 +805,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       : "";
 
     return `
-  <article class="post-card" data-postid="${p.id}" data-authorid="${p.author_id}">
+  <article class="post-card" 
+           data-postid="${p.id}" 
+           data-authorid="${p.author_id}"
+           data-kind="${isReshare ? 'reshare' : 'post'}">
     ${reshareBanner}
 
     <div class="post-head">
@@ -846,9 +852,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     <!-- ✅ Bottom actions now ONLY Like / Comment / Reshare -->
     <div class="post-actions">
-      <button type="button" data-action="like" ${sessionUser ? "" : "disabled"}>👍 Like <span class="count">(${likesCount})</span></button>
-      <button type="button" data-action="comment" ${sessionUser ? "" : "disabled"}>💬 Comment <span class="count">(${commentsCount})</span></button>
-      <button type="button" data-action="reshare" ${sessionUser ? "" : "disabled"}>🔁 Reshare <span class="count">(${resharesCount})</span></button>
+      <button type="button" data-action="like" ${sessionUser ? "" : "disabled"}>👍 <span class="btn-label">Like</span> <span class="count">(${likesCount})</span></button>
+      <button type="button" data-action="comment" ${sessionUser ? "" : "disabled"}>💬 <span class="btn-label">Comment</span> <span class="count">(${commentsCount})</span></button>
+      <button type="button" data-action="reshare" ${sessionUser ? "" : "disabled"}>🔁 <span class="btn-label">Reshare</span> <span class="count">(${resharesCount})</span></button>
     </div>
 
     <div class="post-comments" style="display:none;"></div>
@@ -1615,9 +1621,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     const waRaw = (postWhatsApp?.value || "").trim() || (myProfile.wa || "").trim();
     const whatsapp = waRaw ? waRaw : "";
 
+    const btn = document.getElementById("submitPostBtn");
+    const oldText = btn ? btn.textContent : "Post";
+
     try {
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "Posting...";
+      }
+
       const image_urls = await uploadPostImages(sessionUser.id, files.slice(0, 5));
       if ((type === "opportunity" || type === "social") && !apply_link) {
+        if (btn) {
+          btn.disabled = false;
+          btn.textContent = oldText;
+        }
         return alert("Please paste an apply link.");
       }
 
@@ -1647,9 +1665,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       window.scrollTo({ top: 0, behavior: "smooth" });
       alert("Posted ✅");
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = oldText;
+      }
     } catch (err) {
-      console.error(err);
-      alert(err?.message || "Could not create post.");
+      console.error("post submit error:", err);
+      alert(err.message || "Could not create post.");
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = oldText;
+      }
     }
   });
 
@@ -1856,15 +1882,28 @@ document.addEventListener("DOMContentLoaded", async () => {
       const card = delBtn.closest(".post-card");
       const postId = card?.getAttribute("data-postid");
       const authorId = card?.getAttribute("data-authorid");
+      const kind = card?.getAttribute("data-kind") || "post";
 
       if (!postId) return;
-      if (authorId !== sessionUser.id) return alert("You can only delete your own post.");
 
-      const ok = confirm("Delete this post? This cannot be undone.");
+      const ok = confirm(`Delete this ${kind}? This cannot be undone.`);
       if (!ok) return;
 
-      const { error } = await supabase.from("posts").delete().eq("id", postId);
-      if (error) return alert(error.message || "Could not delete post.");
+      let error;
+      if (kind === "reshare") {
+        const { error: err } = await supabase
+          .from("post_reshares")
+          .delete()
+          .eq("post_id", postId)
+          .eq("user_id", sessionUser.id);
+        error = err;
+      } else {
+        if (authorId !== sessionUser.id) return alert("You can only delete your own post.");
+        const { error: err } = await supabase.from("posts").delete().eq("id", postId);
+        error = err;
+      }
+
+      if (error) return alert(error.message || `Could not delete ${kind}.`);
 
       cachedPosts = await fetchPosts();
       cachedFeedItems = await fetchFeedItemsMixed();
