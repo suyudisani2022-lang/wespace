@@ -180,9 +180,9 @@ form?.addEventListener("submit", async (e) => {
       return;
     }
 
-    // 1) Always create profile first (no avatar yet)
+    // 1) Always create profile first
     const { error: profErr1 } = await supabase.from("profiles").upsert(
-      { id: userId, username, name, campus, department, photo_url: "" },
+      { id: userId, username, name, campus, department },
       { onConflict: "id" }
     );
     if (profErr1) throw profErr1;
@@ -190,12 +190,12 @@ form?.addEventListener("submit", async (e) => {
     // 2) Upload avatar ONLY if we have a session (i.e., email confirmation is OFF)
     if (session) {
       const photo_url = await uploadAvatar(userId, photoFile);
-
-      const { error: profErr2 } = await supabase.from("profiles").upsert(
-        { id: userId, photo_url },
-        { onConflict: "id" }
-      );
-      if (profErr2) throw profErr2;
+      if (photo_url) {
+        const { error: profErr2 } = await supabase.from("profiles").update(
+          { photo_url }
+        ).eq("id", userId);
+        if (profErr2) throw profErr2;
+      }
     }
 
     alert(
