@@ -56,20 +56,68 @@ function friendlyError(msg) {
   return msg || "Something went wrong. Please try again.";
 }
 
+/**
+ * ✅ Client-side image compression
+ */
+async function compressImage(file, { maxWidth = 1200, maxHeight = 1200, quality = 0.7 } = {}) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > maxWidth) {
+            height *= maxWidth / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width *= maxHeight / height;
+            height = maxHeight;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(new File([blob], file.name, { type: "image/jpeg", lastModified: Date.now() }));
+          } else {
+            reject(new Error("Canvas toBlob failed"));
+          }
+        }, "image/jpeg", quality);
+      };
+      img.onerror = reject;
+    };
+    reader.onerror = reject;
+  });
+}
+
 async function uploadAvatar(userId, file) {
   if (!userId || !file) return "";
 
-  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-  const filePath = `${userId}/avatar.${ext}`;
+  try {
+    const compressed = await compressImage(file, { maxWidth: 400, maxHeight: 400, quality: 0.8 });
+    const filePath = `${userId}/avatar.jpg`;
 
-  const { error: uploadErr } = await supabase.storage
-    .from("avatars")
-    .upload(filePath, file, {
-      upsert: true,
-      contentType: file.type,
-    });
+    const { error: uploadErr } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, compressed, {
+        upsert: true,
+        contentType: "image/jpeg",
+      });
 
-  if (uploadErr) throw uploadErr;
+    if (uploadErr) throw uploadErr;
+  } catch (err) {
+    console.error("Avatar upload error:", err);
+    throw err;
+  }
 
   const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
   return data?.publicUrl || "";
