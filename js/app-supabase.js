@@ -1,7 +1,10 @@
 // js/app-supabase.js
 import { supabase } from "./supabaseClient.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  // ✅ Initialize auth as early as possible
+  await initAuth();
+
   // =========================
   // ELEMENTS
   // =========================
