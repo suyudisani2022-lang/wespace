@@ -102,9 +102,9 @@ async function compressImage(file, { maxWidth = 1200, maxHeight = 1200, quality 
 async function uploadAvatar(userId, file) {
   if (!userId || !file) return "";
 
+  const filePath = `${userId}/avatar.jpg`;
   try {
     const compressed = await compressImage(file, { maxWidth: 400, maxHeight: 400, quality: 0.8 });
-    const filePath = `${userId}/avatar.jpg`;
 
     const { error: uploadErr } = await supabase.storage
       .from("avatars")
@@ -120,7 +120,8 @@ async function uploadAvatar(userId, file) {
   }
 
   const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-  return data?.publicUrl || "";
+  const baseUrl = data?.publicUrl || "";
+  return baseUrl ? `${baseUrl}?t=${Date.now()}` : "";
 }
 
 form?.addEventListener("submit", async (e) => {
