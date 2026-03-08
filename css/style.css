@@ -3897,3 +3897,34 @@ body.auth .link2:hover {
 .post-card .connect-btn {
   display: none !important;
 }
+
+/* =========================================================
+   FIX 1: About textarea — high-visibility when read-only/disabled
+   Browsers grey out disabled elements by default; override that
+   so the user's "about" text is clearly readable.
+========================================================= */
+#pAbout:disabled,
+#pAbout[readonly],
+#pAbout:read-only {
+  color: #111827 !important;
+  /* near-black text */
+  -webkit-text-fill-color: #111827 !important;
+  /* Safari override */
+  opacity: 1 !important;
+  /* cancel OS-level dimming */
+  background: #f0f4ff !important;
+  /* soft blue-white, clearly different from input */
+  border-color: #c7d7f5 !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  font-weight: 500 !important;
+}
+
+/* =========================================================
+   FIX 2: Hide "Visit Shop" button inside Profile > Posts tab
+   It appears on every market post card but blocks the delete
+   button in the profile posts list. Hide it only there.
+========================================================= */
+#myPostsWrap .visit-shop-btn {
+  display: none !important;
+}
