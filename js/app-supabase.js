@@ -1957,28 +1957,51 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (likeBtn && postId) {
-      const { data: existing } = await supabase
-        .from("post_likes")
-        .select("post_id")
-        .eq("post_id", postId)
-        .eq("user_id", sessionUser.id)
-        .maybeSingle();
+      // Guard: prevent double-tap firing
+      if (likeBtn.dataset.liking === "1") return;
+      likeBtn.dataset.liking = "1";
 
-      if (existing) {
-        const { error } = await supabase.from("post_likes").delete().eq("post_id", postId).eq("user_id", sessionUser.id);
-        if (error) return alert(error.message || "Could not unlike.");
-      } else {
-        const { error } = await supabase.from("post_likes").insert({ post_id: postId, user_id: sessionUser.id });
-        if (error) return alert(error.message || "Could not like.");
+      // ── Optimistic instant UI update ─────────────────────────────
+      // Read current state from the button itself (no network wait)
+      const countEl = likeBtn.querySelector(".count");
+      const isLiked = likeBtn.classList.contains("active");
+      const currentCount = parseInt((countEl?.textContent || "").replace(/[()]/g, "") || "0", 10);
+      const newCount = isLiked ? Math.max(0, currentCount - 1) : currentCount + 1;
+
+      // Flip state immediately — feels instant on mobile
+      likeBtn.classList.toggle("active", !isLiked);
+      if (countEl) countEl.textContent = `(${newCount})`;
+      // ─────────────────────────────────────────────────────────────
+
+      // Now do the real DB call (user never sees a wait)
+      try {
+        if (isLiked) {
+          const { error } = await supabase.from("post_likes").delete()
+            .eq("post_id", postId).eq("user_id", sessionUser.id);
+          if (error) throw error;
+        } else {
+          const { error } = await supabase.from("post_likes").insert(
+            { post_id: postId, user_id: sessionUser.id }
+          );
+          if (error) throw error;
+        }
+
+        // Silently refresh cache in background — no DOM re-render
+        fetchPosts().then(posts => {
+          cachedPosts = posts;
+          return fetchFeedItemsMixed();
+        }).then(items => {
+          cachedFeedItems = items;
+        }).catch(() => { });
+
+      } catch (err) {
+        // Roll back the optimistic update on failure
+        likeBtn.classList.toggle("active", isLiked);
+        if (countEl) countEl.textContent = `(${currentCount})`;
+        console.error("like error:", err);
+      } finally {
+        likeBtn.dataset.liking = "0";
       }
-
-      cachedPosts = await fetchPosts();
-      cachedFeedItems = await fetchFeedItemsMixed();
-
-      renderFeed(cachedFeedItems);
-      renderMarket();
-      renderOpps();
-      renderSocials();
       return;
     }
 
