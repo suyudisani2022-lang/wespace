@@ -424,6 +424,11 @@ body.landing {
   cursor: pointer;
   font-weight: bold;
   color: #333;
+  /* ✅ Prevents 300ms delay + scroll jitter on mobile */
+  touch-action: manipulation;
+  /* ✅ Prevents text selection flicker on long-press */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .post-actions button:hover {
@@ -431,7 +436,8 @@ body.landing {
 }
 
 .post-actions button:active {
-  transform: scale(0.98);
+  /* ✅ Removed transform:scale that was causing post shaking on touch */
+  background: #dce5f0;
 }
 
 /* =========================================================
