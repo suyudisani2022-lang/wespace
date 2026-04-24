@@ -652,8 +652,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       "Electronics",
       "Others",
     ],
-    opportunity: ["Grants & Funding", "Scholarship", "Job", "Training", "Internship", "Others"],
-    social: ["Events", "Trends", "Conference", "Others"],
+    opportunity: ["Grants & Funding", "Scholars", "Job", "Training", "Internship", "Others"],
+    social: ["kwari market", "farm centre", "singa market", "sabon gari", "wambai"],
   };
 
   const setCategoryOptions = (type) => {
