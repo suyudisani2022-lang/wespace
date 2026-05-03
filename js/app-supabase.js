@@ -2102,10 +2102,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  visitShopBtn?.addEventListener("click", () => {
+visitShopBtn?.addEventListener("click", () => {
     // visitor profile: always view-only
     if (profileView.mode === "visitor" && profileView.userId) {
       window.location.href = `shop.html?seller=${encodeURIComponent(profileView.userId)}`;
+      return;
+    }
+    // owner: open in manage mode
+    if (profileView.mode === "self" && sessionUser) {
+      window.location.href = `shop.html?seller=${encodeURIComponent(sessionUser.id)}&mode=manage`;
       return;
     }
     verifySellerBtn?.addEventListener("click", (e) => {
