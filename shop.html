@@ -4,73 +4,695 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>weSPACE Shop</title>
-  <link rel="stylesheet" href="css/style.css"?v=1/>
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="css/style.css?v=2" />
+  <style>
+    /* =============================================
+       SHOP STOREFRONT — EXTRA STYLES
+       ============================================= */
+
+    /* Banner */
+    .shop-banner {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      display: block;
+      background: linear-gradient(135deg, #1e40af, #2563eb);
+    }
+    .shop-banner-placeholder {
+      width: 100%;
+      height: 160px;
+      background: linear-gradient(135deg, #1e40af, #2563eb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+
+    /* Shop header card */
+    .shop-header-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      margin: -28px 14px 0;
+      padding: 14px;
+      position: relative;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.07);
+    }
+    .shop-header-top {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .shop-logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: #dbeafe;
+      border: 3px solid #fff;
+      flex: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .shop-logo-placeholder {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      background: #dbeafe;
+      border: 3px solid #fff;
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .shop-info { flex: 1; min-width: 0; }
+    .shop-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .shop-name {
+      font-weight: 800;
+      font-size: 17px;
+      color: #0f172a;
+    }
+    .verified-badge {
+      background: #dcfce7;
+      color: #15803d;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+    .shop-location {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 3px;
+    }
+    .shop-category-badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: #2563eb;
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-weight: 700;
+      margin-top: 5px;
+    }
+    .shop-about {
+      font-size: 13px;
+      color: #475569;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+    .shop-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-wa {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #25d366;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      flex: 1;
+      justify-content: center;
+    }
+    .btn-wa img { width: 18px; height: 18px; }
+    .btn-share {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f0f2f5;
+      color: #0f172a;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      flex: 1;
+      justify-content: center;
+    }
+    .btn-manage {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      width: 100%;
+      justify-content: center;
+      margin-top: 6px;
+    }
+
+    /* Stats row */
+    .shop-stats {
+      display: flex;
+      gap: 0;
+      border-top: 1px solid #f1f5f9;
+      margin-top: 12px;
+      padding-top: 10px;
+    }
+    .shop-stat {
+      flex: 1;
+      text-align: center;
+    }
+    .shop-stat + .shop-stat {
+      border-left: 1px solid #f1f5f9;
+    }
+    .shop-stat-num {
+      font-weight: 800;
+      font-size: 16px;
+      color: #0f172a;
+    }
+    .shop-stat-label {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* Section title */
+    .section-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 18px 0 10px;
+    }
+
+    /* Filter bar */
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+      margin-bottom: 12px;
+    }
+    .filter-bar::-webkit-scrollbar { display: none; }
+    .filter-chip {
+      border: 1px solid #e5e7eb;
+      background: #fff;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
+      white-space: nowrap;
+      flex: none;
+    }
+    .filter-chip.active {
+      background: #2563eb;
+      color: #fff;
+      border-color: #2563eb;
+    }
+
+    /* Catalogue grid */
+    .catalogue-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    @media (min-width: 500px) {
+      .catalogue-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .catalogue-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow 0.15s;
+      position: relative;
+    }
+    .catalogue-card:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.1); }
+    .catalogue-card-img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+      background: #f1f5f9;
+    }
+    .catalogue-card-img-placeholder {
+      width: 100%;
+      aspect-ratio: 1;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+    .catalogue-card-name {
+      padding: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .catalogue-del-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Product grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    @media (min-width: 500px) {
+      .product-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    .product-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    .product-card-img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+      background: #f1f5f9;
+      cursor: pointer;
+    }
+    .product-card-img-placeholder {
+      width: 100%;
+      aspect-ratio: 1;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+    .product-card-body { padding: 8px; }
+    .product-card-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .product-card-price {
+      font-size: 13px;
+      font-weight: 800;
+      color: #2563eb;
+      margin-top: 3px;
+    }
+    .product-card-wa {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      background: #25d366;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px;
+      width: 100%;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    .product-card-wa img { width: 14px; height: 14px; }
+    .product-del-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Back breadcrumb */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #2563eb;
+      cursor: pointer;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .breadcrumb span { color: #64748b; }
+
+    /* Manage panel */
+    .manage-panel {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+    .manage-panel-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .field { margin-bottom: 10px; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 5px;
+    }
+    .field input,
+    .field textarea,
+    .field select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 14px;
+      outline: none;
+      background: #f8fafc;
+    }
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color: #2563eb;
+      background: #fff;
+    }
+    .btn-primary {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn-primary:hover { background: #1e40af; }
+    .btn-ghost {
+      background: #f0f2f5;
+      color: #0f172a;
+      border: none;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: #64748b;
+      font-size: 14px;
+    }
+    .empty-state-icon { font-size: 36px; margin-bottom: 8px; }
+
+    /* Setup prompt */
+    .setup-prompt {
+      background: #eff6ff;
+      border: 1px dashed #2563eb;
+      border-radius: 14px;
+      padding: 24px 16px;
+      text-align: center;
+      margin: 16px 0;
+    }
+    .setup-prompt-icon { font-size: 40px; margin-bottom: 10px; }
+    .setup-prompt h3 { font-size: 16px; color: #0f172a; margin-bottom: 6px; }
+    .setup-prompt p { font-size: 13px; color: #64748b; margin-bottom: 16px; }
+
+    /* Fullscreen image modal */
+    .img-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 9000;
+      align-items: center;
+      justify-content: center;
+    }
+    .img-modal.show { display: flex; }
+    .img-modal img {
+      max-width: 95vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    .img-modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: #fff;
+      font-size: 22px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    /* No shop registered message */
+    .no-shop-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 32px 16px;
+      text-align: center;
+      margin: 20px 0;
+    }
+  </style>
 </head>
 <body>
 
+  <!-- TOP BAR -->
   <header class="topbar">
-    <button id="shopBackBtn" class="icon-btn" type="button">←</button>
-    <div style="font-weight:700;">Shop</div>
+    <button id="shopBackBtn" class="icon-btn" type="button" title="Go back">←</button>
+    <div style="font-weight:800; font-size:15px;" id="topbarTitle">Shop</div>
     <div></div>
   </header>
 
-  <main class="page">
-    <div class="container">
+  <main class="page" style="padding-top:60px;">
 
-      <section>
-        <!-- ✅ UPDATED: Added Verified Badge beside shop title -->
-        <h2>
-          <span id="shopTitle">Shop</span>
-          <span id="shopVerifiedBadge" class="verifiedBadge" style="display:none;">✅ Verified</span>
-        </h2>
+    <!-- BANNER -->
+    <div id="bannerWrap">
+      <div class="shop-banner-placeholder" id="bannerPlaceholder">🏪</div>
+      <img id="bannerImg" class="shop-banner" style="display:none;" alt="Shop banner" />
+    </div>
 
-        <p class="panel-hint" id="shopHint">Catalogues</p>
+    <!-- SHOP HEADER CARD -->
+    <div class="shop-header-card" id="shopHeaderCard">
+      <div class="shop-header-top">
+        <div class="shop-logo-placeholder" id="logoPlaceholder">🏬</div>
+        <img id="logoImg" class="shop-logo" style="display:none;" alt="Shop logo" />
+        <div class="shop-info">
+          <div class="shop-name-row">
+            <span class="shop-name" id="shopName">Loading…</span>
+            <span class="verified-badge" id="verifiedBadge" style="display:none;">✔ Verified</span>
+          </div>
+          <div class="shop-location" id="shopLocation"></div>
+          <span class="shop-category-badge" id="shopCategoryBadge" style="display:none;"></span>
+        </div>
+      </div>
+      <div class="shop-about" id="shopAbout" style="display:none;"></div>
+      <div class="shop-stats" id="shopStats">
+        <div class="shop-stat">
+          <div class="shop-stat-num" id="statCatalogues">0</div>
+          <div class="shop-stat-label">Catalogues</div>
+        </div>
+        <div class="shop-stat">
+          <div class="shop-stat-num" id="statProducts">0</div>
+          <div class="shop-stat-label">Products</div>
+        </div>
+      </div>
+      <div class="shop-actions" id="shopActions">
+        <button class="btn-wa" id="waBtn" style="display:none;" type="button">
+          <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WA"> Chat Seller
+        </button>
+        <button class="btn-share" id="shareBtn" type="button">🔗 Share</button>
+      </div>
+      <!-- Owner only -->
+      <button class="btn-manage" id="manageBtn" style="display:none;" type="button">
+        ⚙️ Manage My Shop
+      </button>
+    </div>
 
-        <!-- Owner-only create catalogue -->
-        <div id="ownerCatalogueBox" style="display:none; margin: 12px 0;">
-          <div class="panel-title">Create Catalogue</div>
-          <label class="field">
-            <span>Catalogue name (e.g. Bags)</span>
-            <input id="catName" type="text" maxlength="40" placeholder="Bags" />
-          </label>
-          <label class="field">
-            <span>Cover image</span>
-            <input id="catCover" type="file" accept="image/*" />
-          </label>
-          <button class="btn primary" id="createCatalogueBtn" type="button">Create</button>
+    <div class="container" style="margin-top: 18px;">
+
+      <!-- ======= OWNER: SETUP SHOP (if not yet created) ======= -->
+      <div id="setupSection" style="display:none;">
+        <div class="setup-prompt">
+          <div class="setup-prompt-icon">🏪</div>
+          <h3>Set up your shop</h3>
+          <p>Create your shop profile so buyers across Northern Nigeria can find you.</p>
+          <button class="btn-primary" id="openSetupBtn" type="button">Create My Shop</button>
+        </div>
+      </div>
+
+      <!-- ======= OWNER: MANAGE PANEL ======= -->
+      <div id="manageSection" style="display:none;">
+
+        <!-- Edit Shop Details -->
+        <div class="manage-panel">
+          <div class="manage-panel-title">✏️ Edit Shop Details</div>
+          <div class="field">
+            <label>Shop Name *</label>
+            <input id="mShopName" type="text" maxlength="60" placeholder="e.g. Musa Phones & Accessories" />
+          </div>
+          <div class="field">
+            <label>City / State *</label>
+            <select id="mCity">
+              <option value="">Select city</option>
+              <option>Kano</option><option>Kaduna</option><option>Sokoto</option>
+              <option>Maiduguri</option><option>Katsina</option><option>Zaria</option>
+              <option>Bauchi</option><option>Gusau</option><option>Dutse</option>
+              <option>Birnin Kebbi</option><option>Damaturu</option><option>Lafia</option>
+              <option>Minna</option><option>Yola</option><option>Jalingo</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Market / Area</label>
+            <input id="mMarket" type="text" maxlength="80" placeholder="e.g. Kwari Market, Sabon Gari, Farm Centre" />
+          </div>
+          <div class="field">
+            <label>Category *</label>
+            <select id="mCategory">
+              <option value="">Select category</option>
+              <option>Phones & Gadgets</option>
+              <option>Fashion & Clothing</option>
+              <option>Shoes & Bags</option>
+              <option>Perfumes & Beauty</option>
+              <option>Food & Groceries</option>
+              <option>Electronics</option>
+              <option>Furniture & Home</option>
+              <option>Books & Stationery</option>
+              <option>Jewellery & Accessories</option>
+              <option>Fabric & Textiles</option>
+              <option>Services</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>WhatsApp Number *</label>
+            <input id="mWhatsapp" type="tel" placeholder="e.g. 08012345678" />
+          </div>
+          <div class="field">
+            <label>About Your Shop (optional)</label>
+            <textarea id="mAbout" rows="3" maxlength="200" placeholder="Tell buyers what you sell, delivery options, etc."></textarea>
+          </div>
+          <div class="field">
+            <label>Shop Logo (optional)</label>
+            <input id="mLogo" type="file" accept="image/*" />
+          </div>
+          <div class="field">
+            <label>Shop Banner (optional)</label>
+            <input id="mBanner" type="file" accept="image/*" />
+          </div>
+          <button class="btn-primary" id="saveShopBtn" type="button">💾 Save Shop</button>
         </div>
 
-        <!-- Catalogue grid -->
-        <div id="catalogueGrid" class="shop-grid"></div>
-      </section>
-
-      <button id="copyShopLinkBtn" class="btn ghost" type="button">🔗 Copy Shop Link</button>
-
-      <!-- Catalogue view -->
-      <section id="catalogueView" style="display:none; margin-top:18px;">
-        <div class="panel-title" id="catalogueNameTitle">Catalogue</div>
-
-        <!-- Owner-only add product -->
-        <div id="ownerProductBox" style="display:none; margin: 12px 0;">
-          <div class="panel-title">Add Product</div>
-
-          <input id="productName" type="text" placeholder="Product name (e.g. iPhone 11 128GB)" required />
-
-          <label class="field">
-            <span>Price (text)</span>
-            <input id="prodPrice" type="text" maxlength="20" placeholder="₦5,000" />
-          </label>
-
-          <label class="field">
-            <span>Image</span>
-            <input id="prodImage" type="file" accept="image/*" />
-          </label>
-
-          <button class="btn primary" id="addProductBtn" type="button">Add</button>
+        <!-- Create Catalogue -->
+        <div class="manage-panel">
+          <div class="manage-panel-title">📂 Add Catalogue</div>
+          <div class="field">
+            <label>Catalogue Name *</label>
+            <input id="mCatName" type="text" maxlength="40" placeholder="e.g. Samsung Phones, Ankara Fabrics" />
+          </div>
+          <div class="field">
+            <label>Cover Image *</label>
+            <input id="mCatCover" type="file" accept="image/*" />
+          </div>
+          <button class="btn-primary" id="createCatBtn" type="button">➕ Create Catalogue</button>
         </div>
 
-        <div id="productGrid" class="shop-grid"></div>
-      </section>
+        <!-- Add Product (shows after selecting a catalogue) -->
+        <div class="manage-panel" id="addProductPanel" style="display:none;">
+          <div class="manage-panel-title">📦 Add Product to: <span id="addingToCat"></span></div>
+          <div class="field">
+            <label>Product Name *</label>
+            <input id="mProdName" type="text" maxlength="80" placeholder="e.g. iPhone 13 128GB Black" />
+          </div>
+          <div class="field">
+            <label>Price *</label>
+            <input id="mProdPrice" type="text" maxlength="20" placeholder="e.g. ₦450,000" />
+          </div>
+          <div class="field">
+            <label>Description (optional)</label>
+            <textarea id="mProdDesc" rows="2" maxlength="200" placeholder="Condition, specs, etc."></textarea>
+          </div>
+          <div class="field">
+            <label>Product Image *</label>
+            <input id="mProdImage" type="file" accept="image/*" />
+          </div>
+          <button class="btn-primary" id="addProdBtn" type="button">➕ Add Product</button>
+        </div>
+
+        <button class="btn-ghost" id="doneManageBtn" type="button" style="width:100%; margin-bottom:20px;">
+          ← Back to Shop View
+        </button>
+      </div>
+
+      <!-- ======= PUBLIC VIEW ======= -->
+      <div id="publicSection">
+
+        <!-- Catalogues list -->
+        <div id="cataloguesSection">
+          <div class="section-title">📂 Catalogues</div>
+          <div class="catalogue-grid" id="catalogueGrid"></div>
+        </div>
+
+        <!-- Products view (after clicking a catalogue) -->
+        <div id="productsSection" style="display:none;">
+          <div class="breadcrumb" id="backToCatalogues">← <span>All Catalogues</span></div>
+          <div class="section-title" id="productsTitle">Products</div>
+          <div class="product-grid" id="productGrid"></div>
+        </div>
+
+      </div>
 
     </div>
   </main>
@@ -81,6 +703,6 @@
     <img id="imgModalImg" alt="Full image" />
   </div>
 
-  <script type="module" src="js/shop.js"></script>
+  <script type="module" src="js/shop.js?v=2"></script>
 </body>
 </html>
