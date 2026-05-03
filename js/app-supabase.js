@@ -607,7 +607,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
   const mapSection = (label) => {
     const key = (label || "").toLowerCase().trim();
-    return ({ feed: "feed", market: "market", opportunities: "opportunities", socials: "socials", profile: "profile" }[
+    return ({ feed: "feed", market: "market", opportunities: "opportunities", socials: "socials", shops: "socials", profile: "profile" }[
       key
     ] || "feed");
   };
