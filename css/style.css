@@ -3934,3 +3934,155 @@ body.auth .link2:hover {
 #myPostsWrap .visit-shop-btn {
   display: none !important;
 }
+ 
+/* ── SHOPS DIRECTORY ── */
+.shops-header {
+  padding: 14px 0 10px;
+}
+.shops-filter-wrap {
+  margin-bottom: 14px;
+}
+.shops-filter-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: none;
+  margin-bottom: 6px;
+}
+.shops-filter-bar::-webkit-scrollbar { display: none; }
+.shop-filter-chip {
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  white-space: nowrap;
+  flex: none;
+  transition: all 0.15s;
+}
+.shop-filter-chip.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+.shops-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding-bottom: 80px;
+}
+@media (min-width: 600px) {
+  .shops-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 900px) {
+  .shops-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.shop-dir-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.15s;
+  position: relative;
+}
+.shop-dir-card:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  transform: translateY(-2px);
+}
+.shop-dir-banner {
+  width: 100%;
+  height: 70px;
+  object-fit: cover;
+  display: block;
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+}
+.shop-dir-banner-placeholder {
+  width: 100%;
+  height: 70px;
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+.shop-dir-body {
+  padding: 10px 10px 12px;
+  position: relative;
+}
+.shop-dir-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  margin-top: -22px;
+  margin-bottom: 6px;
+  display: block;
+  background: #dbeafe;
+}
+.shop-dir-logo-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #dbeafe;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  margin-top: -22px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.shop-dir-name {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.shop-dir-location {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.shop-dir-cat {
+  display: inline-block;
+  background: #eff6ff;
+  color: #2563eb;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-weight: 700;
+  margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.shop-dir-verified {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.shop-dir-products {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
