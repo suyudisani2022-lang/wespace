@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const FEED_LIST = document.getElementById("feedList");
   const marketList = document.getElementById("marketList");
   const oppsList = document.getElementById("oppsList");
-  const socialList = document.getElementById("socialList");
+
 
   const marketFilter = document.getElementById("marketFilter");
   const oppsFilter = document.getElementById("oppsFilter");
