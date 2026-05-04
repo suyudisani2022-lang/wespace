@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const marketFilter = document.getElementById("marketFilter");
   const oppsFilter = document.getElementById("oppsFilter");
-  const socialFilter = document.getElementById("socialFilter");
+  
 
   const profileAvatar = document.getElementById("profileAvatar");
   const profileName = document.getElementById("profileName");
@@ -679,14 +679,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     (oppsFilter.innerHTML =
       `<option value="">All types</option>` +
       CATEGORY_MAP.opportunity.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join(""));
-  socialFilter &&
-    (socialFilter.innerHTML =
-      `<option value="">All types</option>` +
-      CATEGORY_MAP.social.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join(""));
+
 
   marketFilter?.addEventListener("change", renderMarket);
   oppsFilter?.addEventListener("change", renderOpps);
-  socialFilter?.addEventListener("change", renderSocials);
+  
 
   // =========================
   // UI RENDER: POSTS
