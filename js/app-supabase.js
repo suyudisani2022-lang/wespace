@@ -878,12 +878,140 @@ document.addEventListener("DOMContentLoaded", async () => {
     oppsList.innerHTML = posts.length ? posts.map((p) => renderPostCard(p)).join("") : `<p class="empty-state">No opportunities yet.</p>`;
   }
 
-  function renderSocials() {
-    if (!socialList) return;
-    const cat = socialFilter?.value || "";
-    const posts = cachedPosts.filter((p) => p.type === "social" && (!cat || p.category === cat));
-    socialList.innerHTML = posts.length ? posts.map((p) => renderPostCard(p)).join("") : `<p class="empty-state">No socials yet.</p>`;
+  // ── SHOPS DIRECTORY STATE ──
+  let cachedShops = [];
+  let shopsLoaded = false;
+  let activeShopCity = "";
+  let activeShopCat = "";
+ 
+  async function loadShopsDirectory() {
+    const { data: shops, error } = await supabase
+      .from("shops")
+      .select("*")
+      .order("created_at", { ascending: false });
+ 
+    if (error) {
+      console.error("loadShopsDirectory error:", error);
+      cachedShops = [];
+      return;
+    }
+ 
+    // Get product counts per seller
+    const sellerIds = (shops || []).map(s => s.seller_id);
+    let productCounts = {};
+    if (sellerIds.length) {
+      const { data: counts } = await supabase
+        .from("shop_products")
+        .select("seller_id")
+        .in("seller_id", sellerIds);
+      (counts || []).forEach(r => {
+        productCounts[r.seller_id] = (productCounts[r.seller_id] || 0) + 1;
+      });
+    }
+ 
+    cachedShops = (shops || []).map(s => ({
+      ...s,
+      productCount: productCounts[s.seller_id] || 0,
+      verified: verifiedSellerSet.has(s.seller_id),
+    }));
+ 
+    shopsLoaded = true;
   }
+ 
+  function renderShopsGrid() {
+    if (!socialList) return;
+ 
+    let list = cachedShops;
+ 
+    if (activeShopCity) {
+      list = list.filter(s => s.city === activeShopCity);
+    }
+    if (activeShopCat) {
+      list = list.filter(s => s.category === activeShopCat);
+    }
+ 
+    if (!list.length) {
+      socialList.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;padding:40px 16px;text-align:center;">
+          <div style="font-size:36px;margin-bottom:8px;">🏪</div>
+          <div style="font-weight:700;color:#0f172a;margin-bottom:4px;">No shops found</div>
+          <div style="font-size:13px;color:#64748b;">Try a different city or category</div>
+        </div>`;
+      return;
+    }
+ 
+    socialList.innerHTML = list.map(shop => {
+      const loc = [shop.city, shop.market].filter(Boolean).join(" • ");
+      return `
+        <div class="shop-dir-card"
+             data-action="open-shop"
+             data-sellerid="${escapeHtml(shop.seller_id)}">
+          ${shop.banner_url
+            ? `<img class="shop-dir-banner" src="${escapeHtml(shop.banner_url)}" alt="banner" loading="lazy" />`
+            : `<div class="shop-dir-banner-placeholder">🏪</div>`}
+          <div class="shop-dir-body">
+            ${shop.verified
+              ? `<span class="shop-dir-verified">✔ Verified</span>`
+              : ""}
+            ${shop.logo_url
+              ? `<img class="shop-dir-logo" src="${escapeHtml(shop.logo_url)}" alt="logo" loading="lazy" />`
+              : `<div class="shop-dir-logo-placeholder">🏬</div>`}
+            <div class="shop-dir-name">${escapeHtml(shop.shop_name || "Shop")}</div>
+            ${loc ? `<div class="shop-dir-location">📍 ${escapeHtml(loc)}</div>` : ""}
+            ${shop.category ? `<div class="shop-dir-cat">${escapeHtml(shop.category)}</div>` : ""}
+            <div class="shop-dir-products">${shop.productCount} product${shop.productCount !== 1 ? "s" : ""}</div>
+          </div>
+        </div>`;
+    }).join("");
+  }
+ 
+  async function renderSocials() {
+    if (!socialList) return;
+    socialList.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">Loading shops…</div>`;
+ 
+    if (!shopsLoaded) {
+      await loadVerifiedSellers();
+      await loadShopsDirectory();
+    }
+ 
+    renderShopsGrid();
+  }
+ 
+  // City filter chips
+  document.getElementById("cityFilterBar")?.addEventListener("click", (e) => {
+    const chip = e.target.closest(".shop-filter-chip");
+    if (!chip) return;
+    document.querySelectorAll("#cityFilterBar .shop-filter-chip").forEach(c => c.classList.remove("active"));
+    chip.classList.add("active");
+    activeShopCity = chip.dataset.city || "";
+    renderShopsGrid();
+  });
+ 
+  // Category filter chips
+  document.getElementById("categoryFilterBar")?.addEventListener("click", (e) => {
+    const chip = e.target.closest(".shop-filter-chip");
+    if (!chip) return;
+    document.querySelectorAll("#categoryFilterBar .shop-filter-chip").forEach(c => c.classList.remove("active"));
+    chip.classList.add("active");
+    activeShopCat = chip.dataset.cat || "";
+    renderShopsGrid();
+  });
+ 
+Also find the global click handler in app-supabase.js (the big document.addEventListener("click"...) 
+and add this case to handle shop card clicks. Search for:
+ 
+  document.addEventListener("click", async (ev) => {
+ 
+And somewhere inside that handler, add this new case (near where "visit-shop" is handled):
+ 
+    // Open shop from directory
+    if (action === "open-shop") {
+      const sellerId = el.dataset.sellerid;
+      if (sellerId) window.location.href = `shop.html?seller=${encodeURIComponent(sellerId)}`;
+      return;
+    }
+ 
+  
 
   // Feed renders mixed items (posts + reshares)
   function renderFeed(items) {
