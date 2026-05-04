@@ -89,17 +89,44 @@
         <div id="oppsList"></div>
       </section>
 
-      <!-- SOCIALS -->
+     
+      <!-- SHOPS DIRECTORY -->
       <section id="socials" class="section">
-        <h2>shops</h2>
-
-        <div class="section-filterbar">
-          <select id="socialFilter">
-            <option value="">All types</option>
-          </select>
+        <div class="shops-header">
+          <h2 style="margin:0;">🏪 Shops</h2>
+          <p style="font-size:13px;color:#64748b;margin:4px 0 0;">Discover shops across Northern Nigeria</p>
         </div>
-
-        <div id="socialList"></div>
+ 
+        <!-- Filters -->
+        <div class="shops-filter-wrap">
+          <div class="shops-filter-bar" id="cityFilterBar">
+            <button class="shop-filter-chip active" data-city="">All Cities</button>
+            <button class="shop-filter-chip" data-city="Kano">Kano</button>
+            <button class="shop-filter-chip" data-city="Kaduna">Kaduna</button>
+            <button class="shop-filter-chip" data-city="Sokoto">Sokoto</button>
+            <button class="shop-filter-chip" data-city="Maiduguri">Maiduguri</button>
+            <button class="shop-filter-chip" data-city="Katsina">Katsina</button>
+            <button class="shop-filter-chip" data-city="Zaria">Zaria</button>
+            <button class="shop-filter-chip" data-city="Bauchi">Bauchi</button>
+            <button class="shop-filter-chip" data-city="Minna">Minna</button>
+            <button class="shop-filter-chip" data-city="Other">Other</button>
+          </div>
+          <div class="shops-filter-bar" id="categoryFilterBar">
+            <button class="shop-filter-chip active" data-cat="">All Categories</button>
+            <button class="shop-filter-chip" data-cat="Phones & Gadgets">📱 Phones</button>
+            <button class="shop-filter-chip" data-cat="Fashion & Clothing">👗 Fashion</button>
+            <button class="shop-filter-chip" data-cat="Shoes & Bags">👟 Shoes</button>
+            <button class="shop-filter-chip" data-cat="Perfumes & Beauty">💄 Beauty</button>
+            <button class="shop-filter-chip" data-cat="Food & Groceries">🍱 Food</button>
+            <button class="shop-filter-chip" data-cat="Electronics">🔌 Electronics</button>
+            <button class="shop-filter-chip" data-cat="Fabric & Textiles">🧵 Fabric</button>
+            <button class="shop-filter-chip" data-cat="Furniture & Home">🪑 Furniture</button>
+            <button class="shop-filter-chip" data-cat="Services">🔧 Services</button>
+          </div>
+        </div>
+ 
+        <!-- Shop grid -->
+        <div id="socialList" class="shops-grid"></div>
       </section>
 
       <!-- PROFILE -->
