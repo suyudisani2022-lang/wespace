@@ -4,33 +4,141 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>weSPACE</title>
-  <link rel="stylesheet" href="css/style.css"?v=1/>
+  <link rel="stylesheet" href="css/style.css?v=3"/>
   <meta name="google-site-verification" content="adWu3JASJ6ZIb3LfNTgOJT6pwzPFzPuOzPgByk8Dqn4" />
   <meta name="theme-color" content="#eef3f8" />
-  <meta name="google-site-verification" content="adWu3JASJ6ZIb3LfNTgOJT6pwzPFzPuOzPgByk8Dqn4" />
   <link rel="icon" href="/favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<meta name="theme-color" content="#eef3f8">
-<!-- PWA -->
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#0a66c2">
-
-<!-- iOS (Apple) -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="weSPACE">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="weSPACE">
   <meta name="mobile-web-app-capable" content="yes">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="description" content="weSPACE — Discover and buy products from shops across Northern Nigeria.">
 
-<meta name="description" content="weSPACE is a social commerce platform to buy, sell, and grow. Create a digital shop, upload products, share your link, and discover opportunities — all in one place.">
+  <style>
+    /* ── FEED PRODUCT GRID ── */
+    .feed-header { padding: 10px 0 6px; display: flex; align-items: center; justify-content: space-between; }
+    .feed-brand { font-size: 20px; font-weight: 900; color: #2563eb; }
+    .feed-product-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 12px; padding-bottom: 80px;
+    }
+    @media (min-width: 480px) { .feed-product-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 768px) { .feed-product-grid { grid-template-columns: repeat(4, 1fr); } }
+    .feed-prod-card {
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 12px; overflow: hidden; cursor: pointer;
+      transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .feed-prod-card:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.10); transform: translateY(-2px); }
+    .feed-prod-img-wrap { position: relative; }
+    .feed-prod-img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #f1f5f9; }
+    .feed-prod-price-badge {
+      position: absolute; bottom: 8px; left: 8px;
+      background: #2563eb; color: #fff;
+      font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px;
+    }
+    .feed-prod-verified {
+      position: absolute; top: 8px; right: 8px;
+      background: #dcfce7; color: #15803d;
+      font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 999px;
+    }
+    .feed-prod-body { padding: 8px; }
+    .feed-prod-name { font-size: 12px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .feed-prod-shop { font-size: 11px; color: #64748b; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ── CATEGORIES MODAL ── */
+    .cat-modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5); z-index: 500;
+      align-items: flex-end; justify-content: center;
+    }
+    .cat-modal-overlay.show { display: flex; }
+    .cat-modal {
+      background: #fff; border-radius: 20px 20px 0 0;
+      width: 100%; max-width: 600px; padding: 20px 16px 40px;
+      animation: slideUp 0.25s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .cat-modal-title {
+      font-size: 16px; font-weight: 800; color: #0f172a;
+      text-align: center; margin-bottom: 16px;
+    }
+    .cat-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    }
+    .cat-item {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 6px; padding: 14px 8px; border-radius: 12px;
+      border: 2px solid #e5e7eb; cursor: pointer; background: #fff;
+      transition: all 0.15s; text-align: center;
+    }
+    .cat-item:hover { border-color: #2563eb; background: #eff6ff; }
+    .cat-item.active { border-color: #2563eb; background: #eff6ff; }
+    .cat-item-icon { font-size: 26px; }
+    .cat-item-label { font-size: 11px; font-weight: 700; color: #0f172a; line-height: 1.2; }
+    .cat-clear {
+      width: 100%; margin-top: 12px; padding: 12px;
+      background: #f1f5f9; border: none; border-radius: 10px;
+      font-size: 14px; font-weight: 700; color: #475569; cursor: pointer;
+    }
+
+    /* ── CATEGORIES ICON BUTTON ── */
+    .cat-icon-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 22px; padding: 4px; position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cat-active-dot {
+      position: absolute; top: 2px; right: 2px;
+      width: 8px; height: 8px; background: #2563eb;
+      border-radius: 50%; display: none;
+    }
+    .cat-active-dot.show { display: block; }
+
+    /* ── SHOPS DIRECTORY ── */
+    .shops-header { padding: 14px 0 10px; }
+    .shops-filter-wrap { margin-bottom: 14px; }
+    .shops-filter-bar {
+      display: flex; gap: 8px; overflow-x: auto;
+      padding-bottom: 6px; scrollbar-width: none; margin-bottom: 6px;
+    }
+    .shops-filter-bar::-webkit-scrollbar { display: none; }
+    .shop-filter-chip {
+      border: 1.5px solid #e5e7eb; background: #fff;
+      padding: 6px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; color: #475569;
+      cursor: pointer; white-space: nowrap; flex: none; transition: all 0.15s;
+    }
+    .shop-filter-chip.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+    .shops-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 12px; padding-bottom: 80px;
+    }
+    @media (min-width: 600px) { .shops-grid { grid-template-columns: repeat(3, 1fr); } }
+    .shop-dir-card {
+      background: #fff; border: 1px solid #e5e7eb; border-radius: 14px;
+      overflow: hidden; cursor: pointer; transition: box-shadow 0.15s, transform 0.15s; position: relative;
+    }
+    .shop-dir-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.10); transform: translateY(-2px); }
+    .shop-dir-banner { width: 100%; height: 70px; object-fit: cover; display: block; background: linear-gradient(135deg, #1e40af, #2563eb); }
+    .shop-dir-banner-placeholder { width: 100%; height: 70px; background: linear-gradient(135deg, #1e40af, #2563eb); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+    .shop-dir-body { padding: 10px 10px 12px; position: relative; }
+    .shop-dir-logo { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.12); margin-top: -22px; margin-bottom: 6px; display: block; background: #dbeafe; }
+    .shop-dir-logo-placeholder { width: 40px; height: 40px; border-radius: 10px; background: #dbeafe; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.12); margin-top: -22px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .shop-dir-name { font-size: 13px; font-weight: 800; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .shop-dir-location { font-size: 11px; color: #64748b; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .shop-dir-cat { display: inline-block; background: #eff6ff; color: #2563eb; font-size: 10px; padding: 2px 7px; border-radius: 999px; font-weight: 700; margin-top: 5px; }
+    .shop-dir-verified { position: absolute; top: 8px; right: 8px; background: #dcfce7; color: #15803d; font-size: 10px; padding: 2px 6px; border-radius: 999px; font-weight: 700; }
+    .shop-dir-products { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+  </style>
 </head>
 
 <body>
-<button id="visitorBackBtn" class="btn ghost" type="button" style="display:none;">
-  ← Back
-</button>
+<button id="visitorBackBtn" class="btn ghost" type="button" style="display:none;">← Back</button>
 
   <!-- Top Bar -->
   <header class="topbar" id="topbar">
@@ -38,10 +146,14 @@
 
     <button id="openSearch" class="search-pill" type="button" aria-label="Search" title="Search">
       <span class="search-icon">🔍</span>
-      <span class="search-text">Search people or products…</span>
+      <span class="search-text">Search products…</span>
     </button>
 
-    <button id="notifBtn" class="icon-btn" type="button" aria-label="Notifications" title="Notifications">🔔</button>
+    <!-- Categories button replaces notification bell -->
+    <button id="catBtn" class="cat-icon-btn" type="button" aria-label="Categories" title="Browse categories">
+      ▤
+      <span class="cat-active-dot" id="catActiveDot"></span>
+    </button>
   </header>
 
   <main class="page">
@@ -52,52 +164,42 @@
         <button type="button" class="tab-btn active" data-section="feed">Feed</button>
         <button type="button" class="tab-btn" data-section="market">Market</button>
         <button type="button" class="tab-btn" data-section="opportunities">Opportunities</button>
-        <button type="button" class="tab-btn" data-section="socials">shops</button>
+        <button type="button" class="tab-btn" data-section="socials">Shops</button>
         <button type="button" class="tab-btn" data-section="profile">Profile</button>
       </nav>
 
-      <!-- FEED -->
+      <!-- FEED — Product Discovery -->
       <section id="feed" class="section active-section">
-        <div class="feed-brand">weSPACE</div>
-        <!-- all posts render here (JS will inject cards) -->
-        <div id="feedList"></div>
+        <div class="feed-header">
+          <div class="feed-brand">weSPACE</div>
+        </div>
+        <div id="feedList" class="feed-product-grid"></div>
       </section>
 
       <!-- MARKET -->
       <section id="market" class="section">
         <h2>Market</h2>
-
         <div class="section-filterbar">
-          <select id="marketFilter">
-            <option value="">All categories</option>
-          </select>
+          <select id="marketFilter"><option value="">All categories</option></select>
         </div>
-
         <div id="marketList"></div>
       </section>
 
       <!-- OPPORTUNITIES -->
       <section id="opportunities" class="section">
         <h2>Opportunities</h2>
-
         <div class="section-filterbar">
-          <select id="oppsFilter">
-            <option value="">All types</option>
-          </select>
+          <select id="oppsFilter"><option value="">All types</option></select>
         </div>
-
         <div id="oppsList"></div>
       </section>
 
-     
       <!-- SHOPS DIRECTORY -->
       <section id="socials" class="section">
         <div class="shops-header">
           <h2 style="margin:0;">🏪 Shops</h2>
           <p style="font-size:13px;color:#64748b;margin:4px 0 0;">Discover shops across Northern Nigeria</p>
         </div>
- 
-        <!-- Filters -->
         <div class="shops-filter-wrap">
           <div class="shops-filter-bar" id="cityFilterBar">
             <button class="shop-filter-chip active" data-city="">All Cities</button>
@@ -124,96 +226,62 @@
             <button class="shop-filter-chip" data-cat="Services">🔧 Services</button>
           </div>
         </div>
- 
-        <!-- Shop grid -->
         <div id="socialList" class="shops-grid"></div>
       </section>
 
       <!-- PROFILE -->
       <section id="profile" class="section">
         <h2>Profile</h2>
-
         <div class="profile-card" id="profileBox">
-
-          <!-- Top identity -->
           <div class="profile-head">
             <img id="profileAvatar" class="profile-avatar" alt="Profile photo" loading="lazy"/>
             <div>
-              <!-- Change photo (self only) -->
- <label id="changePhotoWrap" class="btn ghost change-photo-btn" style="display:none">
-  📷 Change Photo
-  <input id="changePhotoInput" type="file" accept="image/*" hidden>
-</label>
-
-
+              <label id="changePhotoWrap" class="btn ghost change-photo-btn" style="display:none">
+                📷 Change Photo
+                <input id="changePhotoInput" type="file" accept="image/*" hidden>
+              </label>
               <div id="profileName" class="profile-name">Guest</div>
               <div id="profileMeta" class="profile-meta">Not registered</div>
               <div id="profileUsername" class="profile-username">@guest</div>
             </div>
-            
-
           </div>
-          
-
-
-          <!-- Actions -->
           <div class="profile-actions">
-  <button id="goRegisterBtn" class="btn primary" type="button">Create Account</button>
-  <button id="logoutBtn" class="btn ghost" type="button">Log out</button>
-  <button id="profileWaBtn" class="wa-contact-btn" style="display:none;" title="Contact on WhatsApp">
-  <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" loading="lazy">
-</button>
-
-  <!-- NEW: Visit Shop -->
-  <button id="visitShopBtn" class="btn ghost" type="button">🛒 Visit Shop</button>
-  <button id="verifySellerBtn" type="button">✅ Account Verification</button>
-  <button id="deleteAccountBtn" class="btn danger" type="button">Delete my account</button>
-</div>
-<button id="shareShopBtn" class="btn ghost" type="button">🔗 Share Shop Link</button>
-          <!-- Mini nav -->
+            <button id="goRegisterBtn" class="btn primary" type="button">Create Account</button>
+            <button id="logoutBtn" class="btn ghost" type="button">Log out</button>
+            <button id="profileWaBtn" class="wa-contact-btn" style="display:none;" title="Contact on WhatsApp">
+              <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" loading="lazy">
+            </button>
+            <button id="visitShopBtn" class="btn ghost" type="button">🛒 Visit Shop</button>
+            <button id="verifySellerBtn" type="button">✅ Account Verification</button>
+            <button id="deleteAccountBtn" class="btn danger" type="button">Delete my account</button>
+          </div>
+          <button id="shareShopBtn" class="btn ghost" type="button">🔗 Share Shop Link</button>
           <nav class="profile-tabs" aria-label="Profile tabs">
             <button type="button" class="profile-tab active" data-ptab="about">About</button>
             <button type="button" class="profile-tab" data-ptab="details">Details</button>
             <button type="button" class="profile-tab" data-ptab="posts">Posts</button>
             <button type="button" class="profile-tab" data-ptab="connections">Connections</button>
           </nav>
-
-          <!-- Tab panels -->
           <div class="profile-panels">
-
-            <!-- ABOUT -->
             <div class="profile-panel active" id="ptab-about">
               <div class="panel-title">Description</div>
-              <p class="panel-hint">Describe what you sell or who you are. This appears on your profile.</p>
-
+              <p class="panel-hint">Describe what you sell or who you are.</p>
               <label class="field">
                 <span>About you</span>
-                <textarea id="pAbout" rows="4" maxlength="300"
-                  placeholder="E.g. I sell perfumes and skincare. Delivery available."></textarea>
+                <textarea id="pAbout" rows="4" maxlength="300" placeholder="E.g. I sell perfumes and skincare. Delivery available."></textarea>
               </label>
-
               <div class="panel-actions">
                 <button class="btn primary" id="saveProfileBtn" type="button">Save</button>
               </div>
             </div>
-
-            <!-- DETAILS -->
             <div class="profile-panel" id="ptab-details">
               <div class="panel-title">Profile Details</div>
-             
-
               <label class="field">
                 <span>Skills (comma separated)</span>
-                <input id="pSkills" type="text" maxlength="120"
-                  placeholder="E.g. Photography, Hair styling, Graphic design" />
+                <input id="pSkills" type="text" maxlength="120" placeholder="E.g. Photography, Hair styling" />
               </label>
-
               <div class="grid-2">
-                <label class="field">
-                  <span>Birthday (day)</span>
-                  <select id="pBdayDay"></select>
-                </label>
-
+                <label class="field"><span>Birthday (day)</span><select id="pBdayDay"></select></label>
                 <label class="field">
                   <span>Birthday (month)</span>
                   <select id="pBdayMonth">
@@ -224,90 +292,74 @@
                   </select>
                 </label>
               </div>
-
               <label class="field">
                 <span>Level of Education</span>
                 <select id="pEdu">
                   <option value="">Select</option>
-                  <option>Secondary School</option>
-                  <option>ND / Diploma</option>
-                  <option>HND</option>
-                  <option>BSc / BA</option>
-                  <option>MSc</option>
-                  <option>PhD</option>
-                  <option>Other</option>
+                  <option>Secondary School</option><option>ND / Diploma</option><option>HND</option>
+                  <option>BSc / BA</option><option>MSc</option><option>PhD</option><option>Other</option>
                 </select>
               </label>
-
               <div class="panel-title" style="margin-top:12px;">Social handles</div>
-
               <div class="grid-2">
-                <label class="field">
-                  <span>Instagram</span>
-                  <input id="pIG" type="text" maxlength="60" placeholder="@username" />
-                </label>
-
-                <label class="field">
-                  <span>X (Twitter)</span>
-                  <input id="pX" type="text" maxlength="60" placeholder="@username" />
-                </label>
+                <label class="field"><span>Instagram</span><input id="pIG" type="text" maxlength="60" placeholder="@username" /></label>
+                <label class="field"><span>X (Twitter)</span><input id="pX" type="text" maxlength="60" placeholder="@username" /></label>
               </div>
-
               <div class="grid-2">
-                <label class="field">
-                  <span>WhatsApp</span>
-                  <input id="pWA" type="text" maxlength="40" placeholder="+234..." />
-                </label>
-
-                <label class="field">
-                  <span>TikTok</span>
-                  <input id="pTT" type="text" maxlength="60" placeholder="@username" />
-                </label>
+                <label class="field"><span>WhatsApp</span><input id="pWA" type="text" maxlength="40" placeholder="+234..." /></label>
+                <label class="field"><span>TikTok</span><input id="pTT" type="text" maxlength="60" placeholder="@username" /></label>
               </div>
-
               <div class="panel-actions">
                 <button class="btn primary" id="saveProfileBtn2" type="button">Save</button>
               </div>
             </div>
-
-            <!-- POSTS -->
             <div class="profile-panel" id="ptab-posts">
               <div class="panel-title">Posts</div>
-             
               <div id="myPostsWrap"></div>
             </div>
-
-            <!-- CONNECTIONS -->
             <div class="profile-panel" id="ptab-connections">
               <div class="panel-title">Connections</div>
               <p class="panel-hint">People you connected with.</p>
               <div id="myConnectionsWrap"></div>
             </div>
-
           </div>
         </div>
-
-      
-
       </section>
 
     </div>
   </main>
-  <!-- Visitor Profile Modal (READ-ONLY) -->
-<div class="modal-overlay" id="visitorProfileModal" aria-hidden="true">
-  <div class="modal visitor-modal">
-    <div class="modal-header">
-      <h3>Profile</h3>
-      <button type="button" class="modal-close" id="closeVisitorProfile" aria-label="Close">✕</button>
-    </div>
 
-    <div class="modal-body" id="visitorProfileBody">
-      <!-- filled by JS -->
-      <div class="empty-state">Loading profile…</div>
+  <!-- CATEGORIES MODAL -->
+  <div class="cat-modal-overlay" id="catModal" aria-hidden="true">
+    <div class="cat-modal">
+      <div class="cat-modal-title">Browse Categories</div>
+      <div class="cat-grid">
+        <button class="cat-item" data-cat="Phones & Gadgets" type="button"><span class="cat-item-icon">📱</span><span class="cat-item-label">Phones & Gadgets</span></button>
+        <button class="cat-item" data-cat="Fashion & Clothing" type="button"><span class="cat-item-icon">👗</span><span class="cat-item-label">Fashion</span></button>
+        <button class="cat-item" data-cat="Shoes & Bags" type="button"><span class="cat-item-icon">👟</span><span class="cat-item-label">Shoes & Bags</span></button>
+        <button class="cat-item" data-cat="Perfumes & Beauty" type="button"><span class="cat-item-icon">💄</span><span class="cat-item-label">Beauty</span></button>
+        <button class="cat-item" data-cat="Food & Groceries" type="button"><span class="cat-item-icon">🍱</span><span class="cat-item-label">Food</span></button>
+        <button class="cat-item" data-cat="Electronics" type="button"><span class="cat-item-icon">🔌</span><span class="cat-item-label">Electronics</span></button>
+        <button class="cat-item" data-cat="Fabric & Textiles" type="button"><span class="cat-item-icon">🧵</span><span class="cat-item-label">Fabric</span></button>
+        <button class="cat-item" data-cat="Furniture & Home" type="button"><span class="cat-item-icon">🪑</span><span class="cat-item-label">Furniture</span></button>
+        <button class="cat-item" data-cat="Services" type="button"><span class="cat-item-icon">🔧</span><span class="cat-item-label">Services</span></button>
+      </div>
+      <button class="cat-clear" id="catClear" type="button">✕ Clear filter — Show all products</button>
     </div>
   </div>
-</div>
 
+  <!-- Visitor Profile Modal -->
+  <div class="modal-overlay" id="visitorProfileModal" aria-hidden="true">
+    <div class="modal visitor-modal">
+      <div class="modal-header">
+        <h3>Profile</h3>
+        <button type="button" class="modal-close" id="closeVisitorProfile" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body" id="visitorProfileBody">
+        <div class="empty-state">Loading profile…</div>
+      </div>
+    </div>
+  </div>
 
   <!-- Create Post Modal -->
   <div class="modal-overlay" id="postModal" aria-hidden="true">
@@ -316,10 +368,7 @@
         <h3>Create Post</h3>
         <button type="button" class="modal-close" id="closePostModal" aria-label="Close">✕</button>
       </div>
-
-      <!-- ✅ Updated post form for types + categories + price + multi-images -->
       <form id="postForm" class="modal-body">
-
         <label class="field">
           <span>Post type</span>
           <select id="postType" required>
@@ -328,56 +377,45 @@
             <option value="social">Social</option>
           </select>
         </label>
-        
-
         <label class="field">
           <span>Category</span>
           <select id="postCategory" required></select>
         </label>
-
-       
         <label class="field">
           <span>Description</span>
           <textarea id="postDesc" placeholder="Write details..." rows="4" required maxlength="600"></textarea>
         </label>
-
-        <!-- Market price (optional) -->
         <label class="field" id="priceFieldWrap">
           <span>Price (optional)</span>
           <input id="postPrice" type="text" maxlength="20" placeholder="e.g. ₦25,000 or Negotiable">
         </label>
         <div id="applyLinkWrap" style="display:none;">
-  <label class="field">
-    <span>Apply link</span>
-    <input id="applyLink" type="url" placeholder="https://example.com/apply" />
-  </label>
-</div>
-
+          <label class="field">
+            <span>Apply link</span>
+            <input id="applyLink" type="url" placeholder="https://example.com/apply" />
+          </label>
+        </div>
         <label class="field">
           <span>Images (select 1+)</span>
           <input id="postImages" type="file" accept="image/*" multiple>
         </label>
-
         <label class="field">
-  <span>WhatsApp (optional)</span>
-  <input id="postWhatsApp" type="text" placeholder="e.g. 08012345678 or +2348012345678" />
- </label>
-
+          <span>WhatsApp (optional)</span>
+          <input id="postWhatsApp" type="text" placeholder="e.g. 08012345678" />
+        </label>
         <div class="image-preview-wrap">
           <div id="imagePreviewEmpty" class="image-preview-empty">No images selected</div>
           <div id="imagePreviewStrip" class="preview-strip"></div>
         </div>
-
         <div class="modal-actions">
           <button type="button" class="btn ghost" id="cancelPost">Cancel</button>
           <button type="submit" class="btn primary" id="submitPostBtn">Post</button>
         </div>
-
       </form>
     </div>
   </div>
 
-  <!-- Bottom Navigation (mobile only) -->
+  <!-- Bottom Navigation -->
   <nav class="bottom-nav" aria-label="Bottom Navigation">
     <button type="button" class="active">Feed</button>
     <button type="button">Market</button>
@@ -393,13 +431,11 @@
         <h3>Search</h3>
         <button type="button" class="modal-close" id="closeSearch" aria-label="Close">✕</button>
       </div>
-
       <div class="modal-body">
         <label class="field">
-          <span>Search people or products</span>
-          <input id="searchInput" type="text" placeholder="Type a name, campus, product..." />
+          <span>Search products or shops</span>
+          <input id="searchInput" type="text" placeholder="Type a product name, shop..." />
         </label>
-
         <div class="modal-actions">
           <button type="button" class="btn ghost" id="clearSearch">Clear</button>
           <button type="button" class="btn primary" id="applySearch">Search</button>
@@ -408,55 +444,35 @@
     </div>
   </div>
 
-  <!-- Notifications Panel -->
+  <!-- Notifications Panel (kept for future use, hidden from topbar) -->
   <div class="notif-panel" id="notifPanel" aria-hidden="true">
     <div class="notif-head">
       <strong>Notifications</strong>
       <button type="button" class="notif-close" id="closeNotif">✕</button>
     </div>
-    <div class="notif-item">✅ Welcome to weSPACE!</div>
-    <div class="notif-item">💡 Tip: Use Search to find products and people.</div>
-    <div class="notif-item">📌 Your profile badge will show on posts.</div>
   </div>
-  <!-- Image Lightbox Modal -->
+
+  <!-- Image Lightbox -->
   <div class="modal-overlay lightbox-overlay" id="imageLightbox" aria-hidden="true">
     <button type="button" class="lightbox-close" id="closeLightbox" aria-label="Close">✕</button>
     <div class="lightbox-content">
       <img id="lightboxImg" src="" alt="Full view">
     </div>
   </div>
- <script>
-  if ("serviceWorker" in navigator) {
-  window.addEventListener("load", async () => {
-    try {
-      const reg = await navigator.serviceWorker.register("/sw.js");
 
-      console.log("SW registered:", reg.scope);
-
-       document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") reg.update().catch(()=>{});
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", async () => {
+        try {
+          const reg = await navigator.serviceWorker.register("/sw.js");
+          document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") reg.update().catch(() => {});
+          });
+        } catch (err) { console.error("SW registration failed:", err); }
       });
-
-      
-
-    } catch (err) {
-      console.error("SW registration failed:", err);
     }
-  });
-}
-</script>
+  </script>
 
-  <script type="module" src="/js/app-supabase.js?v=1"></script>
-  
-
+  <script type="module" src="/js/app-supabase.js?v=3"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
