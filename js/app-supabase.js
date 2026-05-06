@@ -24,6 +24,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const sections = document.querySelectorAll(".section");
   const profileWaBtn = document.getElementById("profileWaBtn");
   const notifBtn = document.getElementById("notifBtn");
+  const catBtn = document.getElementById("catBtn");
+  const catModal = document.getElementById("catModal");
+  const catActiveDot = document.getElementById("catActiveDot");
 
   const FEED_LIST = document.getElementById("feedList");
   const marketList = document.getElementById("marketList");
@@ -136,14 +139,33 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const runSearch = () => {
     const q = (searchInput?.value || "").trim().toLowerCase();
-    const posts = cachedFeedItems || [];
-    const filtered = !q ? posts : posts.filter((item) => {
-      const p = item.post;
-      const hay = `${p.title} ${p.description} ${p.category} ${p.type} ${p.author_name} ${p.author_campus} ${p.author_department}`.toLowerCase();
+    showSection("feed");
+    if (!q) { renderFeedProductGrid(); closeSearchModal(); return; }
+    const filtered = cachedFeedProducts.filter(p => {
+      const hay = `${p.product_name} ${p.description} ${p.shop?.shop_name} ${p.shop?.category} ${p.shop?.city}`.toLowerCase();
       return hay.includes(q);
     });
-    showSection("feed");
-    renderFeed(filtered);
+    if (!FEED_LIST) { closeSearchModal(); return; }
+    if (!filtered.length) {
+      FEED_LIST.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#64748b;">No products found for "${escapeHtml(q)}"</div>`;
+    } else {
+      FEED_LIST.innerHTML = filtered.map(p => {
+        let imgUrl = "";
+        if (Array.isArray(p.image_paths) && p.image_paths.length) imgUrl = supabase.storage.from("shop-products").getPublicUrl(p.image_paths[0]).data.publicUrl;
+        else if (p.image_path) imgUrl = supabase.storage.from("shop-products").getPublicUrl(p.image_path).data.publicUrl;
+        return `<div class="feed-prod-card" data-action="open-product" data-productid="${escapeHtml(p.id)}">
+          <div class="feed-prod-img-wrap">
+            ${imgUrl ? `<img class="feed-prod-img" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(p.product_name)}" loading="lazy" />` : `<div class="feed-prod-img" style="display:flex;align-items:center;justify-content:center;font-size:32px;">🖼️</div>`}
+            ${p.price_text ? `<span class="feed-prod-price-badge">${escapeHtml(p.price_text)}</span>` : ""}
+            ${p.verified ? `<span class="feed-prod-verified">✔ Verified</span>` : ""}
+          </div>
+          <div class="feed-prod-body">
+            <div class="feed-prod-name">${escapeHtml(p.product_name || "")}</div>
+            <div class="feed-prod-shop">🏪 ${escapeHtml(p.shop?.shop_name || "Shop")}</div>
+          </div>
+        </div>`;
+      }).join("");
+    }
     closeSearchModal();
   };
 
@@ -151,7 +173,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   searchInput?.addEventListener("keydown", (ev) => { if (ev.key === "Enter") runSearch(); });
   clearSearch?.addEventListener("click", () => {
     if (searchInput) searchInput.value = "";
-    renderFeed(cachedFeedItems);
+    renderFeedProductGrid();
     closeSearchModal();
   });
 
@@ -361,7 +383,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!authReady) await initAuth();
     sections.forEach((s) => s.classList.remove("active-section"));
     document.getElementById(id)?.classList.add("active-section");
-    if (id === "feed") renderFeed(cachedFeedItems);
+    if (id === "feed") renderFeed();
     if (id === "market") renderMarket();
     if (id === "opportunities") renderOpps();
     if (id === "socials") renderSocials();
@@ -558,6 +580,121 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // =========================
+  // CATEGORIES MODAL
+  // =========================
+  let activeFeedCat = "";
+
+  function openCatModal() {
+    if (!catModal) return;
+    catModal.classList.add("show");
+    catModal.setAttribute("aria-hidden", "false");
+    // highlight active
+    catModal.querySelectorAll(".cat-item").forEach(item => {
+      item.classList.toggle("active", item.dataset.cat === activeFeedCat);
+    });
+  }
+  function closeCatModal() {
+    if (!catModal) return;
+    catModal.classList.remove("show");
+    catModal.setAttribute("aria-hidden", "true");
+  }
+
+  catBtn?.addEventListener("click", openCatModal);
+  catModal?.addEventListener("click", (e) => { if (e.target === catModal) closeCatModal(); });
+
+  catModal?.querySelectorAll(".cat-item").forEach(item => {
+    item.addEventListener("click", () => {
+      activeFeedCat = item.dataset.cat || "";
+      catActiveDot?.classList.toggle("show", !!activeFeedCat);
+      closeCatModal();
+      renderFeedProductGrid();
+      showSection("feed");
+    });
+  });
+
+  document.getElementById("catClear")?.addEventListener("click", () => {
+    activeFeedCat = "";
+    catActiveDot?.classList.remove("show");
+    closeCatModal();
+    renderFeedProductGrid();
+    showSection("feed");
+  });
+
+  // =========================
+  // FEED PRODUCT GRID
+  // =========================
+  let cachedFeedProducts = [];
+  let feedProductsLoaded = false;
+
+  async function loadFeedProducts() {
+    const { data: products, error } = await supabase
+      .from("shop_products").select("*")
+      .order("created_at", { ascending: false }).limit(120);
+    if (error) { console.error("loadFeedProducts error:", error); cachedFeedProducts = []; return; }
+
+    const sellerIds = [...new Set((products || []).map(p => p.seller_id))];
+    let shopMap = {};
+    if (sellerIds.length) {
+      const { data: shops } = await supabase.from("shops").select("*").in("seller_id", sellerIds);
+      (shops || []).forEach(s => { shopMap[s.seller_id] = s; });
+    }
+
+    cachedFeedProducts = (products || []).map(p => ({
+      ...p,
+      shop: shopMap[p.seller_id] || null,
+      verified: verifiedSellerSet.has(p.seller_id),
+    }));
+    feedProductsLoaded = true;
+  }
+
+  function renderFeedProductGrid() {
+    if (!FEED_LIST) return;
+    let list = activeFeedCat
+      ? cachedFeedProducts.filter(p => p.shop?.category === activeFeedCat)
+      : cachedFeedProducts;
+
+    // Shuffle for discovery
+    list = [...list].sort(() => Math.random() - 0.5);
+
+    if (!list.length) {
+      FEED_LIST.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 16px;color:#64748b;"><div style="font-size:40px;margin-bottom:10px;">🛍️</div><div style="font-weight:700;color:#0f172a;margin-bottom:4px;">${activeFeedCat ? "No products in this category yet" : "No products yet"}</div></div>`;
+      return;
+    }
+
+    FEED_LIST.innerHTML = list.map(p => {
+      let imgUrl = "";
+      if (Array.isArray(p.image_paths) && p.image_paths.length) {
+        imgUrl = supabase.storage.from("shop-products").getPublicUrl(p.image_paths[0]).data.publicUrl;
+      } else if (p.image_path) {
+        imgUrl = supabase.storage.from("shop-products").getPublicUrl(p.image_path).data.publicUrl;
+      }
+      const shopName = p.shop?.shop_name || "Shop";
+      return `
+        <div class="feed-prod-card" data-action="open-product" data-productid="${escapeHtml(p.id)}">
+          <div class="feed-prod-img-wrap">
+            ${imgUrl ? `<img class="feed-prod-img" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(p.product_name)}" loading="lazy" />` : `<div class="feed-prod-img" style="display:flex;align-items:center;justify-content:center;font-size:32px;">🖼️</div>`}
+            ${p.price_text ? `<span class="feed-prod-price-badge">${escapeHtml(p.price_text)}</span>` : ""}
+            ${p.verified ? `<span class="feed-prod-verified">✔ Verified</span>` : ""}
+          </div>
+          <div class="feed-prod-body">
+            <div class="feed-prod-name">${escapeHtml(p.product_name || "")}</div>
+            <div class="feed-prod-shop">🏪 ${escapeHtml(shopName)}</div>
+          </div>
+        </div>`;
+    }).join("");
+  }
+
+  async function renderFeed() {
+    if (!FEED_LIST) return;
+    if (!feedProductsLoaded) {
+      FEED_LIST.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#64748b;">Loading products…</div>`;
+      await loadVerifiedSellers();
+      await loadFeedProducts();
+    }
+    renderFeedProductGrid();
+  }
+
+  // =========================
   // SHOPS DIRECTORY
   // =========================
   let cachedShops = [];
@@ -633,18 +770,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   // =========================
-  // FEED
-  // =========================
-  function renderFeed(items) {
-    if (!FEED_LIST) return;
-    const list = Array.isArray(items) ? items : [];
-    FEED_LIST.innerHTML = list.length
-      ? list.map((it) => renderPostCard(it.post, {
-          feedMeta: it.kind === "reshare" ? { isReshare: true, reshared_by: it.reshared_by, reshared_by_name: it.reshared_by_name, reshared_at: it.reshared_at } : null
-        })).join("")
-      : `<p class="empty-state">No posts yet.</p>`;
-  }
-
   // =========================
   // PROFILE TABS
   // =========================
@@ -781,8 +906,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       myConnectionSet.add(targetId);
     }
     cachedPosts = await fetchPosts();
-    cachedFeedItems = await fetchFeedItemsMixed();
-    renderFeed(cachedFeedItems); renderMarket(); renderOpps(); renderSocials();
+    
+    renderFeed(); renderMarket(); renderOpps(); renderSocials();
     const activePtab = document.querySelector(".profile-tab.active")?.dataset?.ptab;
     if (activeSectionId === "profile" && profileView.mode === "self" && activePtab === "connections") await renderConnectionsList();
   }
@@ -1040,8 +1165,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (error) throw error;
       closePostModal();
       cachedPosts = await fetchPosts();
-      cachedFeedItems = await fetchFeedItemsMixed();
-      renderFeed(cachedFeedItems); renderMarket(); renderOpps(); renderSocials();
+      
+      renderFeed(); renderMarket(); renderOpps(); renderSocials();
       window.scrollTo({ top: 0, behavior: "smooth" });
       alert("Posted ✅");
     } catch (err) {
@@ -1070,8 +1195,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       alert("Reshared ✅");
     }
     cachedPosts = await fetchPosts();
-    cachedFeedItems = await fetchFeedItemsMixed();
-    renderFeed(cachedFeedItems); renderMarket(); renderOpps(); renderSocials();
+    
+    renderFeed(); renderMarket(); renderOpps(); renderSocials();
     const activePtab = document.querySelector(".profile-tab.active")?.dataset?.ptab;
     if (activeSectionId === "profile" && activePtab === "posts") await renderProfilePostsList();
   }
@@ -1136,6 +1261,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    // Open product detail page
+    const prodCard = e.target.closest("[data-action='open-product']");
+    if (prodCard) {
+      const productId = prodCard.dataset.productid;
+      if (productId) window.location.href = `product.html?id=${encodeURIComponent(productId)}`;
+      return;
+    }
+
     // Open shop from directory
     const shopCard = e.target.closest("[data-action='open-shop']");
     if (shopCard) {
@@ -1197,8 +1330,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       if (error) return alert(error.message || `Could not delete ${kind}.`);
       cachedPosts = await fetchPosts();
-      cachedFeedItems = await fetchFeedItemsMixed();
-      renderFeed(cachedFeedItems); renderMarket(); renderOpps(); renderSocials();
+      
+      renderFeed(); renderMarket(); renderOpps(); renderSocials();
       await renderProfilePostsList();
       alert("Deleted ✅");
       return;
@@ -1230,7 +1363,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           const { error } = await supabase.from("post_likes").insert({ post_id: postId, user_id: sessionUser.id });
           if (error) throw error;
         }
-        fetchPosts().then(posts => { cachedPosts = posts; return fetchFeedItemsMixed(); }).then(items => { cachedFeedItems = items; }).catch(() => {});
+        fetchPosts().then(posts => { cachedPosts = posts; }).catch(() => {});
       } catch (err) {
         likeBtn.classList.toggle("active", isLiked);
         if (countEl) countEl.textContent = `(${currentCount})`;
@@ -1259,8 +1392,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         const { error: cErr } = await supabase.from("post_comments").insert({ post_id: postId, user_id: sessionUser.id, text });
         if (cErr) return alert(cErr.message || "Could not comment.");
         input.value = "";
-        cachedPosts = await fetchPosts(); cachedFeedItems = await fetchFeedItemsMixed();
-        renderFeed(cachedFeedItems); renderMarket(); renderOpps(); renderSocials();
+        cachedPosts = await fetchPosts(); 
+        renderFeed(); renderMarket(); renderOpps(); renderSocials();
         alert("Comment added ✅");
       });
       return;
@@ -1370,13 +1503,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (tabButtons.length) setTabActive(tabButtons[0]);
       if (postType) { postType.value = "market"; setCategoryOptions("market"); setPriceVisibility("market"); }
       try {
-        cachedFeedItems = await fetchFeedItemsMixed();
-        renderFeed(cachedFeedItems);
         cachedPosts = await fetchPosts();
-      } catch (e) { console.warn("fetchFeedItemsMixed failed:", e); }
+        await loadVerifiedSellers();
+        await loadFeedProducts();
+        renderFeed();
+      } catch (e) { console.warn("boot feed load failed:", e); }
       queueMicrotask(async () => {
         try {
-          await Promise.allSettled([loadShopOwners(), loadVerifiedSellers(), ...(sessionUser ? [loadMyConnections()] : [])]);
+          await Promise.allSettled([loadShopOwners(), ...(sessionUser ? [loadMyConnections()] : [])]);
           renderProfileUI(); renderMarket(); renderOpps(); renderSocials();
           setupNotifRealtime();
           await refreshNotifBadge();
