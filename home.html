@@ -99,7 +99,84 @@
     }
     .cat-active-dot.show { display: block; }
 
-    /* ── SHOPS DIRECTORY ── */
+    /* ── PROFILE OWNER DASHBOARD ── */
+    .profile-guest-card {
+      text-align: center; padding: 60px 20px;
+      background: #fff; border-radius: 16px;
+      border: 1px solid #e5e7eb; margin-top: 16px;
+    }
+    .prof-header-card {
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 16px; padding: 20px 16px;
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 12px;
+    }
+    .prof-avatar-wrap { position: relative; flex: none; }
+    .prof-avatar {
+      width: 72px; height: 72px; border-radius: 50%;
+      object-fit: cover; border: 3px solid #e5e7eb;
+      background: #f1f5f9; display: block;
+    }
+    .prof-avatar-edit {
+      position: absolute; bottom: 0; right: 0;
+      background: #2563eb; color: #fff; border-radius: 50%;
+      width: 24px; height: 24px; font-size: 12px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .prof-identity { flex: 1; min-width: 0; }
+    .prof-name-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .prof-name { font-size: 18px; font-weight: 800; color: #0f172a; }
+    .prof-verified { background: #dcfce7; color: #15803d; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 700; }
+    .prof-username { font-size: 13px; color: #64748b; margin-top: 3px; }
+
+    .prof-actions-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 10px; margin-bottom: 12px;
+    }
+    .prof-action-card {
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 14px; padding: 16px 12px;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 8px; cursor: pointer; transition: all 0.15s;
+    }
+    .prof-action-card:hover { border-color: #2563eb; background: #eff6ff; box-shadow: 0 4px 12px rgba(37,99,235,0.1); }
+    .prof-action-icon { font-size: 26px; }
+    .prof-action-label { font-size: 12px; font-weight: 700; color: #0f172a; text-align: center; }
+
+    .prof-section-card {
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 14px; padding: 16px;
+      margin-bottom: 12px;
+    }
+    .prof-section-title {
+      font-size: 14px; font-weight: 800; color: #0f172a;
+      margin-bottom: 14px;
+    }
+    .prof-field { margin-bottom: 12px; }
+    .prof-field label { display: block; font-size: 12px; font-weight: 700; color: #64748b; margin-bottom: 5px; }
+    .prof-field input, .prof-field textarea, .prof-field select {
+      width: 100%; padding: 11px 12px;
+      border: 1px solid #e5e7eb; border-radius: 10px;
+      font-size: 14px; background: #f8fafc; outline: none;
+      box-sizing: border-box;
+    }
+    .prof-field input:focus, .prof-field textarea:focus { border-color: #2563eb; background: #fff; }
+
+    .prof-btn {
+      width: 100%; padding: 13px; border-radius: 10px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      border: none; margin-bottom: 8px;
+    }
+    .prof-btn-primary { background: #2563eb; color: #fff; }
+    .prof-btn-primary:hover { background: #1e40af; }
+    .prof-btn-ghost { background: #f1f5f9; color: #0f172a; }
+    .prof-btn-ghost:hover { background: #e2e8f0; }
+    .prof-btn-danger { background: #fee2e2; color: #dc2626; }
+    .prof-btn-danger:hover { background: #fecaca; }
+
+    .prof-danger-zone { border-color: #fecaca; }
+    .prof-danger-zone .prof-section-title { color: #dc2626; }
     .shops-header { padding: 14px 0 10px; }
     .shops-filter-wrap { margin-bottom: 14px; }
     .shops-filter-bar {
@@ -229,100 +306,109 @@
         <div id="socialList" class="shops-grid"></div>
       </section>
 
-      <!-- PROFILE -->
+      <!-- PROFILE — Owner Dashboard -->
       <section id="profile" class="section">
-        <h2>Profile</h2>
-        <div class="profile-card" id="profileBox">
-          <div class="profile-head">
-            <img id="profileAvatar" class="profile-avatar" alt="Profile photo" loading="lazy"/>
-            <div>
-              <label id="changePhotoWrap" class="btn ghost change-photo-btn" style="display:none">
-                📷 Change Photo
+
+        <!-- Guest state -->
+        <div id="profileGuest" style="display:none;">
+          <div class="profile-guest-card">
+            <div style="font-size:48px;margin-bottom:12px;">👤</div>
+            <div style="font-size:18px;font-weight:800;color:#0f172a;margin-bottom:6px;">Welcome to weSPACE</div>
+            <div style="font-size:14px;color:#64748b;margin-bottom:20px;">Create an account to open your shop and start selling across Northern Nigeria.</div>
+            <button id="goRegisterBtn" class="prof-btn prof-btn-primary" type="button">Create Account</button>
+          </div>
+        </div>
+
+        <!-- Logged in state -->
+        <div id="profileOwner" style="display:none;">
+
+          <!-- Profile header card -->
+          <div class="prof-header-card">
+            <div class="prof-avatar-wrap">
+              <img id="profileAvatar" class="prof-avatar" alt="Profile photo" loading="lazy" />
+              <label class="prof-avatar-edit" id="changePhotoWrap" title="Change photo">
+                📷
                 <input id="changePhotoInput" type="file" accept="image/*" hidden>
               </label>
-              <div id="profileName" class="profile-name">Guest</div>
-              <div id="profileMeta" class="profile-meta">Not registered</div>
-              <div id="profileUsername" class="profile-username">@guest</div>
+            </div>
+            <div class="prof-identity">
+              <div class="prof-name-row">
+                <span id="profileName" class="prof-name">Your Name</span>
+                <span id="profileVerifiedBadge" class="prof-verified" style="display:none;">✔ Verified</span>
+              </div>
+              <div id="profileUsername" class="prof-username">@username</div>
             </div>
           </div>
-          <div class="profile-actions">
-            <button id="goRegisterBtn" class="btn primary" type="button">Create Account</button>
-            <button id="logoutBtn" class="btn ghost" type="button">Log out</button>
-            <button id="profileWaBtn" class="wa-contact-btn" style="display:none;" title="Contact on WhatsApp">
-              <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp" loading="lazy">
+
+          <!-- Quick action buttons -->
+          <div class="prof-actions-grid">
+            <button id="visitShopBtn" class="prof-action-card" type="button">
+              <span class="prof-action-icon">🛒</span>
+              <span class="prof-action-label">Manage Shop</span>
             </button>
-            <button id="visitShopBtn" class="btn ghost" type="button">🛒 Visit Shop</button>
-            <button id="verifySellerBtn" type="button">✅ Account Verification</button>
-            <button id="deleteAccountBtn" class="btn danger" type="button">Delete my account</button>
+            <button id="shareShopBtn" class="prof-action-card" type="button">
+              <span class="prof-action-icon">🔗</span>
+              <span class="prof-action-label">Share Shop</span>
+            </button>
+            <button id="verifySellerBtn" class="prof-action-card" type="button">
+              <span class="prof-action-icon">✅</span>
+              <span class="prof-action-label">Get Verified</span>
+            </button>
+            <button id="contactUsBtn" class="prof-action-card" type="button">
+              <span class="prof-action-icon">💬</span>
+              <span class="prof-action-label">Contact Us</span>
+            </button>
           </div>
-          <button id="shareShopBtn" class="btn ghost" type="button">🔗 Share Shop Link</button>
-          <nav class="profile-tabs" aria-label="Profile tabs">
-            <button type="button" class="profile-tab active" data-ptab="about">About</button>
-            <button type="button" class="profile-tab" data-ptab="details">Details</button>
-            <button type="button" class="profile-tab" data-ptab="posts">Posts</button>
-            <button type="button" class="profile-tab" data-ptab="connections">Connections</button>
-          </nav>
-          <div class="profile-panels">
-            <div class="profile-panel active" id="ptab-about">
-              <div class="panel-title">Description</div>
-              <p class="panel-hint">Describe what you sell or who you are.</p>
-              <label class="field">
-                <span>About you</span>
-                <textarea id="pAbout" rows="4" maxlength="300" placeholder="E.g. I sell perfumes and skincare. Delivery available."></textarea>
-              </label>
-              <div class="panel-actions">
-                <button class="btn primary" id="saveProfileBtn" type="button">Save</button>
-              </div>
+
+          <!-- Edit profile section -->
+          <div class="prof-section-card">
+            <div class="prof-section-title">✏️ Edit Profile</div>
+
+            <div class="prof-field">
+              <label>About / Description</label>
+              <textarea id="pAbout" rows="3" maxlength="300" placeholder="E.g. I sell perfumes and skincare. Delivery available in Kano."></textarea>
             </div>
-            <div class="profile-panel" id="ptab-details">
-              <div class="panel-title">Profile Details</div>
-              <label class="field">
-                <span>Skills (comma separated)</span>
-                <input id="pSkills" type="text" maxlength="120" placeholder="E.g. Photography, Hair styling" />
-              </label>
-              <div class="grid-2">
-                <label class="field"><span>Birthday (day)</span><select id="pBdayDay"></select></label>
-                <label class="field">
-                  <span>Birthday (month)</span>
-                  <select id="pBdayMonth">
-                    <option value="">Month</option>
-                    <option>January</option><option>February</option><option>March</option><option>April</option>
-                    <option>May</option><option>June</option><option>July</option><option>August</option>
-                    <option>September</option><option>October</option><option>November</option><option>December</option>
-                  </select>
-                </label>
-              </div>
-              <label class="field">
-                <span>Level of Education</span>
-                <select id="pEdu">
-                  <option value="">Select</option>
-                  <option>Secondary School</option><option>ND / Diploma</option><option>HND</option>
-                  <option>BSc / BA</option><option>MSc</option><option>PhD</option><option>Other</option>
-                </select>
-              </label>
-              <div class="panel-title" style="margin-top:12px;">Social handles</div>
-              <div class="grid-2">
-                <label class="field"><span>Instagram</span><input id="pIG" type="text" maxlength="60" placeholder="@username" /></label>
-                <label class="field"><span>X (Twitter)</span><input id="pX" type="text" maxlength="60" placeholder="@username" /></label>
-              </div>
-              <div class="grid-2">
-                <label class="field"><span>WhatsApp</span><input id="pWA" type="text" maxlength="40" placeholder="+234..." /></label>
-                <label class="field"><span>TikTok</span><input id="pTT" type="text" maxlength="60" placeholder="@username" /></label>
-              </div>
-              <div class="panel-actions">
-                <button class="btn primary" id="saveProfileBtn2" type="button">Save</button>
-              </div>
+            <div class="prof-field">
+              <label>WhatsApp Number</label>
+              <input id="pWA" type="text" maxlength="40" placeholder="+2348012345678" />
             </div>
-            <div class="profile-panel" id="ptab-posts">
-              <div class="panel-title">Posts</div>
-              <div id="myPostsWrap"></div>
+            <div class="prof-field">
+              <label>Instagram</label>
+              <input id="pIG" type="text" maxlength="60" placeholder="@username" />
             </div>
-            <div class="profile-panel" id="ptab-connections">
-              <div class="panel-title">Connections</div>
-              <p class="panel-hint">People you connected with.</p>
-              <div id="myConnectionsWrap"></div>
+            <div class="prof-field">
+              <label>X (Twitter)</label>
+              <input id="pX" type="text" maxlength="60" placeholder="@username" />
             </div>
+            <div class="prof-field">
+              <label>TikTok</label>
+              <input id="pTT" type="text" maxlength="60" placeholder="@username" />
+            </div>
+            <button id="saveProfileBtn" class="prof-btn prof-btn-primary" type="button">💾 Save Changes</button>
+
+            <!-- hidden fields kept for JS compatibility -->
+            <input id="pSkills" type="hidden" />
+            <input id="pBdayDay" type="hidden" />
+            <input id="pBdayMonth" type="hidden" />
+            <select id="pEdu" hidden></select>
+            <button id="saveProfileBtn2" type="button" hidden></button>
           </div>
+
+          <!-- Danger zone -->
+          <div class="prof-section-card prof-danger-zone">
+            <div class="prof-section-title">⚠️ Account</div>
+            <button id="logoutBtn" class="prof-btn prof-btn-ghost" type="button">🚪 Log Out</button>
+            <button id="deleteAccountBtn" class="prof-btn prof-btn-danger" type="button">🗑️ Delete My Account</button>
+          </div>
+
+          <!-- hidden legacy elements for JS compatibility -->
+          <div style="display:none;">
+            <div id="profileMeta"></div>
+            <button id="profileWaBtn"></button>
+            <div id="myPostsWrap"></div>
+            <div id="myConnectionsWrap"></div>
+          </div>
+
         </div>
       </section>
 
