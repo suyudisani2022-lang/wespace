@@ -106,13 +106,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     verifiedSellerSet = new Set((data || []).map(r => r.user_id));
   }
 
-  // Contact Us button
-  document.getElementById("contactUsBtn")?.addEventListener("click", () => {
-    const msg = encodeURIComponent("Hello weSPACE team, I need help with...");
-    window.open(`https://wa.me/2348143281793?text=${msg}`, "_blank");
-  });
-
   verifySellerBtn?.addEventListener("click", () => {
+    if (profileView.mode === "visitor") return;
     window.location.href = "/verify.html";
   });
 
@@ -944,33 +939,88 @@ document.addEventListener("DOMContentLoaded", async () => {
   // PROFILE UI
   // =========================
   function renderProfileUI() {
-    const guestEl = document.getElementById("profileGuest");
-    const ownerEl = document.getElementById("profileOwner");
-
-    if (!sessionUser || !myProfile) {
-      if (guestEl) guestEl.style.display = "block";
-      if (ownerEl) ownerEl.style.display = "none";
+    if (profileView.mode === "visitor" && profileView.userId) {
+      setDisabledProfileInputs(true);
+      if (goRegisterBtn) goRegisterBtn.style.display = "none";
+      if (logoutBtn) logoutBtn.style.display = "none";
+      if (deleteAccountBtn) deleteAccountBtn.style.display = "none";
+      if (profileWaBtn) profileWaBtn.style.display = "";
+      if (changePhotoWrap) changePhotoWrap.style.display = "none";
+      if (visitShopBtn) visitShopBtn.style.display = "";
+      if (shareShopBtn) shareShopBtn.style.display = "";
+      (async () => {
+        const u = await fetchProfileById(profileView.userId);
+        if (!u) {
+          if (profileName) profileName.textContent = "User not found";
+          if (profileMeta) profileMeta.textContent = "Maybe deleted";
+          if (profileUsername) profileUsername.textContent = "@unknown";
+          profileAvatar?.removeAttribute("src");
+          return;
+        }
+        if (profileWaBtn) {
+          if (u?.wa) {
+            profileWaBtn.style.display = "";
+            profileWaBtn.onclick = () => {
+              const phone = formatWaNumber(u.wa);
+              if (!phone) { alert("No WhatsApp number available."); return; }
+              window.open(`https://wa.me/${phone}?text=${encodeURIComponent("Hello, I viewed your profile on weSPACE.")}`, "_blank");
+            };
+          } else { profileWaBtn.style.display = "none"; }
+        }
+        if (profileName) profileName.textContent = u.name || "User";
+        if (profileMeta) profileMeta.textContent = `${u.campus || ""} • ${u.department || ""}`;
+        if (profileUsername) profileUsername.textContent = `@${u.username || "user"}`;
+        if (profileAvatar) {
+          if (u.photo_url) { profileAvatar.src = u.photo_url; profileAvatar.removeAttribute("data-no-photo"); }
+          else { profileAvatar.removeAttribute("src"); profileAvatar.setAttribute("data-no-photo", "1"); }
+        }
+        if (pAbout) pAbout.value = u.about || "";
+        if (pSkills) pSkills.value = u.skills || "";
+        if (pBdayDay) pBdayDay.value = u.bday_day || "";
+        if (pBdayMonth) pBdayMonth.value = u.bday_month || "";
+        if (pEdu) pEdu.value = u.education || "";
+        if (pIG) pIG.value = u.ig || "";
+        if (pX) pX.value = u.x || "";
+        if (pWA) pWA.value = u.wa || "";
+        if (pTT) pTT.value = u.tt || "";
+      })();
       return;
     }
-
-    if (guestEl) guestEl.style.display = "none";
-    if (ownerEl) ownerEl.style.display = "block";
-
+    if (!sessionUser || !myProfile) {
+      if (profileName) profileName.textContent = "Guest";
+      if (profileMeta) profileMeta.textContent = "Not registered";
+      if (profileUsername) profileUsername.textContent = "@guest";
+      profileAvatar?.removeAttribute("src");
+      setDisabledProfileInputs(true);
+      if (goRegisterBtn) goRegisterBtn.style.display = "";
+      if (logoutBtn) logoutBtn.style.display = "none";
+      if (deleteAccountBtn) deleteAccountBtn.style.display = "none";
+      if (visitShopBtn) visitShopBtn.style.display = "none";
+      if (shareShopBtn) shareShopBtn.style.display = "none";
+      return;
+    }
+    if (visitShopBtn) visitShopBtn.style.display = "";
+    if (profileWaBtn) profileWaBtn.style.display = "none";
+    setDisabledProfileInputs(false);
+    if (profileName) profileName.textContent = myProfile.name || "User";
+    if (profileMeta) profileMeta.textContent = `${myProfile.campus || ""} • ${myProfile.department || ""}`;
+    if (profileUsername) profileUsername.textContent = `@${myProfile.username || "user"}`;
     if (profileAvatar) {
       if (myProfile.photo_url) { profileAvatar.src = myProfile.photo_url; profileAvatar.removeAttribute("data-no-photo"); }
       else { profileAvatar.removeAttribute("src"); profileAvatar.setAttribute("data-no-photo", "1"); }
     }
-    if (profileName) profileName.textContent = myProfile.name || "Your Name";
-    if (profileUsername) profileUsername.textContent = `@${myProfile.username || "username"}`;
-
-    const verBadge = document.getElementById("profileVerifiedBadge");
-    if (verBadge) verBadge.style.display = verifiedSellerSet.has(sessionUser.id) ? "inline-flex" : "none";
-
     if (pAbout) pAbout.value = myProfile.about || "";
-    if (pWA) pWA.value = myProfile.wa || "";
+    if (pSkills) pSkills.value = myProfile.skills || "";
+    if (pBdayDay) pBdayDay.value = myProfile.bday_day || "";
+    if (pBdayMonth) pBdayMonth.value = myProfile.bday_month || "";
+    if (pEdu) pEdu.value = myProfile.education || "";
     if (pIG) pIG.value = myProfile.ig || "";
     if (pX) pX.value = myProfile.x || "";
+    if (pWA) pWA.value = myProfile.wa || "";
     if (pTT) pTT.value = myProfile.tt || "";
+    if (goRegisterBtn) goRegisterBtn.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "";
+    if (deleteAccountBtn) deleteAccountBtn.style.display = "";
   }
 
   async function loadMyProfile() {
