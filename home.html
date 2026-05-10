@@ -99,7 +99,74 @@
     }
     .cat-active-dot.show { display: block; }
 
-    /* ── SHOPS DIRECTORY ── */
+    /* ── FLASH SALES ── */
+    .flash-header { padding: 12px 0 10px; }
+    .flash-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .flash-icon { font-size: 22px; }
+    .flash-title { font-size: 18px; font-weight: 900; color: #0f172a; }
+    .flash-badge { background: #ef4444; color: #fff; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 999px; }
+    .flash-subtitle { font-size: 12px; color: #64748b; margin: 0 0 10px; }
+    .flash-filter-bar { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; margin-bottom: 12px; }
+    .flash-filter-bar::-webkit-scrollbar { display: none; }
+    .flash-chip { border: 1.5px solid #e5e7eb; background: #fff; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; white-space: nowrap; flex: none; }
+    .flash-chip.active { background: #ef4444; color: #fff; border-color: #ef4444; }
+    .flash-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding-bottom: 80px; }
+    @media (min-width: 480px) { .flash-grid { grid-template-columns: repeat(3, 1fr); } }
+    .flash-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; cursor: pointer; transition: box-shadow 0.15s; }
+    .flash-card:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.10); }
+    .flash-img-wrap { position: relative; }
+    .flash-img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #f1f5f9; }
+    .flash-discount-badge { position: absolute; top: 8px; left: 8px; background: #ef4444; color: #fff; font-size: 11px; font-weight: 800; padding: 3px 7px; border-radius: 999px; }
+    .flash-timer { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.6); color: #fff; font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 999px; }
+    .flash-body { padding: 8px; }
+    .flash-name { font-size: 12px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .flash-prices { display: flex; align-items: center; gap: 6px; margin-top: 4px; flex-wrap: wrap; }
+    .flash-sale-price { font-size: 14px; font-weight: 900; color: #ef4444; }
+    .flash-orig-price { font-size: 11px; color: #94a3b8; text-decoration: line-through; }
+    .flash-shop { font-size: 10px; color: #64748b; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ── COMMUNITY ── */
+    .comm-header { padding: 12px 0 10px; }
+    .comm-title-row { margin-bottom: 4px; }
+    .comm-title { font-size: 18px; font-weight: 900; color: #0f172a; }
+    .comm-subtitle { font-size: 12px; color: #64748b; margin: 0 0 10px; }
+    .comm-list { padding-bottom: 80px; }
+    .comm-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px; margin-bottom: 10px; }
+    .comm-card-type { display: inline-block; background: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; margin-bottom: 8px; }
+    .comm-card-desc { font-size: 14px; color: #0f172a; line-height: 1.5; }
+    .comm-card-img { width: 100%; border-radius: 10px; margin-top: 10px; object-fit: cover; max-height: 200px; display: block; }
+    .comm-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+    .comm-card-author { font-size: 12px; color: #64748b; }
+    .comm-card-wa { background: #25d366; color: #fff; border: none; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; }
+
+    /* ── POST MODAL REDESIGN ── */
+    .post-modal-new { max-height: 90vh; overflow-y: auto; }
+    .post-type-pills { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+    .post-type-pill { padding: 8px 16px; border-radius: 999px; border: 2px solid #e5e7eb; background: #fff; font-size: 13px; font-weight: 700; color: #475569; cursor: pointer; transition: all 0.15s; }
+    .post-type-pill.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+    .post-img-upload { margin-bottom: 4px; }
+    .post-img-placeholder { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 28px 16px; text-align: center; cursor: pointer; background: #f8fafc; transition: border-color 0.15s; }
+    .post-img-placeholder:hover { border-color: #2563eb; }
+    .post-img-preview-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .post-img-preview-strip img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e7eb; }
+
+    /* ── SHOP PROFILE BUTTON ON SHOP CARDS ── */
+    .shop-dir-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+    .shop-visit-profile-btn { background: #eff6ff; color: #2563eb; border: none; font-size: 10px; font-weight: 700; padding: 4px 8px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+
+    /* ── VISITOR PROFILE MODAL ── */
+    .visitor-profile-card { padding: 16px; }
+    .visitor-prof-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .visitor-prof-avatar { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: #f1f5f9; border: 2px solid #e5e7eb; }
+    .visitor-prof-name { font-size: 16px; font-weight: 800; color: #0f172a; }
+    .visitor-prof-username { font-size: 12px; color: #64748b; }
+    .visitor-prof-about { font-size: 13px; color: #475569; line-height: 1.5; margin-bottom: 12px; }
+    .visitor-prof-socials { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .visitor-social-link { background: #f1f5f9; color: #0f172a; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 8px; text-decoration: none; display: flex; align-items: center; gap: 4px; }
+    .visitor-wa-btn { background: #25d366; color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+    /* ── REMOVE CONNECTION BUTTON ── */
+    .connect-btn { display: none !important; }
     .shops-header { padding: 14px 0 10px; }
     .shops-filter-wrap { margin-bottom: 14px; }
     .shops-filter-bar {
@@ -176,22 +243,41 @@
         <div id="feedList" class="feed-product-grid"></div>
       </section>
 
-      <!-- MARKET -->
+      <!-- FLASH SALES -->
       <section id="market" class="section">
-        <h2>Market</h2>
-        <div class="section-filterbar">
-          <select id="marketFilter"><option value="">All categories</option></select>
+        <div class="flash-header">
+          <div class="flash-title-row">
+            <span class="flash-icon">⚡</span>
+            <span class="flash-title">Flash Sales</span>
+            <span class="flash-badge">Limited Deals</span>
+          </div>
+          <p class="flash-subtitle">Discounted products from shops across Northern Nigeria</p>
         </div>
-        <div id="marketList"></div>
+        <div class="flash-filter-bar" id="flashFilterBar">
+          <button class="flash-chip active" data-cat="">All</button>
+          <button class="flash-chip" data-cat="Phones & Gadgets">📱 Phones</button>
+          <button class="flash-chip" data-cat="Fashion & Clothing">👗 Fashion</button>
+          <button class="flash-chip" data-cat="Shoes & Bags">👟 Shoes</button>
+          <button class="flash-chip" data-cat="Perfumes & Beauty">💄 Beauty</button>
+          <button class="flash-chip" data-cat="Food & Groceries">🍱 Food</button>
+          <button class="flash-chip" data-cat="Electronics">🔌 Electronics</button>
+          <button class="flash-chip" data-cat="Fabric & Textiles">🧵 Fabric</button>
+        </div>
+        <div id="marketList" class="flash-grid"></div>
+        <!-- hidden for JS compat -->
+        <select id="marketFilter" hidden><option value="">All</option></select>
+        <select id="oppsFilter" hidden><option value="">All</option></select>
       </section>
 
-      <!-- OPPORTUNITIES -->
+      <!-- OPPORTUNITIES — repurposed as Community Posts feed -->
       <section id="opportunities" class="section">
-        <h2>Opportunities</h2>
-        <div class="section-filterbar">
-          <select id="oppsFilter"><option value="">All types</option></select>
+        <div class="comm-header">
+          <div class="comm-title-row">
+            <span class="comm-title">📢 Community</span>
+          </div>
+          <p class="comm-subtitle">Posts, announcements and opportunities from the community</p>
         </div>
-        <div id="oppsList"></div>
+        <div id="oppsList" class="comm-list"></div>
       </section>
 
       <!-- SHOPS DIRECTORY -->
@@ -361,52 +447,98 @@
     </div>
   </div>
 
-  <!-- Create Post Modal -->
+  <!-- Create Post Modal — Post to Feed -->
   <div class="modal-overlay" id="postModal" aria-hidden="true">
-    <div class="modal">
+    <div class="modal post-modal-new">
       <div class="modal-header">
-        <h3>Create Post</h3>
+        <h3>📸 Post to Feed</h3>
         <button type="button" class="modal-close" id="closePostModal" aria-label="Close">✕</button>
       </div>
       <form id="postForm" class="modal-body">
-        <label class="field">
-          <span>Post type</span>
-          <select id="postType" required>
-            <option value="market">Market</option>
-            <option value="opportunity">Opportunity</option>
-            <option value="social">Social</option>
-          </select>
+        <!-- Post type selector — pill style -->
+        <div class="post-type-pills">
+          <button type="button" class="post-type-pill active" data-type="feed">📸 Feed Post</button>
+          <button type="button" class="post-type-pill" data-type="flash">⚡ Flash Sale</button>
+          <button type="button" class="post-type-pill" data-type="community">📢 Community</button>
+        </div>
+        <input type="hidden" id="postType" value="feed" />
+        <input type="hidden" id="postCategory" value="" />
+
+        <!-- Image upload — prominent -->
+        <div class="post-img-upload" id="postImgUpload">
+          <input id="postImages" type="file" accept="image/*" multiple hidden />
+          <div id="imagePreviewEmpty" class="post-img-placeholder" onclick="document.getElementById('postImages').click()">
+            <div style="font-size:36px;">📷</div>
+            <div style="font-size:13px;font-weight:700;color:#2563eb;margin-top:6px;">Tap to add photos</div>
+            <div style="font-size:11px;color:#94a3b8;margin-top:3px;">Up to 5 images</div>
+          </div>
+          <div id="imagePreviewStrip" class="post-img-preview-strip"></div>
+        </div>
+
+        <!-- Caption -->
+        <label class="field" style="margin-top:10px;">
+          <span>Caption</span>
+          <textarea id="postDesc" placeholder="Write something about this post…" rows="3" maxlength="600"></textarea>
         </label>
-        <label class="field">
-          <span>Category</span>
-          <select id="postCategory" required></select>
-        </label>
-        <label class="field">
-          <span>Description</span>
-          <textarea id="postDesc" placeholder="Write details..." rows="4" required maxlength="600"></textarea>
-        </label>
-        <label class="field" id="priceFieldWrap">
-          <span>Price (optional)</span>
-          <input id="postPrice" type="text" maxlength="20" placeholder="e.g. ₦25,000 or Negotiable">
-        </label>
-        <div id="applyLinkWrap" style="display:none;">
+
+        <!-- Flash Sale fields (shown only for flash type) -->
+        <div id="flashSaleFields" style="display:none;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <label class="field">
+              <span>Original Price</span>
+              <input id="postOriginalPrice" type="text" maxlength="20" placeholder="e.g. ₦25,000" />
+            </label>
+            <label class="field">
+              <span>Sale Price ⚡</span>
+              <input id="postPrice" type="text" maxlength="20" placeholder="e.g. ₦18,000" />
+            </label>
+          </div>
           <label class="field">
-            <span>Apply link</span>
-            <input id="applyLink" type="url" placeholder="https://example.com/apply" />
+            <span>Category</span>
+            <select id="flashCategory">
+              <option value="">Select category</option>
+              <option>Phones & Gadgets</option>
+              <option>Fashion & Clothing</option>
+              <option>Shoes & Bags</option>
+              <option>Perfumes & Beauty</option>
+              <option>Food & Groceries</option>
+              <option>Electronics</option>
+              <option>Fabric & Textiles</option>
+              <option>Furniture & Home</option>
+              <option>Services</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Ends in (hours)</span>
+            <input id="flashDuration" type="number" min="1" max="72" placeholder="e.g. 24" />
           </label>
         </div>
-        <label class="field">
-          <span>Images (select 1+)</span>
-          <input id="postImages" type="file" accept="image/*" multiple>
-        </label>
+
+        <!-- Community fields (shown only for community type) -->
+        <div id="communityFields" style="display:none;">
+          <label class="field">
+            <span>Post type</span>
+            <select id="communityType">
+              <option value="announcement">📣 Announcement</option>
+              <option value="opportunity">💼 Job / Opportunity</option>
+              <option value="event">📅 Event / Market Day</option>
+              <option value="tip">💡 Business Tip</option>
+            </select>
+          </label>
+          <div id="applyLinkWrap" style="display:none;">
+            <label class="field">
+              <span>Apply / Learn more link</span>
+              <input id="applyLink" type="url" placeholder="https://..." />
+            </label>
+          </div>
+        </div>
+
+        <!-- WhatsApp -->
         <label class="field">
           <span>WhatsApp (optional)</span>
           <input id="postWhatsApp" type="text" placeholder="e.g. 08012345678" />
         </label>
-        <div class="image-preview-wrap">
-          <div id="imagePreviewEmpty" class="image-preview-empty">No images selected</div>
-          <div id="imagePreviewStrip" class="preview-strip"></div>
-        </div>
+
         <div class="modal-actions">
           <button type="button" class="btn ghost" id="cancelPost">Cancel</button>
           <button type="submit" class="btn primary" id="submitPostBtn">Post</button>
