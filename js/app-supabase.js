@@ -565,18 +565,108 @@ document.addEventListener("DOMContentLoaded", async () => {
   </article>`;
   };
 
-  function renderMarket() {
-    if (!marketList) return;
-    const cat = marketFilter?.value || "";
-    const posts = cachedPosts.filter((p) => p.type === "market" && (!cat || p.category === cat));
-    marketList.innerHTML = posts.length ? posts.map((p) => renderPostCard(p)).join("") : `<p class="empty-state">No market posts yet.</p>`;
+  // ── FLASH SALES ──
+  let activeFlashCat = "";
+
+  function renderFlashCard(p) {
+    let imgUrl = "";
+    if (Array.isArray(p.image_paths) && p.image_paths.length) imgUrl = supabase.storage.from("shop-products").getPublicUrl(p.image_paths[0]).data.publicUrl;
+    else if (p.image_path) imgUrl = supabase.storage.from("shop-products").getPublicUrl(p.image_path).data.publicUrl;
+    else if (Array.isArray(p.image_urls) && p.image_urls.length) imgUrl = p.image_urls[0];
+
+    const salePrice = p.price_text || p.price || "";
+    const origPrice = p.original_price || "";
+    const discount = origPrice && salePrice ? Math.round((1 - parseFloat(String(salePrice).replace(/[^\d.]/g,"")) / parseFloat(String(origPrice).replace(/[^\d.]/g,""))) * 100) : 0;
+    const endsAt = p.flash_ends_at ? new Date(p.flash_ends_at) : null;
+    const hoursLeft = endsAt ? Math.max(0, Math.round((endsAt - Date.now()) / 3600000)) : null;
+    const shopName = p.shop?.shop_name || p.author_name || "Shop";
+
+    return `
+      <div class="flash-card" data-action="open-product" data-productid="${escapeHtml(p.id)}">
+        <div class="flash-img-wrap">
+          ${imgUrl ? `<img class="flash-img" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(p.product_name || p.description || "")}" loading="lazy" />` : `<div class="flash-img" style="display:flex;align-items:center;justify-content:center;font-size:32px;">⚡</div>`}
+          ${discount > 0 ? `<span class="flash-discount-badge">-${discount}%</span>` : ""}
+          ${hoursLeft !== null ? `<span class="flash-timer">⏱ ${hoursLeft}h left</span>` : ""}
+        </div>
+        <div class="flash-body">
+          <div class="flash-name">${escapeHtml(p.product_name || p.description || "Flash Deal")}</div>
+          <div class="flash-prices">
+            <span class="flash-sale-price">${escapeHtml(salePrice)}</span>
+            ${origPrice ? `<span class="flash-orig-price">${escapeHtml(origPrice)}</span>` : ""}
+          </div>
+          <div class="flash-shop">🏪 ${escapeHtml(shopName)}</div>
+        </div>
+      </div>`;
   }
 
+  function renderMarket() {
+    if (!marketList) return;
+
+    // Filter: flash sale posts (type=market) + shop products marked as flash
+    let flashItems = [];
+
+    // From posts (type=market with price)
+    const marketPosts = cachedPosts.filter(p => p.type === "market" && p.price);
+    flashItems = marketPosts.map(p => ({
+      id: p.id, product_name: p.description?.slice(0, 60), description: p.description,
+      price_text: p.price, original_price: p.original_price || "",
+      image_urls: p.image_urls, image_paths: null, image_path: null,
+      flash_ends_at: p.flash_ends_at || null,
+      author_name: p.author_name, shop: null,
+    }));
+
+    // Also from feed products marked as flash
+    const flashProds = cachedFeedProducts.filter(p => p.is_flash || p.original_price);
+    flashItems = [...flashItems, ...flashProds.map(p => ({ ...p }))];
+
+    if (activeFlashCat) flashItems = flashItems.filter(p => p.category === activeFlashCat || p.shop?.category === activeFlashCat);
+
+    if (!flashItems.length) {
+      marketList.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 16px;color:#64748b;"><div style="font-size:40px;margin-bottom:10px;">⚡</div><div style="font-weight:700;color:#0f172a;margin-bottom:4px;">No flash sales right now</div><div style="font-size:13px;">Check back soon for deals</div></div>`;
+      return;
+    }
+    marketList.innerHTML = flashItems.map(p => renderFlashCard(p)).join("");
+  }
+
+  // Flash filter chips
+  document.getElementById("flashFilterBar")?.addEventListener("click", (e) => {
+    const chip = e.target.closest(".flash-chip");
+    if (!chip) return;
+    document.querySelectorAll(".flash-chip").forEach(c => c.classList.remove("active"));
+    chip.classList.add("active");
+    activeFlashCat = chip.dataset.cat || "";
+    renderMarket();
+  });
+
+  // ── COMMUNITY ──
   function renderOpps() {
     if (!oppsList) return;
-    const cat = oppsFilter?.value || "";
-    const posts = cachedPosts.filter((p) => p.type === "opportunity" && (!cat || p.category === cat));
-    oppsList.innerHTML = posts.length ? posts.map((p) => renderPostCard(p)).join("") : `<p class="empty-state">No opportunities yet.</p>`;
+
+    // Show all post types except market — social posts, opportunities, announcements
+    const posts = cachedPosts.filter(p => p.type !== "market");
+
+    if (!posts.length) {
+      oppsList.innerHTML = `<div style="text-align:center;padding:60px 16px;color:#64748b;"><div style="font-size:40px;margin-bottom:10px;">📢</div><div style="font-weight:700;color:#0f172a;margin-bottom:4px;">No community posts yet</div><div style="font-size:13px;">Be the first to post!</div></div>`;
+      return;
+    }
+
+    oppsList.innerHTML = posts.map(p => {
+      const typeLabels = { opportunity: "💼 Opportunity", social: "📣 Announcement", community: "📢 Community", event: "📅 Event", tip: "💡 Tip" };
+      const label = typeLabels[p.type] || p.type || "Post";
+      const img = Array.isArray(p.image_urls) && p.image_urls.length ? p.image_urls[0] : "";
+      const wa = formatWaNumber(p.whatsapp || "");
+      return `
+        <div class="comm-card">
+          <span class="comm-card-type">${label}</span>
+          <div class="comm-card-desc">${escapeHtml(p.description || "")}</div>
+          ${img ? `<img class="comm-card-img" src="${escapeHtml(img)}" alt="Post" loading="lazy" />` : ""}
+          <div class="comm-card-footer">
+            <span class="comm-card-author">📍 ${escapeHtml(p.author_name || "Community")} • ${new Date(p.created_at).toLocaleDateString()}</span>
+            ${wa ? `<button class="comm-card-wa" data-action="contact" data-phone="${escapeHtml(wa)}" data-title="${escapeHtml((p.description||"").slice(0,40))}">WhatsApp</button>` : ""}
+          </div>
+          ${p.apply_link ? `<a href="${escapeHtml(p.apply_link)}" target="_blank" rel="noopener" style="display:block;margin-top:8px;background:#eff6ff;color:#2563eb;padding:8px;border-radius:8px;text-align:center;font-size:13px;font-weight:700;text-decoration:none;">🔗 Learn More / Apply</a>` : ""}
+        </div>`;
+    }).join("");
   }
 
   // =========================
@@ -727,15 +817,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     socialList.innerHTML = list.map(shop => {
       const loc = [shop.city, shop.market].filter(Boolean).join(" • ");
       return `
-        <div class="shop-dir-card" data-action="open-shop" data-sellerid="${escapeHtml(shop.seller_id)}">
-          ${shop.banner_url ? `<img class="shop-dir-banner" src="${escapeHtml(shop.banner_url)}" alt="banner" loading="lazy" />` : `<div class="shop-dir-banner-placeholder">🏪</div>`}
-          <div class="shop-dir-body">
-            ${shop.verified ? `<span class="shop-dir-verified">✔ Verified</span>` : ""}
-            ${shop.logo_url ? `<img class="shop-dir-logo" src="${escapeHtml(shop.logo_url)}" alt="logo" loading="lazy" />` : `<div class="shop-dir-logo-placeholder">🏬</div>`}
-            <div class="shop-dir-name">${escapeHtml(shop.shop_name || "Shop")}</div>
-            ${loc ? `<div class="shop-dir-location">📍 ${escapeHtml(loc)}</div>` : ""}
-            ${shop.category ? `<div class="shop-dir-cat">${escapeHtml(shop.category)}</div>` : ""}
-            <div class="shop-dir-products">${shop.productCount} product${shop.productCount !== 1 ? "s" : ""}</div>
+        <div class="shop-dir-card">
+          <div data-action="open-shop" data-sellerid="${escapeHtml(shop.seller_id)}" style="cursor:pointer;">
+            ${shop.banner_url ? `<img class="shop-dir-banner" src="${escapeHtml(shop.banner_url)}" alt="banner" loading="lazy" />` : `<div class="shop-dir-banner-placeholder">🏪</div>`}
+            <div class="shop-dir-body">
+              ${shop.verified ? `<span class="shop-dir-verified">✔ Verified</span>` : ""}
+              ${shop.logo_url ? `<img class="shop-dir-logo" src="${escapeHtml(shop.logo_url)}" alt="logo" loading="lazy" />` : `<div class="shop-dir-logo-placeholder">🏬</div>`}
+              <div class="shop-dir-name">${escapeHtml(shop.shop_name || "Shop")}</div>
+              ${loc ? `<div class="shop-dir-location">📍 ${escapeHtml(loc)}</div>` : ""}
+              ${shop.category ? `<div class="shop-dir-cat">${escapeHtml(shop.category)}</div>` : ""}
+              <div class="shop-dir-footer">
+                <div class="shop-dir-products">${shop.productCount} product${shop.productCount !== 1 ? "s" : ""}</div>
+                <button class="shop-visit-profile-btn" data-action="view-seller-profile" data-sellerid="${escapeHtml(shop.seller_id)}" type="button">👤 Profile</button>
+              </div>
+            </div>
           </div>
         </div>`;
     }).join("");
@@ -1098,18 +1193,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const openPostModal = () => {
     if (!sessionUser) { alert("Please log in to create a post ✅"); window.location.href = "index.html"; return; }
-    if (postType) postType.value = "market";
-    setCategoryOptions("market"); setPriceVisibility("market"); setApplyVisibility("market");
-    if (previewStrip) previewStrip.innerHTML = "";
+    // Reset to feed post type
+    document.querySelectorAll(".post-type-pill").forEach(p => p.classList.remove("active"));
+    document.querySelector(".post-type-pill[data-type='feed']")?.classList.add("active");
+    const postTypeInput = document.getElementById("postType");
+    if (postTypeInput) postTypeInput.value = "feed";
+    document.getElementById("flashSaleFields").style.display = "none";
+    document.getElementById("communityFields").style.display = "none";
+    const previewStrip = document.getElementById("imagePreviewStrip");
+    const previewEmpty = document.getElementById("imagePreviewEmpty");
+    if (previewStrip) { previewStrip.innerHTML = ""; previewStrip.style.display = "none"; }
     if (previewEmpty) previewEmpty.style.display = "block";
+    const postWhatsApp = document.getElementById("postWhatsApp");
     if (postWhatsApp) postWhatsApp.value = "";
     postModal?.classList.add("show");
+    postModal?.setAttribute("aria-hidden", "false");
   };
 
   const closePostModal = () => {
     postModal?.classList.remove("show");
+    postModal?.setAttribute("aria-hidden", "true");
     postForm?.reset();
-    if (previewStrip) previewStrip.innerHTML = "";
+    const previewStrip = document.getElementById("imagePreviewStrip");
+    const previewEmpty = document.getElementById("imagePreviewEmpty");
+    if (previewStrip) { previewStrip.innerHTML = ""; previewStrip.style.display = "none"; }
     if (previewEmpty) previewEmpty.style.display = "block";
   };
 
@@ -1118,22 +1225,44 @@ document.addEventListener("DOMContentLoaded", async () => {
   cancelPostBtn?.addEventListener("click", closePostModal);
   postModal?.addEventListener("click", (e) => { if (e.target === postModal) closePostModal(); });
 
-  postType?.addEventListener("change", () => {
-    const t = postType.value || "market";
-    setCategoryOptions(t); setPriceVisibility(t); setApplyVisibility(t);
+  // Post type pills
+  document.querySelectorAll(".post-type-pill").forEach(pill => {
+    pill.addEventListener("click", () => {
+      document.querySelectorAll(".post-type-pill").forEach(p => p.classList.remove("active"));
+      pill.classList.add("active");
+      const type = pill.dataset.type;
+      const postTypeInput = document.getElementById("postType");
+      if (postTypeInput) postTypeInput.value = type;
+      document.getElementById("flashSaleFields").style.display = type === "flash" ? "block" : "none";
+      document.getElementById("communityFields").style.display = type === "community" ? "block" : "none";
+      // Show apply link for community opportunity type
+      const commType = document.getElementById("communityType");
+      commType?.addEventListener("change", () => {
+        const applyWrap = document.getElementById("applyLinkWrap");
+        if (applyWrap) applyWrap.style.display = commType.value === "opportunity" ? "block" : "none";
+      });
+    });
   });
 
-  postImages?.addEventListener("change", () => {
-    const files = Array.from(postImages.files || []);
-    if (previewStrip) previewStrip.innerHTML = "";
-    if (!files.length) { if (previewEmpty) previewEmpty.style.display = "block"; return; }
+  // Image upload with preview
+  const postImagesInput = document.getElementById("postImages");
+  document.getElementById("postImgUpload")?.addEventListener("click", (e) => {
+    if (e.target.closest("#imagePreviewStrip")) return;
+    postImagesInput?.click();
+  });
+
+  postImagesInput?.addEventListener("change", () => {
+    const files = Array.from(postImagesInput.files || []);
+    const previewStrip = document.getElementById("imagePreviewStrip");
+    const previewEmpty = document.getElementById("imagePreviewEmpty");
+    if (!files.length) { if (previewEmpty) previewEmpty.style.display = "block"; if (previewStrip) previewStrip.style.display = "none"; return; }
     if (previewEmpty) previewEmpty.style.display = "none";
-    files.forEach((file) => {
+    if (previewStrip) { previewStrip.style.display = "flex"; previewStrip.innerHTML = ""; }
+    files.slice(0, 5).forEach(file => {
       const reader = new FileReader();
       reader.onload = () => {
         const img = document.createElement("img");
         img.src = reader.result;
-        img.style.cssText = "width:70px;height:70px;object-fit:cover;border-radius:6px;";
         previewStrip.appendChild(img);
       };
       reader.readAsDataURL(file);
@@ -1143,29 +1272,45 @@ document.addEventListener("DOMContentLoaded", async () => {
   postForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!sessionUser || !myProfile) return alert("Please log in first.");
-    const type = postType?.value || "market";
-    const category = postCategory?.value || "";
-    const description = postDesc?.value.trim();
-    const price = type === "market" ? postPrice?.value.trim() || "" : "";
-    const apply_link = (type === "opportunity" || type === "social") ? (applyLink?.value || "").trim() : "";
-    const files = Array.from(postImages?.files || []);
-    if (!description) return alert("Please enter a description.");
-    if (!files.length) return alert("Please select at least one image.");
-    const waRaw = (postWhatsApp?.value || "").trim() || (myProfile.wa || "").trim();
+    const postTypeVal = document.getElementById("postType")?.value || "feed";
+    const description = document.getElementById("postDesc")?.value.trim();
+    const files = Array.from(document.getElementById("postImages")?.files || []);
+    if (!description && !files.length) return alert("Add a caption or at least one image.");
+    const waRaw = (document.getElementById("postWhatsApp")?.value || "").trim() || (myProfile.wa || "").trim();
+
+    // Map pill types to DB post types
+    let dbType = "social";
+    let price = "";
+    let original_price = "";
+    let flash_ends_at = null;
+    let category = "";
+    let apply_link = "";
+
+    if (postTypeVal === "flash") {
+      dbType = "market";
+      price = document.getElementById("postPrice")?.value.trim() || "";
+      original_price = document.getElementById("postOriginalPrice")?.value.trim() || "";
+      category = document.getElementById("flashCategory")?.value || "";
+      const hours = parseInt(document.getElementById("flashDuration")?.value || "0");
+      if (hours > 0) flash_ends_at = new Date(Date.now() + hours * 3600000).toISOString();
+    } else if (postTypeVal === "community") {
+      dbType = document.getElementById("communityType")?.value || "social";
+      apply_link = document.getElementById("applyLink")?.value.trim() || "";
+    }
+
     const btn = document.getElementById("submitPostBtn");
-    const oldText = btn ? btn.textContent : "Post";
+    const oldText = btn?.textContent || "Post";
     try {
       if (btn) { btn.disabled = true; btn.textContent = "Posting..."; }
-      const image_urls = await uploadPostImages(sessionUser.id, files.slice(0, 5));
-      if ((type === "opportunity" || type === "social") && !apply_link) {
-        if (btn) { btn.disabled = false; btn.textContent = oldText; }
-        return alert("Please paste an apply link.");
-      }
-      const { error } = await supabase.from("posts").insert({ author_id: sessionUser.id, type, category, description, price, apply_link, whatsapp: waRaw, image_urls });
+      const image_urls = files.length ? await uploadPostImages(sessionUser.id, files.slice(0, 5)) : [];
+      const { error } = await supabase.from("posts").insert({
+        author_id: sessionUser.id, type: dbType, category,
+        description: description || "", price, apply_link, whatsapp: waRaw,
+        image_urls, original_price, flash_ends_at,
+      });
       if (error) throw error;
       closePostModal();
       cachedPosts = await fetchPosts();
-      
       renderFeed(); renderMarket(); renderOpps(); renderSocials();
       window.scrollTo({ top: 0, behavior: "smooth" });
       alert("Posted ✅");
@@ -1260,6 +1405,57 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (sellerId) window.location.href = `shop.html?seller=${encodeURIComponent(sellerId)}`;
       return;
     }
+
+    // View seller profile from shop card
+    const profBtn = e.target.closest("[data-action='view-seller-profile']");
+    if (profBtn) {
+      e.stopPropagation();
+      const sellerId = profBtn.dataset.sellerid;
+      if (!sellerId) return;
+      const modal = document.getElementById("visitorProfileModal");
+      const body = document.getElementById("visitorProfileBody");
+      if (!modal || !body) return;
+      modal.classList.add("show");
+      modal.setAttribute("aria-hidden", "false");
+      body.innerHTML = `<div style="text-align:center;padding:30px;color:#64748b;">Loading…</div>`;
+      const { data: prof } = await supabase.from("profiles").select("*").eq("id", sellerId).maybeSingle();
+      const { data: shop } = await supabase.from("shops").select("*").eq("seller_id", sellerId).maybeSingle();
+      const { data: verif } = await supabase.from("seller_verifications").select("status").eq("user_id", sellerId).maybeSingle();
+      const verified = verif?.status === "approved";
+      const wa = formatWaNumber(shop?.whatsapp || prof?.wa || "");
+      body.innerHTML = `
+        <div class="visitor-profile-card">
+          <div class="visitor-prof-head">
+            ${prof?.photo_url ? `<img class="visitor-prof-avatar" src="${escapeHtml(prof.photo_url)}" alt="avatar" />` : `<div class="visitor-prof-avatar" style="display:flex;align-items:center;justify-content:center;font-size:24px;background:#f1f5f9;">👤</div>`}
+            <div>
+              <div class="visitor-prof-name">${escapeHtml(prof?.name || "Shop Owner")} ${verified ? `<span style="background:#dcfce7;color:#15803d;font-size:10px;padding:2px 6px;border-radius:999px;font-weight:700;">✔ Verified</span>` : ""}</div>
+              <div class="visitor-prof-username">@${escapeHtml(prof?.username || "user")}</div>
+              ${shop?.shop_name ? `<div style="font-size:12px;color:#2563eb;font-weight:700;margin-top:2px;">🏪 ${escapeHtml(shop.shop_name)}</div>` : ""}
+            </div>
+          </div>
+          ${prof?.about ? `<div class="visitor-prof-about">${escapeHtml(prof.about)}</div>` : ""}
+          <div class="visitor-prof-socials">
+            ${prof?.ig ? `<a class="visitor-social-link" href="https://instagram.com/${prof.ig.replace('@','')}" target="_blank">📸 ${escapeHtml(prof.ig)}</a>` : ""}
+            ${prof?.x ? `<a class="visitor-social-link" href="https://x.com/${prof.x.replace('@','')}" target="_blank">🐦 ${escapeHtml(prof.x)}</a>` : ""}
+            ${prof?.tt ? `<a class="visitor-social-link" href="https://tiktok.com/@${prof.tt.replace('@','')}" target="_blank">🎵 ${escapeHtml(prof.tt)}</a>` : ""}
+          </div>
+          ${wa ? `<button class="visitor-wa-btn" onclick="window.open('https://wa.me/${wa}?text=${encodeURIComponent('Hello! I saw your shop on weSPACE.')}','_blank')">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" style="width:18px;" alt="WA"> Chat on WhatsApp
+          </button>` : ""}
+          <button style="width:100%;margin-top:8px;padding:12px;background:#2563eb;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;"
+            onclick="window.location.href='shop.html?seller=${sellerId}'">
+            🛒 Visit Shop
+          </button>
+        </div>`;
+      return;
+    }
+
+    // Close visitor profile modal
+    document.getElementById("closeVisitorProfile")?.addEventListener("click", () => {
+      const modal = document.getElementById("visitorProfileModal");
+      modal?.classList.remove("show");
+      modal?.setAttribute("aria-hidden", "true");
+    });
 
     // Open product detail page
     const prodCard = e.target.closest("[data-action='open-product']");
