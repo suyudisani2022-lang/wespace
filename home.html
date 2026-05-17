@@ -235,12 +235,15 @@
         <button type="button" class="tab-btn" data-section="profile">Profile</button>
       </nav>
 
-      <!-- FEED — Product Discovery -->
+      <!-- FEED — Product Discovery + Community Image Posts -->
       <section id="feed" class="section active-section">
         <div class="feed-header">
           <div class="feed-brand">weSPACE</div>
         </div>
+        <!-- Shop catalogue products -->
         <div id="feedList" class="feed-product-grid"></div>
+        <!-- Feed image posts (posted via + button, not in any shop) -->
+        <div id="feedPostsList" style="margin-top:18px;padding-bottom:80px;"></div>
       </section>
 
       <!-- FLASH SALES -->
@@ -457,10 +460,11 @@
       <form id="postForm" class="modal-body">
         <!-- Post type selector — pill style -->
         <div class="post-type-pills">
-          <button type="button" class="post-type-pill active" data-type="feed">📸 Feed Post</button>
+          <button type="button" class="post-type-pill active" data-type="feed">📸 Image Post</button>
           <button type="button" class="post-type-pill" data-type="flash">⚡ Flash Sale</button>
           <button type="button" class="post-type-pill" data-type="community">📢 Community</button>
         </div>
+        <p id="postTypeHint" style="font-size:11px;color:#64748b;margin:-6px 0 10px;">Photos shared to the feed. Not linked to your shop.</p>
         <input type="hidden" id="postType" value="feed" />
         <input type="hidden" id="postCategory" value="" />
 
