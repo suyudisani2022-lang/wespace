@@ -782,6 +782,31 @@ document.addEventListener("DOMContentLoaded", async () => {
       await loadFeedProducts();
     }
     renderFeedProductGrid();
+    // Also load and show image feed posts (type=feed) below the product grid
+    await renderFeedImagePosts();
+  }
+
+  async function renderFeedImagePosts() {
+    const wrap = document.getElementById("feedPostsList");
+    if (!wrap) return;
+    // Feed posts are posts with type="feed" — images posted via + button, not linked to shop
+    const feedPosts = cachedPosts.filter(p => p.type === "feed" || p.type === "social");
+    if (!feedPosts.length) { wrap.innerHTML = ""; return; }
+    wrap.innerHTML = `
+      <div style="font-size:13px;font-weight:800;color:#0f172a;margin-bottom:10px;padding:0 2px;">📸 From the community</div>
+      ${feedPosts.map(p => {
+        const imgs = Array.isArray(p.image_urls) ? p.image_urls : [];
+        const img = imgs[0] || "";
+        const wa = formatWaNumber(p.whatsapp || "");
+        return `<div class="comm-card" style="margin-bottom:10px;">
+          ${img ? `<img src="${escapeHtml(img)}" style="width:100%;border-radius:10px;object-fit:cover;max-height:260px;display:block;margin-bottom:8px;" loading="lazy" />` : ""}
+          ${p.description ? `<div style="font-size:14px;color:#0f172a;line-height:1.5;">${escapeHtml(p.description)}</div>` : ""}
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+            <span style="font-size:11px;color:#64748b;">📍 ${escapeHtml(p.author_name || "User")} • ${new Date(p.created_at).toLocaleDateString()}</span>
+            ${wa ? `<button class="comm-card-wa" data-action="contact" data-phone="${escapeHtml(wa)}" data-title="${escapeHtml((p.description||"").slice(0,40))}">WhatsApp</button>` : ""}
+          </div>
+        </div>`;
+      }).join("")}`;
   }
 
   // =========================
@@ -1226,6 +1251,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   postModal?.addEventListener("click", (e) => { if (e.target === postModal) closePostModal(); });
 
   // Post type pills
+  const postTypeHints = {
+    feed: "Photos shared to the feed. Not linked to your shop.",
+    flash: "Discounted product shown in Flash Sales tab.",
+    community: "Announcements, events or tips for the community.",
+  };
   document.querySelectorAll(".post-type-pill").forEach(pill => {
     pill.addEventListener("click", () => {
       document.querySelectorAll(".post-type-pill").forEach(p => p.classList.remove("active"));
@@ -1235,6 +1265,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (postTypeInput) postTypeInput.value = type;
       document.getElementById("flashSaleFields").style.display = type === "flash" ? "block" : "none";
       document.getElementById("communityFields").style.display = type === "community" ? "block" : "none";
+      const hint = document.getElementById("postTypeHint");
+      if (hint) hint.textContent = postTypeHints[type] || "";
       // Show apply link for community opportunity type
       const commType = document.getElementById("communityType");
       commType?.addEventListener("change", () => {
@@ -1279,14 +1311,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     const waRaw = (document.getElementById("postWhatsApp")?.value || "").trim() || (myProfile.wa || "").trim();
 
     // Map pill types to DB post types
-    let dbType = "social";
+    let dbType = "feed";
     let price = "";
     let original_price = "";
     let flash_ends_at = null;
     let category = "";
     let apply_link = "";
 
-    if (postTypeVal === "flash") {
+    if (postTypeVal === "feed") {
+      dbType = "feed"; // image posts to feed only, not in shop
+    } else if (postTypeVal === "flash") {
       dbType = "market";
       price = document.getElementById("postPrice")?.value.trim() || "";
       original_price = document.getElementById("postOriginalPrice")?.value.trim() || "";
@@ -1312,6 +1346,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       closePostModal();
       cachedPosts = await fetchPosts();
       renderFeed(); renderMarket(); renderOpps(); renderSocials();
+      // If feed post, scroll to feed image posts
+      if (postTypeVal === "feed") {
+        showSection("feed");
+        setTimeout(() => document.getElementById("feedPostsList")?.scrollIntoView({ behavior: "smooth" }), 300);
+      }
       window.scrollTo({ top: 0, behavior: "smooth" });
       alert("Posted ✅");
     } catch (err) {
