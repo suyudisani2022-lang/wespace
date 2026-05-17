@@ -1,74 +1,14 @@
-// js/shop.js — weSPACE E-Commerce Storefront v2
+// js/shop.js — weSPACE Shop v3 (tabbed management)
 import { supabase } from "./supabaseClient.js";
 
-// ─── ELEMENTS ────────────────────────────────────────────
-const $ = (id) => document.getElementById(id);
-
-const shopBackBtn     = $("shopBackBtn");
-const topbarTitle     = $("topbarTitle");
-const bannerPlaceholder = $("bannerPlaceholder");
-const bannerImg       = $("bannerImg");
-const logoPlaceholder = $("logoPlaceholder");
-const logoImg         = $("logoImg");
-const shopName        = $("shopName");
-const verifiedBadge   = $("verifiedBadge");
-const shopLocation    = $("shopLocation");
-const shopCategoryBadge = $("shopCategoryBadge");
-const shopAbout       = $("shopAbout");
-const statCatalogues  = $("statCatalogues");
-const statProducts    = $("statProducts");
-const waBtn           = $("waBtn");
-const shareBtn        = $("shareBtn");
-const manageBtn       = $("manageBtn");
-
-// Sections
-const setupSection    = $("setupSection");
-const manageSection   = $("manageSection");
-const publicSection   = $("publicSection");
-const cataloguesSection = $("cataloguesSection");
-const productsSection = $("productsSection");
-
-// Manage fields
-const mShopName    = $("mShopName");
-const mCity        = $("mCity");
-const mMarket      = $("mMarket");
-const mCategory    = $("mCategory");
-const mWhatsapp    = $("mWhatsapp");
-const mAbout       = $("mAbout");
-const mLogo        = $("mLogo");
-const mBanner      = $("mBanner");
-const mCatName     = $("mCatName");
-const mCatCover    = $("mCatCover");
-const mProdName    = $("mProdName");
-const mProdPrice   = $("mProdPrice");
-const mProdDesc    = $("mProdDesc");
-const mProdImage   = $("mProdImage");
-const addingToCat  = $("addingToCat");
-const addProductPanel = $("addProductPanel");
-
-// Grids
-const catalogueGrid = $("catalogueGrid");
-const productGrid   = $("productGrid");
-const productsTitle = $("productsTitle");
-
-// Image modal
-const imgModal      = $("imgModal");
-const imgModalImg   = $("imgModalImg");
-const imgModalClose = $("imgModalClose");
-
-// ─── STATE ───────────────────────────────────────────────
-const BUCKET = "shop-products";
-let sellerId = null;
-let currentUid = null;
-let isOwner = false;
-let shopData = null;          // shops row
-let selectedCatalogueId = null;
-let selectedCatalogueName = "";
-
 // ─── HELPERS ─────────────────────────────────────────────
-const esc = (s) => String(s ?? "")
-  .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
-  .replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+const $ = (id) => document.getElementById(id);
+const BUCKET = "shop-products";
+
+const esc = (s) =>
+  String(s ?? "")
+    .replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 
 function getParam(key) {
   return new URL(location.href).searchParams.get(key);
@@ -85,11 +25,37 @@ function formatWa(raw) {
   return n;
 }
 
+async function compressImage(file, maxW = 1200, quality = 0.75) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target.result;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let w = img.width, h = img.height;
+        if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        canvas.toBlob(
+          (blob) => blob
+            ? resolve(new File([blob], file.name, { type: "image/jpeg", lastModified: Date.now() }))
+            : reject(new Error("toBlob failed")),
+          "image/jpeg", quality
+        );
+      };
+      img.onerror = reject;
+    };
+    reader.onerror = reject;
+  });
+}
+
 async function uploadFile(uid, file, folder) {
-  const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-  const path = `${uid}/${folder}/${crypto.randomUUID()}.${ext}`;
+  const compressed = await compressImage(file);
+  const path = `${uid}/${folder}/${crypto.randomUUID()}.jpg`;
   const { error } = await supabase.storage.from(BUCKET)
-    .upload(path, file, { contentType: file.type, upsert: false });
+    .upload(path, compressed, { contentType: "image/jpeg", upsert: false });
   if (error) throw error;
   return path;
 }
@@ -100,110 +66,107 @@ async function removeFiles(paths) {
   await supabase.storage.from(BUCKET).remove(clean);
 }
 
-function showLoading(el, msg = "Loading…") {
-  if (el) el.innerHTML = `<div class="empty-state">${msg}</div>`;
-}
+// ─── STATE ───────────────────────────────────────────────
+let sellerId    = null;
+let currentUid  = null;
+let isOwner     = false;
+let shopData    = null;
+let addingToCatalogueId   = null;
+let addingToCatalogueName = "";
 
-// ─── IMAGE MODAL ─────────────────────────────────────────
-function openModal(src) {
+// ─── IMAGE LIGHTBOX ──────────────────────────────────────
+const imgModal      = $("imgModal");
+const imgModalImg   = $("imgModalImg");
+const imgModalClose = $("imgModalClose");
+
+function openLightbox(src) {
+  if (!imgModal || !imgModalImg) return;
   imgModalImg.src = src;
   imgModal.classList.add("show");
   imgModal.setAttribute("aria-hidden", "false");
 }
-function closeModal() {
+function closeLightbox() {
+  if (!imgModal) return;
   imgModal.classList.remove("show");
   imgModal.setAttribute("aria-hidden", "true");
   imgModalImg.src = "";
 }
-imgModalClose?.addEventListener("click", closeModal);
-imgModal?.addEventListener("click", (e) => { if (e.target === imgModal) closeModal(); });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+imgModalClose?.addEventListener("click", closeLightbox);
+imgModal?.addEventListener("click", (e) => { if (e.target === imgModal) closeLightbox(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeLightbox(); closeAddProdModal(); } });
+
+// ─── COPY SHOP LINK ──────────────────────────────────────
+$("copyShopLinkBtn")?.addEventListener("click", async () => {
+  const url = `${location.origin}/shop.html?seller=${sellerId}`;
+  if (navigator.share) {
+    try { await navigator.share({ title: shopData?.shop_name || "weSPACE Shop", url }); return; } catch {}
+  }
+  try { await navigator.clipboard.writeText(url); } catch {
+    const ta = document.createElement("textarea");
+    ta.value = url; document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); ta.remove();
+  }
+  alert("Shop link copied ✅");
+});
+
+// ─── BACK BUTTON ─────────────────────────────────────────
+$("shopBackBtn")?.addEventListener("click", () => history.back());
+
+// ─── MANAGEMENT TABS ─────────────────────────────────────
+document.querySelectorAll(".mgmt-tab").forEach(tab => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".mgmt-tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".mgmt-panel").forEach(p => p.classList.remove("active"));
+    tab.classList.add("active");
+    $(`panel-${tab.dataset.panel}`)?.classList.add("active");
+  });
+});
 
 // ─── RENDER SHOP HEADER ──────────────────────────────────
-async function renderShopHeader(shop, verified) {
+function renderShopHeader(shop, verified) {
   // Banner
-  if (shop?.banner_url) {
+  const bannerImg = $("shopBannerImg");
+  const bannerPH  = $("shopBannerPlaceholder");
+  if (shop?.banner_url && bannerImg) {
     bannerImg.src = shop.banner_url;
     bannerImg.style.display = "block";
-    bannerPlaceholder.style.display = "none";
+    if (bannerPH) bannerPH.style.display = "none";
   }
 
   // Logo
-  if (shop?.logo_url) {
+  const logoImg = $("shopLogoImg");
+  const logoPH  = $("shopLogoPlaceholder");
+  if (shop?.logo_url && logoImg) {
     logoImg.src = shop.logo_url;
     logoImg.style.display = "block";
-    logoPlaceholder.style.display = "none";
+    if (logoPH) logoPH.style.display = "none";
   }
 
-  // Name
-  shopName.textContent = shop?.shop_name || "weSPACE Shop";
-  topbarTitle.textContent = shop?.shop_name || "Shop";
+  // Name + topbar
+  const titleEl  = $("shopTitle");
+  const topbarEl = $("topbarTitle");
+  if (titleEl)  titleEl.textContent  = shop?.shop_name || "Shop";
+  if (topbarEl) topbarEl.textContent = shop?.shop_name || "Shop";
 
-  // Verified
-  if (verified) verifiedBadge.style.display = "inline-flex";
+  // Verified badge
+  if (verified) $("shopVerifiedBadge")?.style && ($("shopVerifiedBadge").style.display = "inline-flex");
 
-  // Location
-  const loc = [shop?.city, shop?.market].filter(Boolean).join(" • ");
-  shopLocation.textContent = loc || "";
-
-  // Category
-  if (shop?.category) {
-    shopCategoryBadge.textContent = shop.category;
-    shopCategoryBadge.style.display = "inline-block";
-  }
-
-  // About
-  if (shop?.about) {
-    shopAbout.textContent = shop.about;
-    shopAbout.style.display = "block";
-  }
-
-  // WhatsApp
-  const wa = formatWa(shop?.whatsapp || "");
-  if (wa) {
-    waBtn.style.display = "flex";
-    waBtn.onclick = () => {
-      const msg = encodeURIComponent(`Assalamu alaikum! I found your shop on weSPACE. I'd like to enquire about your products.`);
-      window.open(`https://wa.me/${wa}?text=${msg}`, "_blank");
-    };
-  }
-
-  // Owner controls
-  if (isOwner) {
-    manageBtn.style.display = "flex";
-    // Pre-fill manage form
-    if (mShopName) mShopName.value = shop?.shop_name || "";
-    if (mCity) mCity.value = shop?.city || "";
-    if (mMarket) mMarket.value = shop?.market || "";
-    if (mCategory) mCategory.value = shop?.category || "";
-    if (mWhatsapp) mWhatsapp.value = shop?.whatsapp || "";
-    if (mAbout) mAbout.value = shop?.about || "";
+  // Meta (city, market, category)
+  const metaEl = $("shopMeta");
+  if (metaEl) {
+    const parts = [
+      shop?.city && shop?.market ? `📍 ${shop.city} • ${shop.market}` : shop?.city ? `📍 ${shop.city}` : "",
+      shop?.category ? `🏷️ ${shop.category}` : "",
+    ].filter(Boolean);
+    metaEl.textContent = parts.join("  ");
   }
 }
 
-// ─── LOAD STATS ──────────────────────────────────────────
-async function loadStats() {
-  const { count: catCount } = await supabase
-    .from("shop_catalogues").select("id", { count: "exact", head: true })
-    .eq("seller_id", sellerId);
-
-  const { count: prodCount } = await supabase
-    .from("shop_products").select("id", { count: "exact", head: true })
-    .eq("seller_id", sellerId);
-
-  statCatalogues.textContent = catCount || 0;
-  statProducts.textContent = prodCount || 0;
-}
-
-// ─── LOAD CATALOGUES ─────────────────────────────────────
-async function loadCatalogues() {
-  productsSection.style.display = "none";
-  cataloguesSection.style.display = "block";
-  selectedCatalogueId = null;
-
-  if (addProductPanel) addProductPanel.style.display = "none";
-
-  showLoading(catalogueGrid);
+// ─── VISITOR: LOAD CATALOGUES ────────────────────────────
+async function loadVisitorCatalogues() {
+  const grid = $("catalogueGrid");
+  if (!grid) return;
+  grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">Loading…</div>`;
 
   const { data, error } = await supabase
     .from("shop_catalogues")
@@ -212,52 +175,40 @@ async function loadCatalogues() {
     .order("created_at", { ascending: false });
 
   if (error || !data?.length) {
-    catalogueGrid.innerHTML = `
-      <div class="empty-state" style="grid-column:1/-1;">
-        <div class="empty-state-icon">📂</div>
-        ${isOwner ? "No catalogues yet. Create your first one above." : "No catalogues yet."}
-      </div>`;
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div style="font-size:36px;">📂</div><p>No catalogues yet.</p></div>`;
     return;
   }
 
-  catalogueGrid.innerHTML = data.map(c => {
+  grid.innerHTML = data.map(c => {
     const cover = c.cover_image_path ? publicUrl(c.cover_image_path) : "";
     return `
-      <div class="catalogue-card" data-catid="${c.id}" data-catname="${esc(c.name)}"
-           data-coverpath="${esc(c.cover_image_path || "")}">
+      <div class="catalogue-card" data-catid="${c.id}" data-catname="${esc(c.name)}" style="cursor:pointer;">
         ${cover
           ? `<img class="catalogue-card-img" src="${esc(cover)}" alt="${esc(c.name)}" loading="lazy" />`
           : `<div class="catalogue-card-img-placeholder">📦</div>`}
         <div class="catalogue-card-name">${esc(c.name)}</div>
-        ${isOwner ? `<button class="catalogue-del-btn" data-action="del-cat"
-          data-catid="${c.id}" data-coverpath="${esc(c.cover_image_path || "")}"
-          title="Delete catalogue">🗑️</button>` : ""}
       </div>`;
   }).join("");
+
+  // Clicks on catalogue cards → show products
+  grid.querySelectorAll(".catalogue-card").forEach(card => {
+    card.addEventListener("click", () => {
+      loadVisitorProducts(card.dataset.catid, card.dataset.catname || "Catalogue");
+    });
+  });
 }
 
-// ─── LOAD PRODUCTS ───────────────────────────────────────
-async function loadProducts(catalogueId, catalogueName) {
-  selectedCatalogueId = catalogueId;
-  selectedCatalogueName = catalogueName;
+// ─── VISITOR: LOAD PRODUCTS ──────────────────────────────
+async function loadVisitorProducts(catalogueId, catalogueName) {
+  $("catalogueGrid").style.display  = "none";
+  const view = $("catalogueView");
+  if (view) view.style.display = "block";
+  const titleEl = $("catalogueNameTitle");
+  if (titleEl) titleEl.textContent = catalogueName;
 
-  cataloguesSection.style.display = "none";
-  productsSection.style.display = "block";
-  productsTitle.textContent = catalogueName;
-
-  if (isOwner && addProductPanel) {
-    addProductPanel.style.display = "block";
-    addingToCat.textContent = catalogueName;
-  }
-
-  showLoading(productGrid);
-
-  // Load seller WA if not loaded
-  if (!shopData?.whatsapp) {
-    const { data: prof } = await supabase.from("profiles")
-      .select("wa").eq("id", sellerId).maybeSingle();
-    if (prof?.wa) shopData = { ...shopData, whatsapp: prof.wa };
-  }
+  const grid = $("productGrid");
+  if (!grid) return;
+  grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">Loading…</div>`;
 
   const wa = formatWa(shopData?.whatsapp || "");
 
@@ -268,343 +219,450 @@ async function loadProducts(catalogueId, catalogueName) {
     .order("created_at", { ascending: false });
 
   if (error || !data?.length) {
-    productGrid.innerHTML = `
-      <div class="empty-state" style="grid-column:1/-1;">
-        <div class="empty-state-icon">📦</div>
-        ${isOwner ? "No products yet. Add your first product above." : "No products in this catalogue yet."}
-      </div>`;
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div style="font-size:36px;">📦</div><p>No products in this catalogue yet.</p></div>`;
     return;
   }
 
-  productGrid.innerHTML = data.map(p => {
-    const img = p.image_path ? publicUrl(p.image_path) : "";
+  grid.innerHTML = data.map(p => {
+    const imgs = Array.isArray(p.image_paths) && p.image_paths.length
+      ? p.image_paths : p.image_path ? [p.image_path] : [];
+    const imgUrl = imgs.length ? publicUrl(imgs[0]) : "";
     return `
-      <div class="product-card" data-prodid="${p.id}" data-imgpath="${esc(p.image_path || "")}">
-        ${img
-          ? `<img class="product-card-img" src="${esc(img)}" alt="${esc(p.product_name)}"
-               loading="lazy" data-action="view-img" />`
+      <div class="product-card">
+        ${imgUrl
+          ? `<img class="product-card-img" src="${esc(imgUrl)}" alt="${esc(p.product_name)}" loading="lazy" data-action="view-img" data-src="${esc(imgUrl)}" />`
           : `<div class="product-card-img-placeholder">🖼️</div>`}
-        ${isOwner ? `<button class="product-del-btn" data-action="del-prod"
-          data-prodid="${p.id}" data-imgpath="${esc(p.image_path || "")}"
-          title="Delete">🗑️</button>` : ""}
         <div class="product-card-body">
           <div class="product-card-name">${esc(p.product_name)}</div>
           <div class="product-card-price">${esc(p.price_text || "")}</div>
           ${p.description ? `<div style="font-size:11px;color:#64748b;margin-top:3px;">${esc(p.description)}</div>` : ""}
           <button class="product-card-wa" data-action="contact-wa"
             data-phone="${esc(wa)}" data-product="${esc(p.product_name)}"
-            ${wa ? "" : "disabled"}>
-            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WA">
-            Chat Seller
+            ${wa ? "" : "disabled"} style="margin-top:8px;width:100%;background:#25d366;color:#fff;border:none;padding:8px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WA" style="width:14px;"> Chat Seller
           </button>
         </div>
       </div>`;
   }).join("");
 }
 
-// ─── GLOBAL CLICK HANDLER ────────────────────────────────
-document.addEventListener("click", async (e) => {
-  // Catalogue card click → open products
-  const catCard = e.target.closest(".catalogue-card");
-  if (catCard && !e.target.closest("[data-action]")) {
-    const id = catCard.dataset.catid;
-    const name = catCard.dataset.catname || "Catalogue";
-    if (id) await loadProducts(id, name);
-    return;
-  }
-
-  const action = e.target.closest("[data-action]")?.dataset?.action;
-  if (!action) return;
-
-  // View full image
-  if (action === "view-img") {
-    openModal(e.target.closest("[data-action]").src);
-    return;
-  }
-
-  // WhatsApp contact
-  if (action === "contact-wa") {
-    const btn = e.target.closest("[data-action]");
-    const phone = btn.dataset.phone;
-    const product = btn.dataset.product;
-    if (!phone) return alert("No WhatsApp number available for this seller.");
-    const msg = encodeURIComponent(`Assalamu alaikum! I saw *${product}* on weSPACE. Is it still available?`);
-    window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
-    return;
-  }
-
-  // Delete product
-  if (action === "del-prod") {
-    if (!isOwner) return;
-    const btn = e.target.closest("[data-action]");
-    if (!confirm("Delete this product?")) return;
-    const pid = btn.dataset.prodid;
-    const imgPath = btn.dataset.imgpath;
-    const { error } = await supabase.from("shop_products").delete().eq("id", pid);
-    if (error) return alert("Error: " + error.message);
-    if (imgPath) await removeFiles([imgPath]);
-    await loadProducts(selectedCatalogueId, selectedCatalogueName);
-    await loadStats();
-    return;
-  }
-
-  // Delete catalogue
-  if (action === "del-cat") {
-    if (!isOwner) return;
-    const btn = e.target.closest("[data-action]");
-    if (!confirm("Delete this catalogue and all its products?")) return;
-    const cid = btn.dataset.catid;
-    const coverPath = btn.dataset.coverpath;
-    const { data: prods } = await supabase.from("shop_products")
-      .select("image_path").eq("catalogue_id", cid);
-    const imgPaths = (prods || []).map(x => x.image_path).filter(Boolean);
-    await supabase.from("shop_products").delete().eq("catalogue_id", cid);
-    await supabase.from("shop_catalogues").delete().eq("id", cid);
-    await removeFiles([...imgPaths, coverPath]);
-    await loadCatalogues();
-    await loadStats();
-    return;
-  }
-});
-
-// ─── BACK TO CATALOGUES ──────────────────────────────────
+// Back button in visitor product view
 $("backToCatalogues")?.addEventListener("click", () => {
-  loadCatalogues();
-  if (addProductPanel) addProductPanel.style.display = "none";
+  $("catalogueView").style.display  = "none";
+  $("catalogueGrid").style.display  = "";
 });
 
-// ─── SHARE ───────────────────────────────────────────────
-shareBtn?.addEventListener("click", async () => {
-  const url = `${location.origin}/shop.html?seller=${sellerId}`;
-  if (navigator.share) {
-    try { await navigator.share({ title: shopData?.shop_name || "weSPACE Shop", url }); return; }
-    catch {}
+// ─── OWNER: LOAD CATALOGUE MANAGEMENT LIST ───────────────
+async function loadOwnerCatalogueList() {
+  const wrap = $("catalogueMgmtList");
+  if (!wrap) return;
+  wrap.innerHTML = `<div style="text-align:center;padding:24px;color:#64748b;">Loading…</div>`;
+
+  const { data: catalogues, error } = await supabase
+    .from("shop_catalogues")
+    .select("*")
+    .eq("seller_id", sellerId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    wrap.innerHTML = `<div style="color:#dc2626;padding:12px;">Could not load catalogues.</div>`;
+    return;
   }
-  await navigator.clipboard.writeText(url).catch(() => {});
-  alert("Shop link copied! ✅");
-});
 
-// ─── MANAGE TOGGLE ───────────────────────────────────────
-manageBtn?.addEventListener("click", () => {
-  publicSection.style.display = "none";
-  setupSection.style.display = "none";
-  manageSection.style.display = "block";
-});
+  if (!catalogues?.length) {
+    wrap.innerHTML = `<div style="text-align:center;padding:24px;color:#64748b;"><div style="font-size:36px;">📂</div><p style="margin-top:8px;">No catalogues yet. Create your first one above.</p></div>`;
+    return;
+  }
 
-$("doneManageBtn")?.addEventListener("click", () => {
-  manageSection.style.display = "none";
-  publicSection.style.display = "block";
-  loadCatalogues();
-  loadStats();
-});
+  // For each catalogue, get product count
+  const catIds = catalogues.map(c => c.id);
+  const { data: prodRows } = await supabase
+    .from("shop_products").select("catalogue_id").in("catalogue_id", catIds);
 
-$("openSetupBtn")?.addEventListener("click", () => {
-  setupSection.style.display = "none";
-  manageSection.style.display = "block";
-});
+  const countMap = {};
+  (prodRows || []).forEach(r => { countMap[r.catalogue_id] = (countMap[r.catalogue_id] || 0) + 1; });
 
-// ─── SAVE SHOP ───────────────────────────────────────────
-$("saveShopBtn")?.addEventListener("click", async () => {
-  const name = mShopName.value.trim();
-  const city = mCity.value;
-  const category = mCategory.value;
-  const whatsapp = mWhatsapp.value.trim();
+  wrap.innerHTML = catalogues.map(c => {
+    const cover = c.cover_image_path ? publicUrl(c.cover_image_path) : "";
+    const count = countMap[c.id] || 0;
+    return `
+      <div class="cat-mgmt-card" data-catid="${c.id}">
+        <div class="cat-mgmt-card-head">
+          <div>
+            <div class="cat-mgmt-card-name">
+              ${cover ? `<img src="${esc(cover)}" style="width:32px;height:32px;border-radius:6px;object-fit:cover;vertical-align:middle;margin-right:6px;" loading="lazy">` : "📦 "}
+              ${esc(c.name)}
+            </div>
+            <div class="cat-mgmt-card-count">${count} product${count !== 1 ? "s" : ""}</div>
+          </div>
+          <div class="cat-mgmt-card-actions">
+            <button class="cat-mgmt-expand-btn" data-action="toggle-cat-products" data-catid="${c.id}" data-catname="${esc(c.name)}" type="button">View Products</button>
+            <button class="cat-mgmt-add-btn" data-action="open-add-prod" data-catid="${c.id}" data-catname="${esc(c.name)}" type="button">+ Add</button>
+          </div>
+        </div>
+        <div class="cat-mgmt-products" id="catprods-${c.id}">
+          <!-- Loaded on expand -->
+        </div>
+        <div style="margin-top:8px;border-top:1px solid #f1f5f9;padding-top:8px;">
+          <button class="btn danger" data-action="del-cat" data-catid="${c.id}" data-coverpath="${esc(c.cover_image_path || "")}" type="button" style="font-size:11px;padding:5px 10px;">🗑️ Delete Catalogue</button>
+        </div>
+      </div>`;
+  }).join("");
+}
 
-  if (!name) return alert("Enter shop name.");
-  if (!city) return alert("Select your city.");
-  if (!category) return alert("Select a category.");
-  if (!whatsapp) return alert("Enter your WhatsApp number.");
+// ─── OWNER: LOAD PRODUCTS INLINE IN CATALOGUE CARD ───────
+async function loadInlineProducts(catalogueId) {
+  const wrap = $(`catprods-${catalogueId}`);
+  if (!wrap) return;
+  wrap.innerHTML = `<div style="padding:8px;color:#64748b;font-size:12px;">Loading…</div>`;
 
-  const btn = $("saveShopBtn");
-  btn.textContent = "Saving…";
-  btn.disabled = true;
+  const { data, error } = await supabase
+    .from("shop_products")
+    .select("*")
+    .eq("catalogue_id", catalogueId)
+    .order("created_at", { ascending: false });
+
+  if (error || !data?.length) {
+    wrap.innerHTML = `<div style="padding:8px;color:#64748b;font-size:12px;">No products yet. Tap "+ Add" to add one.</div>`;
+    return;
+  }
+
+  wrap.innerHTML = data.map(p => {
+    const imgs = Array.isArray(p.image_paths) && p.image_paths.length
+      ? p.image_paths : p.image_path ? [p.image_path] : [];
+    const imgUrl = imgs.length ? publicUrl(imgs[0]) : "";
+    return `
+      <div class="cat-prod-row">
+        ${imgUrl
+          ? `<img class="cat-prod-thumb" src="${esc(imgUrl)}" alt="${esc(p.product_name)}" loading="lazy" />`
+          : `<div class="cat-prod-thumb" style="display:flex;align-items:center;justify-content:center;font-size:18px;">🖼️</div>`}
+        <div class="cat-prod-info">
+          <div class="cat-prod-name">${esc(p.product_name)}</div>
+          <div class="cat-prod-price">${esc(p.price_text || "")}</div>
+          ${p.description ? `<div style="font-size:10px;color:#94a3b8;">${esc(p.description)}</div>` : ""}
+        </div>
+        <button class="cat-prod-del" data-action="del-prod" data-prodid="${p.id}" data-imgpath="${esc(p.image_path || "")}" data-catid="${catalogueId}" type="button">Delete</button>
+      </div>`;
+  }).join("");
+}
+
+// ─── ADD PRODUCT MODAL ───────────────────────────────────
+function openAddProdModal(catId, catName) {
+  addingToCatalogueId   = catId;
+  addingToCatalogueName = catName;
+  const nameEl = $("addProdCatName");
+  if (nameEl) nameEl.textContent = catName;
+  // Clear form
+  ["productName", "prodPrice", "prodDesc", "prodImage"].forEach(id => {
+    const el = $(id); if (el) el.value = "";
+  });
+  const overlay = $("addProdModal");
+  if (overlay) { overlay.classList.add("show"); overlay.setAttribute("aria-hidden", "false"); }
+}
+
+function closeAddProdModal() {
+  const overlay = $("addProdModal");
+  if (overlay) { overlay.classList.remove("show"); overlay.setAttribute("aria-hidden", "true"); }
+  addingToCatalogueId   = null;
+  addingToCatalogueName = "";
+}
+
+$("closeAddProdModal")?.addEventListener("click", closeAddProdModal);
+$("addProdModal")?.addEventListener("click", (e) => { if (e.target === $("addProdModal")) closeAddProdModal(); });
+
+// ─── ADD PRODUCT SUBMIT ──────────────────────────────────
+$("addProductBtn")?.addEventListener("click", async () => {
+  if (!addingToCatalogueId) return alert("No catalogue selected.");
+  const name  = $("productName")?.value.trim();
+  const price = $("prodPrice")?.value.trim();
+  const desc  = $("prodDesc")?.value.trim();
+  const files = Array.from($("prodImage")?.files || []);
+
+  if (!name)  return alert("Enter a product name.");
+  if (!price) return alert("Enter a price.");
+  if (!files.length) return alert("Select at least one image.");
+
+  const btn = $("addProductBtn");
+  btn.textContent = "Adding…"; btn.disabled = true;
 
   try {
-    let logoUrl = shopData?.logo_url || null;
-    let bannerUrl = shopData?.banner_url || null;
-
-    // Upload logo if selected
-    if (mLogo.files?.[0]) {
-      const path = await uploadFile(currentUid, mLogo.files[0], "logos");
-      logoUrl = publicUrl(path);
-    }
-    // Upload banner if selected
-    if (mBanner.files?.[0]) {
-      const path = await uploadFile(currentUid, mBanner.files[0], "banners");
-      bannerUrl = publicUrl(path);
+    // Upload up to 5 images
+    const imagePaths = [];
+    for (const file of files.slice(0, 5)) {
+      const path = await uploadFile(currentUid, file, "products");
+      imagePaths.push(path);
     }
 
-    const payload = {
-      seller_id: currentUid,
-      shop_name: name,
-      city,
-      market: mMarket.value.trim(),
-      category,
-      whatsapp,
-      about: mAbout.value.trim(),
-      logo_url: logoUrl,
-      banner_url: bannerUrl,
-      updated_at: new Date().toISOString(),
-    };
-
-    const { error } = await supabase.from("shops")
-      .upsert(payload, { onConflict: "seller_id" });
-
+    const { error } = await supabase.from("shop_products").insert({
+      seller_id:    currentUid,
+      catalogue_id: addingToCatalogueId,
+      product_name: name,
+      price_text:   price,
+      description:  desc || null,
+      image_path:   imagePaths[0] || null,    // backwards compat
+      image_paths:  imagePaths,               // multi-image
+    });
     if (error) throw error;
 
-    shopData = { ...shopData, ...payload };
-    alert("Shop saved ✅");
-
-    // Refresh header
-    await renderShopHeader(shopData, verifiedBadge.style.display !== "none");
-    mLogo.value = "";
-    mBanner.value = "";
-
+    closeAddProdModal();
+    alert("Product added ✅");
+    // Refresh the inline product list for that catalogue
+    const prodsWrap = $(`catprods-${addingToCatalogueId || ""}`);
+    if (prodsWrap?.classList.contains("open")) {
+      await loadInlineProducts(addingToCatalogueId);
+    }
+    // Refresh the catalogue list to update product count
+    await loadOwnerCatalogueList();
   } catch (e) {
-    alert("Error: " + (e.message || "Could not save shop."));
+    alert("Error: " + (e.message || "Could not add product."));
   } finally {
-    btn.textContent = "💾 Save Shop";
-    btn.disabled = false;
+    btn.textContent = "Add Product"; btn.disabled = false;
   }
 });
 
 // ─── CREATE CATALOGUE ────────────────────────────────────
-$("createCatBtn")?.addEventListener("click", async () => {
-  const name = mCatName.value.trim();
-  const file = mCatCover.files?.[0];
-  if (!name) return alert("Enter catalogue name.");
-  if (!file) return alert("Select a cover image.");
+$("createCatalogueBtn")?.addEventListener("click", async () => {
+  const name = $("catName")?.value.trim();
+  const file = $("catCover")?.files?.[0];
+  if (!name) return alert("Enter a catalogue name.");
 
-  const btn = $("createCatBtn");
-  btn.textContent = "Creating…";
-  btn.disabled = true;
+  const btn = $("createCatalogueBtn");
+  btn.textContent = "Creating…"; btn.disabled = true;
 
   try {
-    const coverPath = await uploadFile(currentUid, file, "covers");
+    let coverPath = null;
+    if (file) coverPath = await uploadFile(currentUid, file, "covers");
+
     const { error } = await supabase.from("shop_catalogues").insert({
       seller_id: currentUid,
       name,
       cover_image_path: coverPath,
     });
     if (error) throw error;
-    mCatName.value = "";
-    mCatCover.value = "";
+
+    if ($("catName"))  $("catName").value  = "";
+    if ($("catCover")) $("catCover").value = "";
     alert("Catalogue created ✅");
-    await loadCatalogues();
-    await loadStats();
+    await loadOwnerCatalogueList();
   } catch (e) {
     alert("Error: " + (e.message || "Could not create catalogue."));
   } finally {
-    btn.textContent = "➕ Create Catalogue";
-    btn.disabled = false;
+    btn.textContent = "Create Catalogue"; btn.disabled = false;
   }
 });
 
-// ─── ADD PRODUCT ─────────────────────────────────────────
-$("addProdBtn")?.addEventListener("click", async () => {
-  if (!selectedCatalogueId) return alert("Select a catalogue first.");
-  const name = mProdName.value.trim();
-  const price = mProdPrice.value.trim();
-  const desc = mProdDesc.value.trim();
-  const file = mProdImage.files?.[0];
+// ─── SAVE SHOP SETUP ─────────────────────────────────────
+$("saveSetupBtn")?.addEventListener("click", async () => {
+  const name     = $("setupShopName")?.value.trim();
+  const city     = $("setupCity")?.value;
+  const market   = $("setupMarket")?.value.trim();
+  const category = $("setupCategory")?.value;
+  const whatsapp = $("setupWhatsApp")?.value.trim();
 
-  if (!name) return alert("Enter product name.");
-  if (!price) return alert("Enter price.");
-  if (!file) return alert("Select product image.");
+  if (!name)     return alert("Enter your shop name.");
+  if (!city)     return alert("Select your city.");
+  if (!category) return alert("Select a category.");
+  if (!whatsapp) return alert("Enter your WhatsApp number.");
 
-  const btn = $("addProdBtn");
-  btn.textContent = "Adding…";
-  btn.disabled = true;
+  const btn = $("saveSetupBtn");
+  btn.textContent = "Saving…"; btn.disabled = true;
 
   try {
-    const imgPath = await uploadFile(currentUid, file, "products");
-    const { error } = await supabase.from("shop_products").insert({
-      seller_id: currentUid,
-      catalogue_id: selectedCatalogueId,
-      product_name: name,
-      price_text: price,
-      description: desc,
-      image_path: imgPath,
-    });
+    let logoUrl   = shopData?.logo_url   || null;
+    let bannerUrl = shopData?.banner_url || null;
+
+    const logoFile   = $("setupLogo")?.files?.[0];
+    const bannerFile = $("setupBanner")?.files?.[0];
+
+    if (logoFile)   { const p = await uploadFile(currentUid, logoFile,   "logos");   logoUrl   = publicUrl(p); }
+    if (bannerFile) { const p = await uploadFile(currentUid, bannerFile, "banners"); bannerUrl = publicUrl(p); }
+
+    const payload = {
+      seller_id:  currentUid,
+      shop_name:  name,
+      city, market, category, whatsapp,
+      logo_url:   logoUrl,
+      banner_url: bannerUrl,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabase.from("shops")
+      .upsert(payload, { onConflict: "seller_id" });
     if (error) throw error;
-    mProdName.value = "";
-    mProdPrice.value = "";
-    mProdDesc.value = "";
-    mProdImage.value = "";
-    alert("Product added ✅");
-    await loadProducts(selectedCatalogueId, selectedCatalogueName);
-    await loadStats();
+
+    shopData = { ...shopData, ...payload };
+    renderShopHeader(shopData, $("shopVerifiedBadge")?.style.display !== "none");
+
+    // Clear file inputs
+    if ($("setupLogo"))   $("setupLogo").value   = "";
+    if ($("setupBanner")) $("setupBanner").value = "";
+
+    alert("Shop settings saved ✅");
   } catch (e) {
-    alert("Error: " + (e.message || "Could not add product."));
+    alert("Error: " + (e.message || "Could not save."));
   } finally {
-    btn.textContent = "➕ Add Product";
-    btn.disabled = false;
+    btn.textContent = "💾 Save Shop Settings"; btn.disabled = false;
   }
 });
 
-// ─── BACK BUTTON ─────────────────────────────────────────
-shopBackBtn?.addEventListener("click", () => history.back());
+// ─── IMAGE PREVIEWS FOR SETUP ────────────────────────────
+$("setupBanner")?.addEventListener("change", () => {
+  const f = $("setupBanner").files?.[0];
+  const prev = $("setupBannerPreview");
+  if (!f || !prev) return;
+  prev.src = URL.createObjectURL(f);
+  prev.style.display = "block";
+});
+
+$("setupLogo")?.addEventListener("change", () => {
+  const f = $("setupLogo").files?.[0];
+  const prev = $("setupLogoPreview");
+  if (!f || !prev) return;
+  prev.src = URL.createObjectURL(f);
+  prev.style.display = "block";
+});
+
+// ─── GLOBAL CLICK DELEGATE ───────────────────────────────
+document.addEventListener("click", async (e) => {
+  const target = e.target.closest("[data-action]");
+  const action = target?.dataset?.action;
+
+  // Full image view
+  if (action === "view-img") {
+    openLightbox(target.dataset.src || target.src || "");
+    return;
+  }
+
+  // WhatsApp contact
+  if (action === "contact-wa") {
+    const phone = target.dataset.phone;
+    const prod  = target.dataset.product;
+    if (!phone) return alert("No WhatsApp number available for this seller.");
+    const msg = encodeURIComponent(`Assalamu alaikum! I saw *${prod}* on weSPACE. Is it still available?`);
+    window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
+    return;
+  }
+
+  // Toggle inline products expand/collapse
+  if (action === "toggle-cat-products") {
+    const catId   = target.dataset.catid;
+    const catName = target.dataset.catname;
+    const wrap    = $(`catprods-${catId}`);
+    if (!wrap) return;
+    const isOpen = wrap.classList.toggle("open");
+    target.textContent = isOpen ? "Hide Products" : "View Products";
+    if (isOpen) await loadInlineProducts(catId);
+    return;
+  }
+
+  // Open add product modal for a specific catalogue
+  if (action === "open-add-prod") {
+    openAddProdModal(target.dataset.catid, target.dataset.catname || "Catalogue");
+    return;
+  }
+
+  // Delete product
+  if (action === "del-prod") {
+    if (!isOwner) return;
+    if (!confirm("Delete this product?")) return;
+    const pid     = target.dataset.prodid;
+    const imgPath = target.dataset.imgpath;
+    const catId   = target.dataset.catid;
+    const { error } = await supabase.from("shop_products").delete().eq("id", pid);
+    if (error) return alert("Error: " + error.message);
+    if (imgPath) await removeFiles([imgPath]);
+    // Reload the inline list for this catalogue
+    await loadInlineProducts(catId);
+    await loadOwnerCatalogueList();
+    return;
+  }
+
+  // Delete catalogue
+  if (action === "del-cat") {
+    if (!isOwner) return;
+    if (!confirm("Delete this entire catalogue and all its products? This cannot be undone.")) return;
+    const cid       = target.dataset.catid;
+    const coverPath = target.dataset.coverpath;
+    const { data: prods } = await supabase.from("shop_products")
+      .select("image_path, image_paths").eq("catalogue_id", cid);
+    const imgPaths = (prods || []).flatMap(p => [
+      p.image_path,
+      ...(Array.isArray(p.image_paths) ? p.image_paths : []),
+    ]).filter(Boolean);
+    await supabase.from("shop_products").delete().eq("catalogue_id", cid);
+    await supabase.from("shop_catalogues").delete().eq("id", cid);
+    await removeFiles([...imgPaths, coverPath]);
+    await loadOwnerCatalogueList();
+    return;
+  }
+});
+
+// ─── PRE-FILL SETUP FORM FROM shopData ───────────────────
+function fillSetupForm(shop) {
+  if (!shop) return;
+  if ($("setupShopName"))  $("setupShopName").value  = shop.shop_name  || "";
+  if ($("setupWhatsApp"))  $("setupWhatsApp").value  = shop.whatsapp   || "";
+  if ($("setupCity"))      $("setupCity").value      = shop.city       || "";
+  if ($("setupMarket"))    $("setupMarket").value    = shop.market     || "";
+  if ($("setupCategory"))  $("setupCategory").value  = shop.category   || "";
+}
 
 // ─── INIT ────────────────────────────────────────────────
 (async function init() {
   sellerId = getParam("seller");
-
   if (!sellerId) {
-    shopName.textContent = "No shop found";
-    catalogueGrid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">Missing seller ID.</div>`;
+    $("shopTitle") && ($("shopTitle").textContent = "No shop found");
     return;
   }
 
-  // Get current user
+  // Auth
   const { data: { session } } = await supabase.auth.getSession();
   currentUid = session?.user?.id || null;
-  isOwner = currentUid === sellerId;
+  isOwner    = currentUid === sellerId;
 
-  // Check mode param (manage mode from profile link)
-  const mode = getParam("mode");
-  if (isOwner && mode === "manage") {
-    // Will show manage after setup check below
-  }
-
-  // Load shop data
+  // Load shop row
   const { data: shop } = await supabase.from("shops")
     .select("*").eq("seller_id", sellerId).maybeSingle();
-
   shopData = shop;
 
-  // Check verified
+  // Verified status
   const { data: verif } = await supabase.from("seller_verifications")
     .select("status").eq("user_id", sellerId).maybeSingle();
   const verified = verif?.status === "approved";
 
-  if (!shop) {
-    // No shop profile yet
-    shopName.textContent = "Shop";
-    shopLocation.textContent = "";
+  // Render header (even if no shop data yet)
+  renderShopHeader(shop, verified);
 
-    if (isOwner) {
-      // Show setup prompt
-      setupSection.style.display = "block";
-      publicSection.style.display = "none";
-    } else {
-      catalogueGrid.innerHTML = `
-        <div class="no-shop-card" style="grid-column:1/-1;">
+  if (isOwner) {
+    // Owner view: show management tabs
+    const ownerPanel   = $("ownerPanel");
+    const visitorPanel = $("visitorPanel");
+    if (ownerPanel)   ownerPanel.style.display   = "block";
+    if (visitorPanel) visitorPanel.style.display = "none";
+
+    // Pre-fill setup form
+    fillSetupForm(shop);
+
+    // Load catalogue management
+    await loadOwnerCatalogueList();
+
+    // If owner came from profile with ?mode=manage, default to catalogues tab (it's already first)
+  } else {
+    // Visitor view: show public catalogues
+    const ownerPanel   = $("ownerPanel");
+    const visitorPanel = $("visitorPanel");
+    if (ownerPanel)   ownerPanel.style.display   = "none";
+    if (visitorPanel) visitorPanel.style.display = "block";
+
+    if (!shop) {
+      $("catalogueGrid").innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;">
           <div style="font-size:40px;">🏪</div>
           <p style="color:#64748b;margin-top:8px;">This shop hasn't been set up yet.</p>
         </div>`;
+      return;
     }
-    return;
+
+    await loadVisitorCatalogues();
   }
-
-  // Render header
-  await renderShopHeader(shop, verified);
-  await loadStats();
-  await loadCatalogues();
-
-  // Auto-open manage mode if owner came from profile
-  if (isOwner && mode === "manage") {
-    publicSection.style.display = "none";
-    manageSection.style.display = "block";
-  }
-
 })();
