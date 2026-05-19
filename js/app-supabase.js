@@ -565,8 +565,60 @@ document.addEventListener("DOMContentLoaded", async () => {
   </article>`;
   };
 
+  // ── PRODUCT / FLASH DETAIL SHEET (in-page modal) ────────
+  function openProductDetailSheet({ imgUrl, name, salePrice, origPrice, desc, shopName, wa }) {
+    // Build a bottom sheet inside home.html without navigating away
+    let sheet = document.getElementById("homeProductDetailSheet");
+    if (!sheet) {
+      sheet = document.createElement("div");
+      sheet.id = "homeProductDetailSheet";
+      sheet.style.cssText = "display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;align-items:flex-end;justify-content:center;";
+      sheet.innerHTML = `
+        <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;
+          padding:20px 16px 48px;max-height:92vh;overflow-y:auto;animation:slideUpSheet .22s ease;">
+          <style>@keyframes slideUpSheet{from{transform:translateY(100%)}to{transform:translateY(0)}}</style>
+          <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+            <button id="closeHomeProductSheet" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748b;">✕</button>
+          </div>
+          <div id="homeProductSheetBody"></div>
+        </div>`;
+      document.body.appendChild(sheet);
+      document.getElementById("closeHomeProductSheet")?.addEventListener("click", closeProductDetailSheet);
+      sheet.addEventListener("click", (e) => { if (e.target === sheet) closeProductDetailSheet(); });
+    }
+    const waNum = formatWaNumber(wa || "");
+    const body = document.getElementById("homeProductSheetBody");
+    if (body) body.innerHTML = `
+      ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" style="width:100%;border-radius:12px;object-fit:cover;max-height:280px;display:block;margin-bottom:14px;background:#f1f5f9;" loading="lazy" />` : ""}
+      <div style="font-size:18px;font-weight:900;color:#0f172a;margin-bottom:6px;">${escapeHtml(name || "Product")}</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        ${salePrice ? `<span style="font-size:20px;font-weight:900;color:#ef4444;">${escapeHtml(salePrice)}</span>` : ""}
+        ${origPrice ? `<span style="font-size:14px;color:#94a3b8;text-decoration:line-through;">${escapeHtml(origPrice)}</span>` : ""}
+      </div>
+      ${desc ? `<div style="font-size:14px;color:#475569;line-height:1.5;margin-bottom:14px;">${escapeHtml(desc)}</div>` : ""}
+      ${shopName ? `<div style="font-size:12px;color:#64748b;margin-bottom:14px;">🏪 ${escapeHtml(shopName)}</div>` : ""}
+      ${waNum
+        ? `<button onclick="window.open('https://wa.me/${waNum}?text=${encodeURIComponent(`Assalamu alaikum! I saw *${name}* on weSPACE. Is it available?`)}','_blank')"
+            style="background:#25d366;color:#fff;border:none;width:100%;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" style="width:18px;" alt="WA"> Chat Seller on WhatsApp
+          </button>`
+        : `<div style="text-align:center;color:#94a3b8;font-size:13px;">No WhatsApp number available</div>`}`;
+    sheet.style.display = "flex";
+  }
+
+  function closeProductDetailSheet() {
+    const sheet = document.getElementById("homeProductDetailSheet");
+    if (sheet) sheet.style.display = "none";
+  }
+
+  // Close on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeProductDetailSheet();
+  });
+
   // ── FLASH SALES ──
   let activeFlashCat = "";
+  let cachedFlashItems = [];
 
   function renderFlashCard(p) {
     let imgUrl = "";
@@ -581,8 +633,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const hoursLeft = endsAt ? Math.max(0, Math.round((endsAt - Date.now()) / 3600000)) : null;
     const shopName = p.shop?.shop_name || p.author_name || "Shop";
 
+    // Shop catalogue products → go to product.html; posts → open detail sheet
+    const isShopProduct = !!p.seller_id;
+    const clickAttr = isShopProduct
+      ? `data-action="open-product" data-productid="${escapeHtml(p.id)}"`
+      : `data-action="open-flash-detail" data-flashid="${escapeHtml(p.id)}"`;
+
     return `
-      <div class="flash-card" data-action="open-product" data-productid="${escapeHtml(p.id)}">
+      <div class="flash-card" ${clickAttr}>
         <div class="flash-img-wrap">
           ${imgUrl ? `<img class="flash-img" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(p.product_name || p.description || "")}" loading="lazy" />` : `<div class="flash-img" style="display:flex;align-items:center;justify-content:center;font-size:32px;">⚡</div>`}
           ${discount > 0 ? `<span class="flash-discount-badge">-${discount}%</span>` : ""}
@@ -625,6 +683,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       marketList.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 16px;color:#64748b;"><div style="font-size:40px;margin-bottom:10px;">⚡</div><div style="font-weight:700;color:#0f172a;margin-bottom:4px;">No flash sales right now</div><div style="font-size:13px;">Check back soon for deals</div></div>`;
       return;
     }
+    cachedFlashItems = flashItems; // cache for click handler
     marketList.innerHTML = flashItems.map(p => renderFlashCard(p)).join("");
   }
 
@@ -776,7 +835,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function renderFeed() {
     if (!FEED_LIST) return;
-    if (!feedProductsLoaded) {
+    // If shop.js signalled that a new product was added, force reload
+    let forceReload = false;
+    try {
+      if (localStorage.getItem("wespace_feed_stale") === "1") {
+        localStorage.removeItem("wespace_feed_stale");
+        forceReload = true;
+        feedProductsLoaded = false;
+      }
+    } catch {}
+    if (!feedProductsLoaded || forceReload) {
       FEED_LIST.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:#64748b;">Loading products…</div>`;
       await loadVerifiedSellers();
       await loadFeedProducts();
@@ -1496,11 +1564,33 @@ document.addEventListener("DOMContentLoaded", async () => {
       modal?.setAttribute("aria-hidden", "true");
     });
 
-    // Open product detail page
+    // Open product detail page (shop catalogue products)
     const prodCard = e.target.closest("[data-action='open-product']");
     if (prodCard) {
       const productId = prodCard.dataset.productid;
       if (productId) window.location.href = `product.html?id=${encodeURIComponent(productId)}`;
+      return;
+    }
+
+    // Open flash detail sheet (post-sourced flash items — no product.html page)
+    const flashCard = e.target.closest("[data-action='open-flash-detail']");
+    if (flashCard) {
+      const flashId = flashCard.dataset.flashid;
+      const item = cachedFlashItems.find(f => String(f.id) === String(flashId));
+      if (!item) return;
+      let imgUrl = "";
+      if (Array.isArray(item.image_paths) && item.image_paths.length) imgUrl = supabase.storage.from("shop-products").getPublicUrl(item.image_paths[0]).data.publicUrl;
+      else if (item.image_path) imgUrl = supabase.storage.from("shop-products").getPublicUrl(item.image_path).data.publicUrl;
+      else if (Array.isArray(item.image_urls) && item.image_urls.length) imgUrl = item.image_urls[0];
+      openProductDetailSheet({
+        imgUrl,
+        name:      item.product_name || item.description || "Flash Deal",
+        salePrice: item.price_text || item.price || "",
+        origPrice: item.original_price || "",
+        desc:      item.description || "",
+        shopName:  item.shop?.shop_name || item.author_name || "",
+        wa:        item.whatsapp || item.shop?.whatsapp || "",
+      });
       return;
     }
 
