@@ -6,90 +6,105 @@
   <title>weSPACE Shop</title>
   <link rel="stylesheet" href="css/style.css?v=3" />
   <style>
-    /* ── SHOP MANAGEMENT TABS ── */
-    .mgmt-tabs {
-      display: flex; gap: 0; border-bottom: 2px solid #e5e7eb;
-      margin: 14px 0 0; background: #fff; border-radius: 12px 12px 0 0; overflow: hidden;
+    /* ── SHOP HEADER ── */
+    .shop-page-banner {
+      width: 100%; height: 160px; object-fit: cover; display: block;
+      background: linear-gradient(135deg, #1e40af, #2563eb);
     }
-    .mgmt-tab {
-      flex: 1; padding: 12px 8px; font-size: 13px; font-weight: 700;
-      color: #64748b; background: none; border: none; cursor: pointer;
-      border-bottom: 3px solid transparent; transition: all 0.15s;
+    .shop-page-banner-ph {
+      width: 100%; height: 160px;
+      background: linear-gradient(135deg, #1e40af, #2563eb);
+      display: flex; align-items: center; justify-content: center; font-size: 50px;
     }
-    .mgmt-tab.active { color: #2563eb; border-bottom-color: #2563eb; background: #f8fafc; }
-    .mgmt-panel { display: none; padding: 16px 0; }
+    .shop-page-logo-wrap { margin-top: -30px; margin-left: 16px; display: inline-block; }
+    .shop-page-logo {
+      width: 60px; height: 60px; border-radius: 12px; border: 3px solid #fff;
+      object-fit: cover; background: #dbeafe; box-shadow: 0 2px 8px rgba(0,0,0,.18); display: block;
+    }
+    .shop-page-logo-ph {
+      width: 60px; height: 60px; border-radius: 12px; border: 3px solid #fff;
+      background: #dbeafe; box-shadow: 0 2px 8px rgba(0,0,0,.18);
+      display: flex; align-items: center; justify-content: center; font-size: 26px;
+    }
+    .shop-page-info { padding: 6px 16px 14px; }
+    .shop-page-name { font-size: 20px; font-weight: 900; color: #0f172a; display: flex; align-items: center; gap: 8px; }
+    .shop-page-verified { background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+    .shop-page-meta { font-size: 12px; color: #64748b; margin-top: 3px; }
+    .shop-page-actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+    .shop-wa-pill { background: #25d366; color: #fff; border: none; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+    .shop-share-pill { background: #f1f5f9; color: #0f172a; border: none; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+    /* ── MANAGEMENT TABS ── */
+    .mgmt-tabs { display: flex; border-bottom: 2px solid #e5e7eb; margin: 16px 0 0; }
+    .mgmt-tab { flex: 1; padding: 11px 8px; font-size: 13px; font-weight: 700; color: #64748b; background: none; border: none; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.15s; margin-bottom: -2px; }
+    .mgmt-tab.active { color: #2563eb; border-bottom-color: #2563eb; }
+    .mgmt-panel { display: none; padding: 14px 0 80px; }
     .mgmt-panel.active { display: block; }
 
-    /* ── SHOP HEADER ── */
-    .shop-hero { position: relative; margin-bottom: 12px; }
-    .shop-banner-img { width: 100%; height: 140px; object-fit: cover; border-radius: 14px; display: block; background: linear-gradient(135deg,#1e40af,#2563eb); }
-    .shop-banner-placeholder { width: 100%; height: 140px; background: linear-gradient(135deg,#1e40af,#2563eb); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 40px; }
-    .shop-logo-wrap { position: absolute; bottom: -22px; left: 16px; }
-    .shop-logo-img { width: 52px; height: 52px; border-radius: 12px; border: 3px solid #fff; object-fit: cover; background: #dbeafe; box-shadow: 0 2px 8px rgba(0,0,0,.14); display: block; }
-    .shop-logo-placeholder { width: 52px; height: 52px; border-radius: 12px; border: 3px solid #fff; background: #dbeafe; box-shadow: 0 2px 8px rgba(0,0,0,.14); display: flex; align-items: center; justify-content: center; font-size: 22px; }
-    .shop-info-bar { margin-top: 28px; padding: 0 4px; }
-    .shop-name-row { display: flex; align-items: center; gap: 8px; }
-    .shop-name-h { font-size: 20px; font-weight: 900; color: #0f172a; }
-    .shop-verified-badge { background: #dcfce7; color: #15803d; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px; }
-    .shop-meta-row { font-size: 12px; color: #64748b; margin-top: 4px; }
+    /* ── NEW CATALOGUE BOX ── */
+    .new-cat-box { background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 12px; padding: 14px; margin-bottom: 20px; }
+    .new-cat-box-title { font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 10px; }
 
-    /* ── CATALOGUE CARD ── */
-    .cat-mgmt-card {
-      background: #fff; border: 1.5px solid #e5e7eb; border-radius: 14px;
-      padding: 14px 14px 12px; margin-bottom: 12px; position: relative;
-    }
-    .cat-mgmt-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .cat-mgmt-card-name { font-size: 15px; font-weight: 800; color: #0f172a; }
-    .cat-mgmt-card-count { font-size: 11px; color: #64748b; }
-    .cat-mgmt-card-actions { display: flex; gap: 8px; }
-    .cat-mgmt-expand-btn { background: #eff6ff; color: #2563eb; border: none; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
-    .cat-mgmt-add-btn { background: #2563eb; color: #fff; border: none; font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 8px; cursor: pointer; }
-    .cat-mgmt-products { display: none; margin-top: 10px; }
-    .cat-mgmt-products.open { display: block; }
-    .cat-prod-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid #f1f5f9; }
-    .cat-prod-thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: #f1f5f9; border: 1px solid #e5e7eb; flex-shrink: 0; }
-    .cat-prod-info { flex: 1; min-width: 0; }
-    .cat-prod-name { font-size: 13px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cat-prod-price { font-size: 11px; color: #2563eb; font-weight: 700; margin-top: 2px; }
-    .cat-prod-del { background: #fee2e2; color: #dc2626; border: none; font-size: 11px; font-weight: 700; padding: 5px 9px; border-radius: 7px; cursor: pointer; flex-shrink: 0; }
+    /* ── OWNER CATALOGUE MGMT CARD ── */
+    .mgmt-cat-card { background: #fff; border: 1.5px solid #e5e7eb; border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+    .mgmt-cat-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px; justify-content: space-between; }
+    .mgmt-cat-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .mgmt-cat-cover { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; background: #f1f5f9; flex-shrink: 0; }
+    .mgmt-cat-cover-ph { width: 42px; height: 42px; border-radius: 8px; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .mgmt-cat-name { font-size: 14px; font-weight: 800; color: #0f172a; }
+    .mgmt-cat-count { font-size: 11px; color: #64748b; margin-top: 1px; }
+    .mgmt-cat-btns { display: flex; gap: 6px; flex-shrink: 0; }
+    .mgmt-cat-expand { background: #eff6ff; color: #2563eb; border: none; font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 7px; cursor: pointer; }
+    .mgmt-cat-add    { background: #2563eb; color: #fff;    border: none; font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 7px; cursor: pointer; }
+    .mgmt-cat-del    { background: #fee2e2; color: #dc2626; border: none; font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 7px; cursor: pointer; }
 
-    /* ── ADD PRODUCT MODAL ── */
-    .add-prod-modal-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-      z-index: 600; align-items: flex-end; justify-content: center;
-    }
-    .add-prod-modal-overlay.show { display: flex; }
-    .add-prod-modal {
-      background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 600px;
-      padding: 20px 16px 40px; max-height: 90vh; overflow-y: auto;
-      animation: slideUp 0.25s ease;
-    }
+    /* inline products inside mgmt card */
+    .mgmt-prod-list { border-top: 1px solid #f1f5f9; padding: 0 14px 8px; display: none; }
+    .mgmt-prod-list.open { display: block; }
+    .mgmt-prod-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f8fafc; }
+    .mgmt-prod-thumb { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; background: #f1f5f9; flex-shrink: 0; }
+    .mgmt-prod-thumb-ph { width: 44px; height: 44px; border-radius: 8px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .mgmt-prod-info { flex: 1; min-width: 0; }
+    .mgmt-prod-name { font-size: 13px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .mgmt-prod-price { font-size: 11px; color: #2563eb; font-weight: 700; margin-top: 2px; }
+    .mgmt-prod-del { background: #fee2e2; color: #dc2626; border: none; font-size: 11px; font-weight: 700; padding: 5px 8px; border-radius: 6px; cursor: pointer; }
+
+    /* ── SETUP PANEL LABELS ── */
+    .setup-label { font-size: 12px; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: .04em; margin: 16px 0 8px; padding-bottom: 4px; border-bottom: 1.5px solid #e5e7eb; }
+    .setup-preview-banner { width: 100%; height: 90px; object-fit: cover; border-radius: 10px; margin-top: 6px; display: none; }
+    .setup-preview-logo   { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; margin-top: 6px; display: none; }
+
+    /* ── ADD PRODUCT BOTTOM SHEET ── */
+    .add-prod-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 700; align-items: flex-end; justify-content: center; }
+    .add-prod-overlay.show { display: flex; }
+    .add-prod-sheet { background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 600px; padding: 20px 16px 48px; max-height: 92vh; overflow-y: auto; animation: slideUp .22s ease; }
     @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    .add-prod-modal-title { font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
-    .add-prod-close { background: none; border: none; font-size: 18px; cursor: pointer; color: #64748b; }
+    .add-prod-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .add-prod-title { font-size: 15px; font-weight: 800; color: #0f172a; }
+    .add-prod-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b; padding: 4px; }
 
-    /* ── CREATE CATALOGUE FORM ── */
-    .create-cat-form { background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 12px; padding: 14px; margin-bottom: 18px; }
-    .create-cat-form-title { font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 10px; }
+    /* ── PRODUCT DETAIL SHEET (flash/feed) ── */
+    .prod-detail-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 700; align-items: flex-end; justify-content: center; }
+    .prod-detail-overlay.show { display: flex; }
+    .prod-detail-sheet { background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 600px; padding: 20px 16px 48px; max-height: 92vh; overflow-y: auto; animation: slideUp .22s ease; }
+    .prod-detail-close-row { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+    .prod-detail-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #64748b; }
+    .prod-detail-img { width: 100%; border-radius: 12px; object-fit: cover; max-height: 280px; display: block; margin-bottom: 14px; background: #f1f5f9; }
+    .prod-detail-name { font-size: 18px; font-weight: 900; color: #0f172a; margin-bottom: 6px; }
+    .prod-detail-prices { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .prod-detail-sale { font-size: 20px; font-weight: 900; color: #ef4444; }
+    .prod-detail-orig { font-size: 14px; color: #94a3b8; text-decoration: line-through; }
+    .prod-detail-desc { font-size: 14px; color: #475569; line-height: 1.5; margin-bottom: 16px; }
+    .prod-detail-wa { background: #25d366; color: #fff; border: none; width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
-    /* ── SETUP FORM ── */
-    .setup-section-title { font-size: 13px; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.04em; margin: 18px 0 8px; padding-bottom: 4px; border-bottom: 1.5px solid #e5e7eb; }
-    .setup-img-preview { width: 100%; height: 100px; object-fit: cover; border-radius: 10px; margin-top: 6px; display: none; }
-    .setup-logo-preview { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; margin-top: 6px; display: none; }
+    /* ── BACK BUTTON ── */
+    .back-to-cat-btn { display: inline-flex; align-items: center; gap: 6px; background: #f1f5f9; color: #0f172a; border: none; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 14px; }
 
-    /* ── VISITOR VIEW (no manage panel) ── */
-    .visitor-cat-card {
-      background: #fff; border: 1px solid #e5e7eb; border-radius: 14px;
-      overflow: hidden; cursor: pointer; transition: box-shadow 0.15s;
-      margin-bottom: 12px;
-    }
-    .visitor-cat-banner { width: 100%; height: 90px; object-fit: cover; background: linear-gradient(135deg,#1e40af,#2563eb); display: block; }
-    .visitor-cat-body { padding: 10px 12px; }
-    .visitor-cat-name { font-size: 14px; font-weight: 800; color: #0f172a; }
-    .visitor-cat-count { font-size: 11px; color: #64748b; margin-top: 2px; }
-
-    .shop-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; padding-bottom: 80px; }
-    @media (min-width: 480px) { .shop-grid { grid-template-columns: repeat(3,1fr); } }
+    /* ── VISITOR PRODUCT GRID (uses original .shop-grid + .shop-tile CSS) ── */
+    .catalogue-card { cursor: pointer; }
+    .catalogue-card-img { width: 100%; aspect-ratio: 4/3; overflow: hidden; border-radius: 10px 10px 0 0; background: #f1f5f9; display: flex; align-items: center; justify-content: center; }
+    .catalogue-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .catalogue-card-name { padding: 10px 12px; font-size: 14px; font-weight: 600; color: #0f172a; }
   </style>
 </head>
 <body>
@@ -97,48 +112,53 @@
 <header class="topbar">
   <button id="shopBackBtn" class="icon-btn" type="button" aria-label="Back">←</button>
   <div id="topbarTitle" style="font-weight:700;">Shop</div>
-  <button id="copyShopLinkBtn" class="icon-btn" type="button" title="Copy shop link" style="font-size:16px;">🔗</button>
+  <button id="copyShopLinkBtn" class="icon-btn" type="button" title="Share shop" style="font-size:18px;">🔗</button>
 </header>
 
-<main class="page">
-  <div class="container">
+<main class="page" style="padding-top:60px;padding-bottom:0;">
+  <div class="container" style="padding:0;max-width:100%;">
 
-    <!-- SHOP HERO (always visible) -->
-    <div class="shop-hero" id="shopHero">
-      <div class="shop-banner-placeholder" id="shopBannerPlaceholder">🏪</div>
-      <img class="shop-banner-img" id="shopBannerImg" alt="Shop banner" style="display:none;" loading="lazy" />
-      <div class="shop-logo-wrap">
-        <div class="shop-logo-placeholder" id="shopLogoPlaceholder">🏬</div>
-        <img class="shop-logo-img" id="shopLogoImg" alt="Shop logo" style="display:none;" loading="lazy" />
+    <!-- SHOP BANNER -->
+    <div id="shopBannerPlaceholder" class="shop-page-banner-ph">🏪</div>
+    <img id="shopBannerImg" class="shop-page-banner" alt="Shop banner" style="display:none;" loading="lazy" />
+
+    <!-- SHOP LOGO -->
+    <div class="shop-page-logo-wrap">
+      <div id="shopLogoPlaceholder" class="shop-page-logo-ph">🏬</div>
+      <img id="shopLogoImg" class="shop-page-logo" alt="Shop logo" style="display:none;" loading="lazy" />
+    </div>
+
+    <!-- SHOP INFO -->
+    <div class="shop-page-info">
+      <div class="shop-page-name">
+        <span id="shopTitle">Shop</span>
+        <span id="shopVerifiedBadge" class="shop-page-verified" style="display:none;">✔ Verified</span>
+      </div>
+      <div class="shop-page-meta" id="shopMeta"></div>
+      <div class="shop-page-actions">
+        <button id="shopWaBtn" class="shop-wa-pill" style="display:none;">
+          <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" style="width:16px;" alt="WA"> WhatsApp
+        </button>
+        <button id="shopShareBtn" class="shop-share-pill">🔗 Share Shop</button>
       </div>
     </div>
 
-    <div class="shop-info-bar">
-      <div class="shop-name-row">
-        <span class="shop-name-h" id="shopTitle">Shop</span>
-        <span id="shopVerifiedBadge" class="shop-verified-badge" style="display:none;">✔ Verified</span>
-      </div>
-      <div class="shop-meta-row" id="shopMeta"></div>
-    </div>
-
-    <!-- ══════════════════════════════════════════ -->
-    <!-- OWNER MANAGEMENT (shown only to shop owner) -->
-    <!-- ══════════════════════════════════════════ -->
-    <div id="ownerPanel" style="display:none;">
+    <!-- ══════════════════════════════ -->
+    <!-- OWNER PANEL                   -->
+    <!-- ══════════════════════════════ -->
+    <div id="ownerPanel" style="display:none; padding:0 14px;">
       <nav class="mgmt-tabs">
         <button class="mgmt-tab active" data-panel="catalogues" type="button">📦 Catalogues</button>
         <button class="mgmt-tab" data-panel="setup" type="button">⚙️ Shop Setup</button>
       </nav>
 
-      <!-- PANEL: CATALOGUE MANAGEMENT -->
+      <!-- CATALOGUES TAB -->
       <div class="mgmt-panel active" id="panel-catalogues">
-
-        <!-- Create new catalogue -->
-        <div class="create-cat-form">
-          <div class="create-cat-form-title">➕ New Catalogue</div>
+        <div class="new-cat-box">
+          <div class="new-cat-box-title">➕ Create New Catalogue</div>
           <label class="field">
-            <span>Catalogue name (e.g. Bags, Phones)</span>
-            <input id="catName" type="text" maxlength="40" placeholder="e.g. Bags" />
+            <span>Catalogue name</span>
+            <input id="catName" type="text" maxlength="40" placeholder="e.g. Bags, Phones, Shoes" />
           </label>
           <label class="field">
             <span>Cover image (optional)</span>
@@ -146,16 +166,14 @@
           </label>
           <button class="btn primary" id="createCatalogueBtn" type="button">Create Catalogue</button>
         </div>
-
-        <!-- Existing catalogues with expandable product lists -->
         <div id="catalogueMgmtList">
-          <div style="text-align:center;padding:30px;color:#64748b;">Loading catalogues…</div>
+          <div style="text-align:center;padding:30px;color:#64748b;">Loading…</div>
         </div>
       </div>
 
-      <!-- PANEL: SHOP SETUP -->
+      <!-- SETUP TAB -->
       <div class="mgmt-panel" id="panel-setup">
-        <div class="setup-section-title">Basic Info</div>
+        <div class="setup-label">Basic Info</div>
         <label class="field">
           <span>Shop name</span>
           <input id="setupShopName" type="text" maxlength="60" placeholder="e.g. Amina's Boutique" />
@@ -184,83 +202,79 @@
             <option>Phones & Gadgets</option><option>Fashion & Clothing</option>
             <option>Shoes & Bags</option><option>Perfumes & Beauty</option>
             <option>Food & Groceries</option><option>Electronics</option>
-            <option>Fabric & Textiles</option><option>Furniture & Home</option><option>Services</option>
+            <option>Fabric & Textiles</option><option>Furniture & Home</option>
+            <option>Services</option>
           </select>
         </label>
 
-        <div class="setup-section-title">Branding</div>
+        <div class="setup-label">Branding</div>
         <label class="field">
           <span>Shop banner image</span>
           <input id="setupBanner" type="file" accept="image/*" />
-          <img id="setupBannerPreview" class="setup-img-preview" alt="Banner preview" />
+          <img id="setupBannerPreview" class="setup-preview-banner" alt="Banner preview" />
         </label>
         <label class="field">
-          <span>Shop logo image</span>
+          <span>Shop logo</span>
           <input id="setupLogo" type="file" accept="image/*" />
-          <img id="setupLogoPreview" class="setup-logo-preview" alt="Logo preview" />
+          <img id="setupLogoPreview" class="setup-preview-logo" alt="Logo preview" />
         </label>
 
-        <div style="margin-top:16px;">
-          <button class="btn primary" id="saveSetupBtn" type="button" style="width:100%;">💾 Save Shop Settings</button>
-        </div>
+        <button class="btn primary" id="saveSetupBtn" type="button" style="width:100%;margin-top:18px;">
+          💾 Save Shop Settings
+        </button>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!-- VISITOR VIEW (shown to non-owners) -->
-    <!-- ══════════════════════════════════════════ -->
-    <div id="visitorPanel" style="display:none;">
-      <p class="panel-hint" id="shopHint" style="margin:10px 0 14px;">Browse catalogues</p>
-      <div id="catalogueGrid" class="shop-grid"></div>
+    <!-- ══════════════════════════════ -->
+    <!-- VISITOR PANEL                 -->
+    <!-- ══════════════════════════════ -->
+    <div id="visitorPanel" style="display:none; padding:0 14px;">
+      <!-- Catalogue grid — uses .shop-card CSS from style.css -->
+      <div id="catalogueGrid" class="shop-grid" style="margin-top:14px; padding-bottom:80px;"></div>
 
-      <!-- Catalogue product view (slides in) -->
-      <div id="catalogueView" style="display:none; margin-top:12px;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-          <button id="backToCatalogues" class="btn ghost" type="button" style="padding:6px 12px;">← Back</button>
-          <div class="panel-title" id="catalogueNameTitle" style="margin:0;">Catalogue</div>
-        </div>
-        <div id="productGrid" class="shop-grid"></div>
+      <!-- Product view inside a catalogue -->
+      <div id="catalogueView" style="display:none; margin-top:8px;">
+        <button id="backToCatalogues" class="back-to-cat-btn">← Catalogues</button>
+        <h3 id="catalogueNameTitle" style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:12px;"></h3>
+        <div id="productGrid" class="shop-grid" style="padding-bottom:80px;"></div>
       </div>
     </div>
 
   </div>
 </main>
 
-<!-- ADD PRODUCT MODAL (owner only) -->
-<div class="add-prod-modal-overlay" id="addProdModal" aria-hidden="true">
-  <div class="add-prod-modal">
-    <div class="add-prod-modal-title">
-      <span>Add Product to <span id="addProdCatName">Catalogue</span></span>
+<!-- ADD PRODUCT BOTTOM SHEET -->
+<div class="add-prod-overlay" id="addProdModal" aria-hidden="true">
+  <div class="add-prod-sheet">
+    <div class="add-prod-header">
+      <div class="add-prod-title">Add to: <span id="addProdCatName" style="color:#2563eb;"></span></div>
       <button class="add-prod-close" id="closeAddProdModal" type="button">✕</button>
     </div>
-    <label class="field">
-      <span>Product name</span>
-      <input id="productName" type="text" placeholder="e.g. iPhone 11 128GB" maxlength="80" />
-    </label>
-    <label class="field">
-      <span>Price</span>
-      <input id="prodPrice" type="text" maxlength="20" placeholder="₦5,000" />
-    </label>
-    <label class="field">
-      <span>Description (optional)</span>
-      <textarea id="prodDesc" rows="2" maxlength="200" placeholder="Short description…"></textarea>
-    </label>
-    <label class="field">
-      <span>Product images (up to 5)</span>
-      <input id="prodImage" type="file" accept="image/*" multiple />
-    </label>
-    <div style="margin-top:14px;">
-      <button class="btn primary" id="addProductBtn" type="button" style="width:100%;">Add Product</button>
-    </div>
+    <label class="field"><span>Product name</span><input id="productName" type="text" placeholder="e.g. iPhone 11 128GB" maxlength="80" /></label>
+    <label class="field"><span>Sale / regular price</span><input id="prodPrice" type="text" maxlength="20" placeholder="e.g. ₦25,000" /></label>
+    <label class="field"><span>Original price (for discounts, optional)</span><input id="prodOrigPrice" type="text" maxlength="20" placeholder="e.g. ₦30,000" /></label>
+    <label class="field"><span>Description (optional)</span><textarea id="prodDesc" rows="2" maxlength="200" placeholder="Short description…"></textarea></label>
+    <label class="field"><span>Product images (up to 5)</span><input id="prodImage" type="file" accept="image/*" multiple /></label>
+    <button class="btn primary" id="addProductBtn" type="button" style="width:100%;margin-top:14px;">Add Product</button>
   </div>
 </div>
 
-<!-- FULLSCREEN IMAGE MODAL -->
+<!-- PRODUCT DETAIL MODAL (flash / feed product) -->
+<div class="prod-detail-overlay" id="prodDetailModal" aria-hidden="true">
+  <div class="prod-detail-sheet">
+    <div class="prod-detail-close-row">
+      <button class="prod-detail-close" id="closeProdDetail" type="button">✕</button>
+    </div>
+    <div id="prodDetailBody"></div>
+  </div>
+</div>
+
+<!-- FULLSCREEN IMAGE LIGHTBOX -->
 <div id="imgModal" class="img-modal" aria-hidden="true">
   <button id="imgModalClose" class="img-modal-close" type="button">✕</button>
   <img id="imgModalImg" alt="Full image" />
 </div>
 
-<script type="module" src="js/shop.js?v=3"></script>
+<script type="module" src="js/shop.js?v=4"></script>
 </body>
 </html>
