@@ -491,7 +491,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // =========================
   // POST CARD RENDER
   // =========================
-  const connectBtnHTML = (authorId) => "";
+  const connectBtnHTML = () => ""; // connect feature disabled
 
   const visitShopHTML = (p) => {
     if (p.type !== "market") return "";
@@ -545,7 +545,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               ${verifiedSellerSet.has(p.author_id) ? `<span class="verified-badge" title="Verified seller">✔</span>` : ""}
             </span>
           </div>
-          <div class="name-right">${connectBtnHTML(p.author_id)}${visitShopHTML(p)}${deleteBtn}</div>
+          <div class="name-right">${visitShopHTML(p)}${deleteBtn}</div>
         </div>
         <div class="sub-row">${escapeHtml(p.author_campus || "")}${p.author_department ? " • " + escapeHtml(p.author_department) : ""}</div>
       </div>
@@ -566,7 +566,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   // ── PRODUCT / FLASH DETAIL SHEET (in-page modal) ────────
-  function openProductDetailSheet({ imgUrl, name, salePrice, origPrice, desc, shopName, wa }) {
+  function openProductDetailSheet({ imgUrl, name, salePrice, origPrice, desc, shopName, wa, authorId }) {
     // Build a bottom sheet inside home.html without navigating away
     let sheet = document.getElementById("homeProductDetailSheet");
     if (!sheet) {
@@ -597,12 +597,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       </div>
       ${desc ? `<div style="font-size:14px;color:#475569;line-height:1.5;margin-bottom:14px;">${escapeHtml(desc)}</div>` : ""}
       ${shopName ? `<div style="font-size:12px;color:#64748b;margin-bottom:14px;">🏪 ${escapeHtml(shopName)}</div>` : ""}
-      ${waNum
-        ? `<button onclick="window.open('https://wa.me/${waNum}?text=${encodeURIComponent(`Assalamu alaikum! I saw *${name}* on weSPACE. Is it available?`)}','_blank')"
-            style="background:#25d366;color:#fff;border:none;width:100%;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" style="width:18px;" alt="WA"> Chat Seller on WhatsApp
-          </button>`
-        : `<div style="text-align:center;color:#94a3b8;font-size:13px;">No WhatsApp number available</div>`}`;
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+        ${waNum
+          ? `<button onclick="window.open('https://wa.me/${waNum}?text=${encodeURIComponent(`Assalamu alaikum! I saw *${name}* on weSPACE. Is it available?`)}','_blank')"
+              style="background:#25d366;color:#fff;border:none;width:100%;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+              <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" style="width:18px;" alt="WA"> Chat Seller on WhatsApp
+            </button>`
+          : `<div style="text-align:center;color:#94a3b8;font-size:13px;padding:10px 0;">No WhatsApp number on this post</div>`}
+        ${authorId
+          ? `<button onclick="closeProductDetailSheet();window.location.href='shop.html?seller=${encodeURIComponent(authorId)}'"
+              style="background:#eff6ff;color:#2563eb;border:2px solid #2563eb;width:100%;padding:13px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+              🛒 Visit Seller's Shop
+            </button>`
+          : ""}
+      </div>`;
     sheet.style.display = "flex";
   }
 
@@ -621,10 +629,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   let cachedFlashItems = [];
 
   function renderFlashCard(p) {
+    // Resolve image URL:
+    // Posts use image_urls (Supabase public URLs already)
+    // Shop products use image_paths (need getPublicUrl)
     let imgUrl = "";
-    if (Array.isArray(p.image_paths) && p.image_paths.length) imgUrl = supabase.storage.from("shop-products").getPublicUrl(p.image_paths[0]).data.publicUrl;
-    else if (p.image_path) imgUrl = supabase.storage.from("shop-products").getPublicUrl(p.image_path).data.publicUrl;
-    else if (Array.isArray(p.image_urls) && p.image_urls.length) imgUrl = p.image_urls[0];
+    if (Array.isArray(p.image_urls) && p.image_urls.length) {
+      imgUrl = p.image_urls[0]; // posts — already full URL
+    } else if (Array.isArray(p.image_paths) && p.image_paths.length) {
+      imgUrl = supabase.storage.from("shop-products").getPublicUrl(p.image_paths[0]).data.publicUrl;
+    } else if (p.image_path) {
+      imgUrl = supabase.storage.from("shop-products").getPublicUrl(p.image_path).data.publicUrl;
+    }
 
     const salePrice = p.price_text || p.price || "";
     const origPrice = p.original_price || "";
@@ -660,30 +675,46 @@ document.addEventListener("DOMContentLoaded", async () => {
   function renderMarket() {
     if (!marketList) return;
 
-    // Filter: flash sale posts (type=market) + shop products marked as flash
-    let flashItems = [];
+    // Flash Sales = ONLY posts with type === "market"
+    // (shop products do not appear here — they have their own shop page)
+    let flashItems = cachedPosts
+      .filter(p => p.type === "market")
+      .map(p => {
+        // image_urls can be a JSON string from Supabase view — parse it
+        let imgArr = p.image_urls;
+        if (typeof imgArr === "string") {
+          try { imgArr = JSON.parse(imgArr); } catch { imgArr = []; }
+        }
+        if (!Array.isArray(imgArr)) imgArr = [];
 
-    // From posts (type=market with price)
-    const marketPosts = cachedPosts.filter(p => p.type === "market" && p.price);
-    flashItems = marketPosts.map(p => ({
-      id: p.id, product_name: p.description?.slice(0, 60), description: p.description,
-      price_text: p.price, original_price: p.original_price || "",
-      image_urls: p.image_urls, image_paths: null, image_path: null,
-      flash_ends_at: p.flash_ends_at || null,
-      author_name: p.author_name, shop: null,
-    }));
+        return {
+          id:             p.id,
+          author_id:      p.author_id,
+          product_name:   p.description?.slice(0, 60) || "",
+          description:   p.description || "",
+          price_text:    p.price || "",
+          original_price: p.original_price || "",
+          image_urls:    imgArr,   // correctly passed through
+          image_paths:   null,     // these are post images, not storage paths
+          image_path:    null,
+          flash_ends_at: p.flash_ends_at || null,
+          author_name:   p.author_name || "User",
+          whatsapp:      p.whatsapp || "",
+          category:      p.category || "",
+          shop:          null,
+          seller_id:     null,     // posts are NOT shop products → open detail sheet
+        };
+      });
 
-    // Also from feed products marked as flash
-    const flashProds = cachedFeedProducts.filter(p => p.is_flash || p.original_price);
-    flashItems = [...flashItems, ...flashProds.map(p => ({ ...p }))];
-
-    if (activeFlashCat) flashItems = flashItems.filter(p => p.category === activeFlashCat || p.shop?.category === activeFlashCat);
+    if (activeFlashCat) {
+      flashItems = flashItems.filter(p => !p.category || p.category === activeFlashCat);
+    }
 
     if (!flashItems.length) {
-      marketList.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 16px;color:#64748b;"><div style="font-size:40px;margin-bottom:10px;">⚡</div><div style="font-weight:700;color:#0f172a;margin-bottom:4px;">No flash sales right now</div><div style="font-size:13px;">Check back soon for deals</div></div>`;
+      marketList.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 16px;color:#64748b;"><div style="font-size:40px;margin-bottom:10px;">⚡</div><div style="font-weight:700;color:#0f172a;margin-bottom:4px;">No flash sales right now</div><div style="font-size:13px;">Be the first to post a deal!</div></div>`;
       return;
     }
-    cachedFlashItems = flashItems; // cache for click handler
+    cachedFlashItems = flashItems;
     marketList.innerHTML = flashItems.map(p => renderFlashCard(p)).join("");
   }
 
@@ -973,7 +1004,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const btn = e.target.closest(".profile-tab");
     if (!btn) return;
     openPTab(btn.dataset.ptab);
-    if (btn.dataset.ptab === "connections") await renderConnectionsList();
+    // connections tab removed
     if (btn.dataset.ptab === "posts") await renderProfilePostsList();
   });
 
@@ -1006,7 +1037,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     const byId = new Map((profs || []).map((x) => [x.id, x]));
     return (posts || []).map((p) => {
       const a = byId.get(p.author_id);
-      return { ...p, author_name: a?.name || "User", author_campus: a?.campus || "", author_department: a?.department || "", author_photo_url: a?.photo_url || "", author_username: a?.username || "" };
+      // Safely parse image_urls — Supabase views sometimes return JSON strings
+      let image_urls = p.image_urls;
+      if (typeof image_urls === "string") {
+        try { image_urls = JSON.parse(image_urls); } catch { image_urls = []; }
+      }
+      if (!Array.isArray(image_urls)) image_urls = [];
+      return {
+        ...p,
+        image_urls,
+        author_name: a?.name || "User",
+        author_campus: a?.campus || "",
+        author_department: a?.department || "",
+        author_photo_url: a?.photo_url || "",
+        author_username: a?.username || "",
+      };
     });
   }
 
@@ -1033,6 +1078,65 @@ document.addEventListener("DOMContentLoaded", async () => {
   // =========================
   // PROFILE POSTS LIST
   // =========================
+  // ── PROFILE POST CARD (feed/flash style, delete only) ───
+  function renderProfileCard(p, canDelete) {
+    const isFlash = p.type === "market";
+    const isFeed  = p.type === "feed" || p.type === "social";
+
+    // Resolve images
+    let imgArr = p.image_urls;
+    if (typeof imgArr === "string") { try { imgArr = JSON.parse(imgArr); } catch { imgArr = []; } }
+    if (!Array.isArray(imgArr)) imgArr = [];
+    const imgUrl = imgArr[0] || "";
+
+    const deleteBtn = canDelete
+      ? `<button type="button" data-action="delete-post" data-postid="${p.id}"
+           style="background:#fee2e2;color:#dc2626;border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">
+           🗑️ Delete
+         </button>`
+      : "";
+
+    if (isFlash) {
+      const salePrice = p.price || "";
+      const origPrice = p.original_price || "";
+      return `
+        <div class="flash-card" style="margin-bottom:12px;border-radius:12px;overflow:hidden;background:#fff;border:1px solid rgba(0,0,0,.08);">
+          <div class="flash-img-wrap" style="position:relative;">
+            ${imgUrl ? `<img class="flash-img" src="${escapeHtml(imgUrl)}" alt="" loading="lazy" style="width:100%;height:180px;object-fit:cover;display:block;" />` : `<div style="height:100px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:32px;">⚡</div>`}
+            <span style="position:absolute;top:8px;left:8px;background:#ef4444;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;">⚡ FLASH SALE</span>
+          </div>
+          <div style="padding:10px 12px;">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+              <div>
+                <div style="font-size:14px;font-weight:800;color:#0f172a;">${escapeHtml(p.description?.slice(0,80) || "Flash Deal")}</div>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+                  ${salePrice ? `<span style="font-size:16px;font-weight:900;color:#ef4444;">${escapeHtml(salePrice)}</span>` : ""}
+                  ${origPrice ? `<span style="font-size:12px;color:#94a3b8;text-decoration:line-through;">${escapeHtml(origPrice)}</span>` : ""}
+                </div>
+                <div style="font-size:11px;color:#64748b;margin-top:3px;">📅 ${new Date(p.created_at).toLocaleDateString()}</div>
+              </div>
+              ${deleteBtn}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // Feed / community / other posts
+    return `
+      <div style="margin-bottom:12px;border-radius:12px;overflow:hidden;background:#fff;border:1px solid rgba(0,0,0,.08);">
+        ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="" loading="lazy" style="width:100%;max-height:260px;object-fit:cover;display:block;" />` : ""}
+        <div style="padding:10px 12px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+            <div style="flex:1;min-width:0;">
+              ${p.description ? `<div style="font-size:13px;color:#0f172a;line-height:1.5;">${escapeHtml(p.description)}</div>` : ""}
+              <div style="font-size:11px;color:#94a3b8;margin-top:4px;">📅 ${new Date(p.created_at).toLocaleDateString()}</div>
+            </div>
+            ${deleteBtn}
+          </div>
+        </div>
+      </div>`;
+  }
+
   async function renderProfilePostsList() {
     if (!myPostsWrap) return;
     const whoId = profileView.mode === "visitor" ? profileView.userId : sessionUser?.id;
@@ -1065,7 +1169,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ].sort((a, b) => new Date(b.sort) - new Date(a.sort));
     const isSelf = profileView.mode === "self" && sessionUser && whoId === sessionUser.id;
     myPostsWrap.innerHTML = combined.length
-      ? combined.map((x) => renderPostCard(x.post, { showDelete: isSelf, feedMeta: x.meta })).join("")
+      ? combined.map((x) => renderProfileCard(x.post, isSelf)).join("")
       : `<p class="empty-state">No posts yet.</p>`;
   }
 
@@ -1579,9 +1683,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       const item = cachedFlashItems.find(f => String(f.id) === String(flashId));
       if (!item) return;
       let imgUrl = "";
-      if (Array.isArray(item.image_paths) && item.image_paths.length) imgUrl = supabase.storage.from("shop-products").getPublicUrl(item.image_paths[0]).data.publicUrl;
+      if (Array.isArray(item.image_urls) && item.image_urls.length) imgUrl = item.image_urls[0];
+      else if (Array.isArray(item.image_paths) && item.image_paths.length) imgUrl = supabase.storage.from("shop-products").getPublicUrl(item.image_paths[0]).data.publicUrl;
       else if (item.image_path) imgUrl = supabase.storage.from("shop-products").getPublicUrl(item.image_path).data.publicUrl;
-      else if (Array.isArray(item.image_urls) && item.image_urls.length) imgUrl = item.image_urls[0];
       openProductDetailSheet({
         imgUrl,
         name:      item.product_name || item.description || "Flash Deal",
@@ -1590,6 +1694,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         desc:      item.description || "",
         shopName:  item.shop?.shop_name || item.author_name || "",
         wa:        item.whatsapp || item.shop?.whatsapp || "",
+        authorId:  item.author_id || null,
       });
       return;
     }
