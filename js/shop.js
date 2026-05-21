@@ -287,23 +287,32 @@ async function loadVisitorProducts(catalogueId, catalogueName) {
     const allImgs = imgs.map(i => publicUrl(i));
 
     return `
-      <div class="shop-tile" style="border-radius:12px;overflow:hidden;background:#fff;border:1px solid rgba(0,0,0,.08);display:flex;flex-direction:column;">
-        <div class="shop-tile-img" style="position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;background:#f1f5f9;flex-shrink:0;">
+      <div style="border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.09);display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s;">
+        <!-- IMAGE -->
+        <div style="position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;background:#f1f5f9;flex-shrink:0;">
           ${imgUrl
             ? `<img src="${esc(imgUrl)}" alt="${esc(p.product_name)}" loading="lazy"
                 data-action="view-img" data-src="${esc(imgUrl)}"
                 style="width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;" />`
-            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;">🖼️</div>`}
-          ${p.price_text ? `<div class="shop-tile-price" style="position:absolute;top:8px;left:8px;">${esc(p.price_text)}</div>` : ""}
-          ${p.original_price ? `<div style="position:absolute;top:8px;right:8px;background:rgba(239,68,68,.9);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:999px;text-decoration:line-through;">${esc(p.original_price)}</div>` : ""}
+            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#cbd5e1;">🖼️</div>`}
+          <!-- PRICE BADGE — bright colour, no dark overlay -->
+          ${p.price_text ? `
+            <div style="position:absolute;bottom:0;left:0;right:0;padding:20px 10px 8px;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,transparent 100%);">
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span style="font-size:14px;font-weight:900;color:#fff;letter-spacing:.3px;">${esc(p.price_text)}</span>
+                ${p.original_price ? `<span style="font-size:11px;color:rgba(255,255,255,.7);text-decoration:line-through;">${esc(p.original_price)}</span>` : ""}
+              </div>
+            </div>` : ""}
         </div>
-        <div style="padding:8px 10px 0;">
-          <div style="font-size:13px;font-weight:700;color:#0f172a;line-height:1.3;">${esc(p.product_name)}</div>
-          ${p.description ? `<div style="font-size:11px;color:#64748b;margin-top:2px;line-height:1.4;">${esc(p.description)}</div>` : ""}
+        <!-- NAME -->
+        <div style="padding:8px 10px 4px;">
+          <div style="font-size:13px;font-weight:700;color:#0f172a;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(p.product_name)}</div>
+          ${p.description ? `<div style="font-size:11px;color:#64748b;margin-top:2px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(p.description)}</div>` : ""}
         </div>
+        <!-- CONTACT SELLER BAR -->
         ${wa ? `<button data-action="contact-wa" data-phone="${esc(wa)}" data-product="${esc(p.product_name)}"
-          style="margin:8px 10px 10px;background:#25d366;color:#fff;border:none;border-radius:8px;padding:9px 8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:calc(100% - 20px);">
-          <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" style="width:14px;" alt="WA"> Contact Seller
+          style="margin:6px 10px 10px;background:#25d366;color:#fff;border:none;border-radius:10px;padding:10px 8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:calc(100% - 20px);letter-spacing:.2px;">
+          <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" style="width:14px;filter:brightness(10);" alt="WA"> Contact Seller
         </button>` : ""}
       </div>`;
   }).join("");
