@@ -284,22 +284,27 @@ async function loadVisitorProducts(catalogueId, catalogueName) {
     const imgs = Array.isArray(p.image_paths) && p.image_paths.length
       ? p.image_paths : p.image_path ? [p.image_path] : [];
     const imgUrl = imgs.length ? publicUrl(imgs[0]) : "";
+    const allImgs = imgs.map(i => publicUrl(i));
 
     return `
-      <div class="shop-tile" style="border-radius:12px;overflow:hidden;background:#fff;border:1px solid rgba(0,0,0,.08);">
-        <div class="shop-tile-img">
+      <div class="shop-tile" style="border-radius:12px;overflow:hidden;background:#fff;border:1px solid rgba(0,0,0,.08);display:flex;flex-direction:column;">
+        <div class="shop-tile-img" style="position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;background:#f1f5f9;flex-shrink:0;">
           ${imgUrl
             ? `<img src="${esc(imgUrl)}" alt="${esc(p.product_name)}" loading="lazy"
-                data-action="view-img" data-src="${esc(imgUrl)}" style="cursor:zoom-in;" />`
-            : `<span style="font-size:32px;">🖼️</span>`}
-          ${p.price_text ? `<div class="shop-tile-price">${esc(p.price_text)}</div>` : ""}
-          ${wa ? `<button class="shop-wa-btn" data-action="contact-wa"
-            data-phone="${esc(wa)}" data-product="${esc(p.product_name)}" title="Chat seller">
-            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WA" />
-          </button>` : ""}
-          <div class="shop-tile-name">${esc(p.product_name)}</div>
+                data-action="view-img" data-src="${esc(imgUrl)}"
+                style="width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;" />`
+            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;">🖼️</div>`}
+          ${p.price_text ? `<div class="shop-tile-price" style="position:absolute;top:8px;left:8px;">${esc(p.price_text)}</div>` : ""}
+          ${p.original_price ? `<div style="position:absolute;top:8px;right:8px;background:rgba(239,68,68,.9);color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:999px;text-decoration:line-through;">${esc(p.original_price)}</div>` : ""}
         </div>
-        ${p.description ? `<div style="padding:6px 10px 8px;font-size:11px;color:#64748b;">${esc(p.description)}</div>` : ""}
+        <div style="padding:8px 10px 0;">
+          <div style="font-size:13px;font-weight:700;color:#0f172a;line-height:1.3;">${esc(p.product_name)}</div>
+          ${p.description ? `<div style="font-size:11px;color:#64748b;margin-top:2px;line-height:1.4;">${esc(p.description)}</div>` : ""}
+        </div>
+        ${wa ? `<button data-action="contact-wa" data-phone="${esc(wa)}" data-product="${esc(p.product_name)}"
+          style="margin:8px 10px 10px;background:#25d366;color:#fff;border:none;border-radius:8px;padding:9px 8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:calc(100% - 20px);">
+          <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" style="width:14px;" alt="WA"> Contact Seller
+        </button>` : ""}
       </div>`;
   }).join("");
 }
@@ -395,7 +400,8 @@ async function loadInlineProducts(catalogueId) {
     return `
       <div class="mgmt-prod-row">
         ${imgUrl
-          ? `<img class="mgmt-prod-thumb" src="${esc(imgUrl)}" alt="${esc(p.product_name)}" loading="lazy" />`
+          ? `<img class="mgmt-prod-thumb" src="${esc(imgUrl)}" alt="${esc(p.product_name)}" loading="lazy"
+              data-action="view-img" data-src="${esc(imgUrl)}" style="cursor:zoom-in;" />`
           : `<div class="mgmt-prod-thumb-ph">🖼️</div>`}
         <div class="mgmt-prod-info">
           <div class="mgmt-prod-name">${esc(p.product_name)}</div>
@@ -698,41 +704,50 @@ document.addEventListener("click", async (e) => {
 
   renderShopHeader(shop, verified);
 
+  // Always show visitor panel first (safe for shared links)
+  // Owner gets a "Manage Shop" button to switch to management view
+  const ownerPanel   = $("ownerPanel");
+  const visitorPanel = $("visitorPanel");
+  if (ownerPanel)   ownerPanel.style.display   = "none";
+  if (visitorPanel) visitorPanel.style.display = "block";
+
   if (isOwner) {
-    const ownerPanel   = $("ownerPanel");
-    const visitorPanel = $("visitorPanel");
-    if (ownerPanel)   ownerPanel.style.display   = "block";
-    if (visitorPanel) visitorPanel.style.display = "none";
-
-    if (shop) {
-      fillSetupForm(shop);
-      await loadOwnerCatalogueList();
-    } else {
-      // No shop yet — nudge owner to fill setup tab
-      document.querySelectorAll(".mgmt-tab").forEach(t => t.classList.remove("active"));
-      document.querySelectorAll(".mgmt-panel").forEach(p => p.classList.remove("active"));
-      const setupTab   = document.querySelector(".mgmt-tab[data-panel='setup']");
-      const setupPanel = $("panel-setup");
-      if (setupTab)   setupTab.classList.add("active");
-      if (setupPanel) setupPanel.classList.add("active");
-      const mgmtList = $("catalogueMgmtList");
-      if (mgmtList) mgmtList.innerHTML = "";
-    }
-  } else {
-    const ownerPanel   = $("ownerPanel");
-    const visitorPanel = $("visitorPanel");
-    if (ownerPanel)   ownerPanel.style.display   = "none";
-    if (visitorPanel) visitorPanel.style.display = "block";
-
-    if (!shop) {
-      const grid = $("catalogueGrid");
-      if (grid) grid.innerHTML = `
-        <div class="empty-state" style="grid-column:1/-1;">
-          <div style="font-size:40px;">🏪</div>
-          <p style="color:#64748b;margin-top:8px;">This shop hasn't been set up yet.</p>
-        </div>`;
-      return;
-    }
-    await loadVisitorCatalogues();
+    // Show "Manage My Shop" floating button for owner
+    const manageBtn = document.createElement("button");
+    manageBtn.id = "manageShopBtn";
+    manageBtn.innerHTML = "⚙️ Manage My Shop";
+    manageBtn.style.cssText = "position:fixed;bottom:80px;right:16px;background:#2563eb;color:#fff;border:none;padding:12px 18px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.4);z-index:500;display:flex;align-items:center;gap:6px;";
+    manageBtn.onclick = () => {
+      if (ownerPanel.style.display === "none") {
+        ownerPanel.style.display = "block";
+        visitorPanel.style.display = "none";
+        manageBtn.innerHTML = "👁️ View as Visitor";
+        if (shop) { fillSetupForm(shop); loadOwnerCatalogueList(); }
+        else {
+          document.querySelectorAll(".mgmt-tab").forEach(t => t.classList.remove("active"));
+          document.querySelectorAll(".mgmt-panel").forEach(p => p.classList.remove("active"));
+          const setupTab = document.querySelector(".mgmt-tab[data-panel='setup']");
+          const setupPanel = $("panel-setup");
+          if (setupTab) setupTab.classList.add("active");
+          if (setupPanel) setupPanel.classList.add("active");
+        }
+      } else {
+        ownerPanel.style.display = "none";
+        visitorPanel.style.display = "block";
+        manageBtn.innerHTML = "⚙️ Manage My Shop";
+      }
+    };
+    document.body.appendChild(manageBtn);
   }
+
+  if (!shop) {
+    const grid = $("catalogueGrid");
+    if (grid) grid.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1;">
+        <div style="font-size:40px;">🏪</div>
+        <p style="color:#64748b;margin-top:8px;">${isOwner ? "Set up your shop using the Manage button below." : "This shop hasn't been set up yet."}</p>
+      </div>`;
+    return;
+  }
+  await loadVisitorCatalogues();
 })();
