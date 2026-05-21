@@ -605,7 +605,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             </button>`
           : `<div style="text-align:center;color:#94a3b8;font-size:13px;padding:10px 0;">No WhatsApp number on this post</div>`}
         ${authorId
-          ? `<button onclick="closeProductDetailSheet();window.location.href='shop.html?seller=${encodeURIComponent(authorId)}'"
+          ? `<button data-action="visit-seller-shop" data-sellerid="${encodeURIComponent(authorId)}"
               style="background:#eff6ff;color:#2563eb;border:2px solid #2563eb;width:100%;padding:13px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
               🛒 Visit Seller's Shop
             </button>`
@@ -1699,8 +1699,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    // Open shop from directory
-    const shopCard = e.target.closest("[data-action='open-shop']");
+    // Visit seller shop from flash detail sheet
+    const visitSellerBtn = e.target.closest("[data-action='visit-seller-shop']");
+    if (visitSellerBtn) {
+      closeProductDetailSheet();
+      window.location.href = `shop.html?seller=${visitSellerBtn.dataset.sellerid}`;
+      return;
+    }
     if (shopCard) {
       const sellerId = shopCard.dataset.sellerid;
       if (sellerId) window.location.href = `shop.html?seller=${encodeURIComponent(sellerId)}`;
