@@ -281,37 +281,64 @@ async function loadVisitorProducts(catalogueId, catalogueName) {
   }
 
   grid.innerHTML = data.map(p => {
-    const imgs = Array.isArray(p.image_paths) && p.image_paths.length
-      ? p.image_paths : p.image_path ? [p.image_path] : [];
-    const imgUrl = imgs.length ? publicUrl(imgs[0]) : "";
-    const allImgs = imgs.map(i => publicUrl(i));
+    // Safely parse image_paths (may be jsonb array or legacy string)
+    let imgPaths = p.image_paths;
+    if (typeof imgPaths === "string") { try { imgPaths = JSON.parse(imgPaths); } catch { imgPaths = []; } }
+    if (!Array.isArray(imgPaths) || !imgPaths.length) imgPaths = p.image_path ? [p.image_path] : [];
+    const allUrls = imgPaths.map(i => publicUrl(i));
+    const pid = `prod-${p.id}`;
+
+    // Build image swiper dots only if >1 image
+    const dotsHtml = allUrls.length > 1
+      ? `<div style="position:absolute;bottom:6px;left:0;right:0;display:flex;justify-content:center;gap:4px;z-index:2;">
+          ${allUrls.map((_, i) => `<span class="swiper-dot${i===0?' active':''}" data-prodid="${pid}" data-idx="${i}"
+            style="width:6px;height:6px;border-radius:50%;background:${i===0?'#fff':'rgba(255,255,255,.5)'};cursor:pointer;transition:background .2s;display:inline-block;"></span>`).join('')}
+         </div>`
+      : "";
+
+    const imagesHtml = allUrls.map((url, i) =>
+      `<img src="${esc(url)}" alt="${esc(p.product_name)}" loading="${i===0?'eager':'lazy'}"
+        data-action="view-img" data-src="${esc(url)}"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;transition:opacity .25s;opacity:${i===0?1:0};pointer-events:${i===0?'auto':'none'};" />`
+    ).join("");
+
+    const descHtml = p.description ? `
+      <div style="padding:4px 10px 0;">
+        <div class="prod-desc-collapsed" id="desc-${pid}"
+          style="font-size:11px;color:#64748b;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;"
+          data-action="expand-desc" data-descid="desc-${pid}">
+          ${esc(p.description)}
+        </div>
+      </div>` : "";
 
     return `
-      <div style="border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.09);display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s;">
-        <!-- IMAGE -->
+      <div style="border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.09);display:flex;flex-direction:column;" id="${pid}">
+        <!-- IMAGE SWIPER -->
         <div style="position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;background:#f1f5f9;flex-shrink:0;">
-          ${imgUrl
-            ? `<img src="${esc(imgUrl)}" alt="${esc(p.product_name)}" loading="lazy"
-                data-action="view-img" data-src="${esc(imgUrl)}"
-                style="width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;" />`
-            : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#cbd5e1;">🖼️</div>`}
-          <!-- PRICE BADGE — bright colour, no dark overlay -->
-          ${p.price_text ? `
-            <div style="position:absolute;bottom:0;left:0;right:0;padding:20px 10px 8px;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,transparent 100%);">
-              <div style="display:flex;align-items:center;gap:6px;">
-                <span style="font-size:14px;font-weight:900;color:#fff;letter-spacing:.3px;">${esc(p.price_text)}</span>
-                ${p.original_price ? `<span style="font-size:11px;color:rgba(255,255,255,.7);text-decoration:line-through;">${esc(p.original_price)}</span>` : ""}
-              </div>
-            </div>` : ""}
+          ${allUrls.length ? imagesHtml : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#cbd5e1;">🖼️</div>`}
+          <!-- gradient + price -->
+          ${allUrls.length ? `<div style="position:absolute;bottom:0;left:0;right:0;padding:22px 10px ${allUrls.length>1?'22':'8'}px;background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 100%);pointer-events:none;z-index:1;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              ${p.price_text ? `<span style="font-size:14px;font-weight:900;color:#fff;">${esc(p.price_text)}</span>` : ""}
+              ${p.original_price ? `<span style="font-size:11px;color:rgba(255,255,255,.65);text-decoration:line-through;">${esc(p.original_price)}</span>` : ""}
+            </div>
+          </div>` : ""}
+          ${dotsHtml}
+          <!-- swipe arrows if multiple images -->
+          ${allUrls.length > 1 ? `
+            <button data-action="swipe-prev" data-prodid="${pid}" data-total="${allUrls.length}"
+              style="position:absolute;left:4px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.35);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:13px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0;">‹</button>
+            <button data-action="swipe-next" data-prodid="${pid}" data-total="${allUrls.length}"
+              style="position:absolute;right:4px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.35);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:13px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0;">›</button>` : ""}
         </div>
-        <!-- NAME -->
+        <!-- NAME + DESCRIPTION -->
         <div style="padding:8px 10px 4px;">
           <div style="font-size:13px;font-weight:700;color:#0f172a;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(p.product_name)}</div>
-          ${p.description ? `<div style="font-size:11px;color:#64748b;margin-top:2px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${esc(p.description)}</div>` : ""}
         </div>
-        <!-- CONTACT SELLER BAR -->
+        ${descHtml}
+        <!-- CONTACT SELLER -->
         ${wa ? `<button data-action="contact-wa" data-phone="${esc(wa)}" data-product="${esc(p.product_name)}"
-          style="margin:6px 10px 10px;background:#25d366;color:#fff;border:none;border-radius:10px;padding:10px 8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:calc(100% - 20px);letter-spacing:.2px;">
+          style="margin:6px 10px 10px;background:#25d366;color:#fff;border:none;border-radius:10px;padding:10px 8px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:calc(100% - 20px);">
           <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" style="width:14px;filter:brightness(10);" alt="WA"> Contact Seller
         </button>` : ""}
       </div>`;
@@ -409,8 +436,7 @@ async function loadInlineProducts(catalogueId) {
     return `
       <div class="mgmt-prod-row">
         ${imgUrl
-          ? `<img class="mgmt-prod-thumb" src="${esc(imgUrl)}" alt="${esc(p.product_name)}" loading="lazy"
-              data-action="view-img" data-src="${esc(imgUrl)}" style="cursor:zoom-in;" />`
+          ? `<img class="mgmt-prod-thumb" src="${esc(imgUrl)}" alt="${esc(p.product_name)}" loading="lazy" />`
           : `<div class="mgmt-prod-thumb-ph">🖼️</div>`}
         <div class="mgmt-prod-info">
           <div class="mgmt-prod-name">${esc(p.product_name)}</div>
@@ -615,8 +641,71 @@ function fillSetupForm(shop) {
   if ($("setupCategory"))  $("setupCategory").value  = shop.category   || "";
 }
 
-// ─── GLOBAL CLICK DELEGATE ───────────────────────────────
-document.addEventListener("click", async (e) => {
+  // ── IMAGE SWIPER ─────────────────────────────────────────
+  function getSwipeState(prodId) {
+    if (!getSwipeState._map) getSwipeState._map = {};
+    if (!getSwipeState._map[prodId]) getSwipeState._map[prodId] = { idx: 0 };
+    return getSwipeState._map[prodId];
+  }
+
+  function goToSlide(prodId, newIdx, total) {
+    const card = document.getElementById(prodId);
+    if (!card) return;
+    const imgs = card.querySelectorAll("img[data-action='view-img']");
+    const dots = card.querySelectorAll(".swiper-dot");
+    const state = getSwipeState(prodId);
+    state.idx = ((newIdx % total) + total) % total;
+    imgs.forEach((img, i) => {
+      img.style.opacity        = i === state.idx ? "1" : "0";
+      img.style.pointerEvents  = i === state.idx ? "auto" : "none";
+    });
+    dots.forEach((dot, i) => {
+      dot.style.background = i === state.idx ? "#fff" : "rgba(255,255,255,.5)";
+    });
+  }
+
+  document.addEventListener("click", (e) => {
+    // Swipe next
+    const nextBtn = e.target.closest("[data-action='swipe-next']");
+    if (nextBtn) {
+      const pid   = nextBtn.dataset.prodid;
+      const total = parseInt(nextBtn.dataset.total);
+      goToSlide(pid, getSwipeState(pid).idx + 1, total);
+      return;
+    }
+    // Swipe prev
+    const prevBtn = e.target.closest("[data-action='swipe-prev']");
+    if (prevBtn) {
+      const pid   = prevBtn.dataset.prodid;
+      const total = parseInt(prevBtn.dataset.total);
+      goToSlide(pid, getSwipeState(pid).idx - 1, total);
+      return;
+    }
+    // Dot click
+    const dot = e.target.closest(".swiper-dot");
+    if (dot) {
+      const pid   = dot.dataset.prodid;
+      const idx   = parseInt(dot.dataset.idx);
+      const total = document.getElementById(pid)?.querySelectorAll("img[data-action='view-img']").length || 1;
+      goToSlide(pid, idx, total);
+      return;
+    }
+    // Expand description
+    const descEl = e.target.closest("[data-action='expand-desc']");
+    if (descEl) {
+      const isExpanded = descEl.dataset.expanded === "1";
+      if (isExpanded) {
+        descEl.style.webkitLineClamp = "2";
+        descEl.style.overflow = "hidden";
+        descEl.dataset.expanded = "0";
+      } else {
+        descEl.style.webkitLineClamp = "unset";
+        descEl.style.overflow = "visible";
+        descEl.dataset.expanded = "1";
+      }
+      return;
+    }
+  }, true); // capture phase so it fires before other handlers
   const target = e.target.closest("[data-action]");
   const action = target?.dataset?.action;
   if (!action) return;
@@ -713,50 +802,41 @@ document.addEventListener("click", async (e) => {
 
   renderShopHeader(shop, verified);
 
-  // Always show visitor panel first (safe for shared links)
-  // Owner gets a "Manage Shop" button to switch to management view
-  const ownerPanel   = $("ownerPanel");
-  const visitorPanel = $("visitorPanel");
-  if (ownerPanel)   ownerPanel.style.display   = "none";
-  if (visitorPanel) visitorPanel.style.display = "block";
-
   if (isOwner) {
-    // Show "Manage My Shop" floating button for owner
-    const manageBtn = document.createElement("button");
-    manageBtn.id = "manageShopBtn";
-    manageBtn.innerHTML = "⚙️ Manage My Shop";
-    manageBtn.style.cssText = "position:fixed;bottom:80px;right:16px;background:#2563eb;color:#fff;border:none;padding:12px 18px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.4);z-index:500;display:flex;align-items:center;gap:6px;";
-    manageBtn.onclick = () => {
-      if (ownerPanel.style.display === "none") {
-        ownerPanel.style.display = "block";
-        visitorPanel.style.display = "none";
-        manageBtn.innerHTML = "👁️ View as Visitor";
-        if (shop) { fillSetupForm(shop); loadOwnerCatalogueList(); }
-        else {
-          document.querySelectorAll(".mgmt-tab").forEach(t => t.classList.remove("active"));
-          document.querySelectorAll(".mgmt-panel").forEach(p => p.classList.remove("active"));
-          const setupTab = document.querySelector(".mgmt-tab[data-panel='setup']");
-          const setupPanel = $("panel-setup");
-          if (setupTab) setupTab.classList.add("active");
-          if (setupPanel) setupPanel.classList.add("active");
-        }
-      } else {
-        ownerPanel.style.display = "none";
-        visitorPanel.style.display = "block";
-        manageBtn.innerHTML = "⚙️ Manage My Shop";
-      }
-    };
-    document.body.appendChild(manageBtn);
-  }
+    const ownerPanel   = $("ownerPanel");
+    const visitorPanel = $("visitorPanel");
+    if (ownerPanel)   ownerPanel.style.display   = "block";
+    if (visitorPanel) visitorPanel.style.display = "none";
 
-  if (!shop) {
-    const grid = $("catalogueGrid");
-    if (grid) grid.innerHTML = `
-      <div class="empty-state" style="grid-column:1/-1;">
-        <div style="font-size:40px;">🏪</div>
-        <p style="color:#64748b;margin-top:8px;">${isOwner ? "Set up your shop using the Manage button below." : "This shop hasn't been set up yet."}</p>
-      </div>`;
-    return;
+    if (shop) {
+      fillSetupForm(shop);
+      await loadOwnerCatalogueList();
+    } else {
+      // No shop yet — nudge owner to fill setup tab
+      document.querySelectorAll(".mgmt-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".mgmt-panel").forEach(p => p.classList.remove("active"));
+      const setupTab   = document.querySelector(".mgmt-tab[data-panel='setup']");
+      const setupPanel = $("panel-setup");
+      if (setupTab)   setupTab.classList.add("active");
+      if (setupPanel) setupPanel.classList.add("active");
+      const mgmtList = $("catalogueMgmtList");
+      if (mgmtList) mgmtList.innerHTML = "";
+    }
+  } else {
+    const ownerPanel   = $("ownerPanel");
+    const visitorPanel = $("visitorPanel");
+    if (ownerPanel)   ownerPanel.style.display   = "none";
+    if (visitorPanel) visitorPanel.style.display = "block";
+
+    if (!shop) {
+      const grid = $("catalogueGrid");
+      if (grid) grid.innerHTML = `
+        <div class="empty-state" style="grid-column:1/-1;">
+          <div style="font-size:40px;">🏪</div>
+          <p style="color:#64748b;margin-top:8px;">This shop hasn't been set up yet.</p>
+        </div>`;
+      return;
+    }
+    await loadVisitorCatalogues();
   }
-  await loadVisitorCatalogues();
 })();
