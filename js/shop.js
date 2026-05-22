@@ -641,71 +641,66 @@ function fillSetupForm(shop) {
   if ($("setupCategory"))  $("setupCategory").value  = shop.category   || "";
 }
 
-  // ── IMAGE SWIPER ─────────────────────────────────────────
-  function getSwipeState(prodId) {
-    if (!getSwipeState._map) getSwipeState._map = {};
-    if (!getSwipeState._map[prodId]) getSwipeState._map[prodId] = { idx: 0 };
-    return getSwipeState._map[prodId];
+// ─── SWIPER STATE ────────────────────────────────────────
+const _swipeState = {};
+function getSwipeState(prodId) {
+  if (!_swipeState[prodId]) _swipeState[prodId] = { idx: 0 };
+  return _swipeState[prodId];
+}
+function goToSlide(prodId, newIdx, total) {
+  const card = document.getElementById(prodId);
+  if (!card) return;
+  const imgs = card.querySelectorAll("img[data-action='view-img']");
+  const dots = card.querySelectorAll(".swiper-dot");
+  const state = getSwipeState(prodId);
+  state.idx = ((newIdx % total) + total) % total;
+  imgs.forEach((img, i) => {
+    img.style.opacity       = i === state.idx ? "1" : "0";
+    img.style.pointerEvents = i === state.idx ? "auto" : "none";
+  });
+  dots.forEach((dot, i) => {
+    dot.style.background = i === state.idx ? "#fff" : "rgba(255,255,255,.5)";
+  });
+}
+
+// ─── GLOBAL CLICK DELEGATE ───────────────────────────────
+document.addEventListener("click", async (e) => {
+
+  // Swipe next
+  const nextBtn = e.target.closest("[data-action='swipe-next']");
+  if (nextBtn) {
+    const pid = nextBtn.dataset.prodid;
+    const total = parseInt(nextBtn.dataset.total);
+    goToSlide(pid, getSwipeState(pid).idx + 1, total);
+    return;
+  }
+  // Swipe prev
+  const prevBtn = e.target.closest("[data-action='swipe-prev']");
+  if (prevBtn) {
+    const pid = prevBtn.dataset.prodid;
+    const total = parseInt(prevBtn.dataset.total);
+    goToSlide(pid, getSwipeState(pid).idx - 1, total);
+    return;
+  }
+  // Dot click
+  const dot = e.target.closest(".swiper-dot");
+  if (dot) {
+    const pid = dot.dataset.prodid;
+    const idx = parseInt(dot.dataset.idx);
+    const total = document.getElementById(pid)?.querySelectorAll("img[data-action='view-img']").length || 1;
+    goToSlide(pid, idx, total);
+    return;
+  }
+  // Expand/collapse description
+  const descEl = e.target.closest("[data-action='expand-desc']");
+  if (descEl) {
+    const expanded = descEl.dataset.expanded === "1";
+    descEl.style.webkitLineClamp = expanded ? "2" : "unset";
+    descEl.style.overflow = expanded ? "hidden" : "visible";
+    descEl.dataset.expanded = expanded ? "0" : "1";
+    return;
   }
 
-  function goToSlide(prodId, newIdx, total) {
-    const card = document.getElementById(prodId);
-    if (!card) return;
-    const imgs = card.querySelectorAll("img[data-action='view-img']");
-    const dots = card.querySelectorAll(".swiper-dot");
-    const state = getSwipeState(prodId);
-    state.idx = ((newIdx % total) + total) % total;
-    imgs.forEach((img, i) => {
-      img.style.opacity        = i === state.idx ? "1" : "0";
-      img.style.pointerEvents  = i === state.idx ? "auto" : "none";
-    });
-    dots.forEach((dot, i) => {
-      dot.style.background = i === state.idx ? "#fff" : "rgba(255,255,255,.5)";
-    });
-  }
-
-  document.addEventListener("click", (e) => {
-    // Swipe next
-    const nextBtn = e.target.closest("[data-action='swipe-next']");
-    if (nextBtn) {
-      const pid   = nextBtn.dataset.prodid;
-      const total = parseInt(nextBtn.dataset.total);
-      goToSlide(pid, getSwipeState(pid).idx + 1, total);
-      return;
-    }
-    // Swipe prev
-    const prevBtn = e.target.closest("[data-action='swipe-prev']");
-    if (prevBtn) {
-      const pid   = prevBtn.dataset.prodid;
-      const total = parseInt(prevBtn.dataset.total);
-      goToSlide(pid, getSwipeState(pid).idx - 1, total);
-      return;
-    }
-    // Dot click
-    const dot = e.target.closest(".swiper-dot");
-    if (dot) {
-      const pid   = dot.dataset.prodid;
-      const idx   = parseInt(dot.dataset.idx);
-      const total = document.getElementById(pid)?.querySelectorAll("img[data-action='view-img']").length || 1;
-      goToSlide(pid, idx, total);
-      return;
-    }
-    // Expand description
-    const descEl = e.target.closest("[data-action='expand-desc']");
-    if (descEl) {
-      const isExpanded = descEl.dataset.expanded === "1";
-      if (isExpanded) {
-        descEl.style.webkitLineClamp = "2";
-        descEl.style.overflow = "hidden";
-        descEl.dataset.expanded = "0";
-      } else {
-        descEl.style.webkitLineClamp = "unset";
-        descEl.style.overflow = "visible";
-        descEl.dataset.expanded = "1";
-      }
-      return;
-    }
-  }, true); // capture phase so it fires before other handlers
   const target = e.target.closest("[data-action]");
   const action = target?.dataset?.action;
   if (!action) return;
@@ -726,7 +721,7 @@ function fillSetupForm(shop) {
     return;
   }
 
-  // Toggle inline product list expand/collapse (owner)
+  // Toggle inline product list (owner)
   if (action === "toggle-products") {
     const catId = target.dataset.catid;
     const wrap  = $(`catprods-${catId}`);
@@ -762,7 +757,7 @@ function fillSetupForm(shop) {
   // Delete catalogue (owner)
   if (action === "del-cat") {
     if (!isOwner) return;
-    if (!confirm("Delete this entire catalogue and all its products?\nThis cannot be undone.")) return;
+    if (!confirm("Delete this entire catalogue and all its products? This cannot be undone.")) return;
     const cid       = target.dataset.catid;
     const coverPath = target.dataset.coverpath;
     const { data: prods } = await supabase.from("shop_products")
@@ -802,41 +797,35 @@ function fillSetupForm(shop) {
 
   renderShopHeader(shop, verified);
 
+  // Always open as visitor view (safe for shared links)
+  // Owner gets a floating "Manage My Shop" button
+  const ownerPanel   = $("ownerPanel");
+  const visitorPanel = $("visitorPanel");
+  if (ownerPanel)   ownerPanel.style.display = "none";
+  if (visitorPanel) visitorPanel.style.display = "block";
+
   if (isOwner) {
-    const ownerPanel   = $("ownerPanel");
-    const visitorPanel = $("visitorPanel");
-    if (ownerPanel)   ownerPanel.style.display   = "block";
-    if (visitorPanel) visitorPanel.style.display = "none";
-
-    if (shop) {
-      fillSetupForm(shop);
-      await loadOwnerCatalogueList();
-    } else {
-      // No shop yet — nudge owner to fill setup tab
-      document.querySelectorAll(".mgmt-tab").forEach(t => t.classList.remove("active"));
-      document.querySelectorAll(".mgmt-panel").forEach(p => p.classList.remove("active"));
-      const setupTab   = document.querySelector(".mgmt-tab[data-panel='setup']");
-      const setupPanel = $("panel-setup");
-      if (setupTab)   setupTab.classList.add("active");
-      if (setupPanel) setupPanel.classList.add("active");
-      const mgmtList = $("catalogueMgmtList");
-      if (mgmtList) mgmtList.innerHTML = "";
-    }
-  } else {
-    const ownerPanel   = $("ownerPanel");
-    const visitorPanel = $("visitorPanel");
-    if (ownerPanel)   ownerPanel.style.display   = "none";
-    if (visitorPanel) visitorPanel.style.display = "block";
-
-    if (!shop) {
-      const grid = $("catalogueGrid");
-      if (grid) grid.innerHTML = `
-        <div class="empty-state" style="grid-column:1/-1;">
-          <div style="font-size:40px;">🏪</div>
-          <p style="color:#64748b;margin-top:8px;">This shop hasn't been set up yet.</p>
-        </div>`;
-      return;
-    }
-    await loadVisitorCatalogues();
+    const manageBtn = document.createElement("button");
+    manageBtn.innerHTML = "⚙️ Manage My Shop";
+    manageBtn.style.cssText = "position:fixed;bottom:80px;right:16px;background:#2563eb;color:#fff;border:none;padding:12px 18px;border-radius:999px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,.4);z-index:500;";
+    manageBtn.onclick = () => {
+      const managing = ownerPanel.style.display === "block";
+      ownerPanel.style.display   = managing ? "none"  : "block";
+      visitorPanel.style.display = managing ? "block" : "none";
+      manageBtn.innerHTML = managing ? "⚙️ Manage My Shop" : "👁️ View as Visitor";
+      if (!managing && shop) { fillSetupForm(shop); loadOwnerCatalogueList(); }
+    };
+    document.body.appendChild(manageBtn);
   }
+
+  if (!shop) {
+    const grid = $("catalogueGrid");
+    if (grid) grid.innerHTML = `
+      <div class="empty-state" style="grid-column:1/-1;">
+        <div style="font-size:40px;">🏪</div>
+        <p style="color:#64748b;margin-top:8px;">${isOwner ? "Tap 'Manage My Shop' to set up your shop." : "This shop hasn't been set up yet."}</p>
+      </div>`;
+    return;
+  }
+  await loadVisitorCatalogues();
 })();
