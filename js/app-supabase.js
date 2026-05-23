@@ -888,24 +888,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function renderFeedImagePosts() {
     const wrap = document.getElementById("feedPostsList");
     if (!wrap) return;
-    // Feed posts are posts with type="feed" — images posted via + button, not linked to shop
-    const feedPosts = cachedPosts.filter(p => p.type === "social");
+    // Only social posts with images + price (product posts from + button)
+    const feedPosts = cachedPosts.filter(p => p.type === "social" && Array.isArray(p.image_urls) && p.image_urls.length);
     if (!feedPosts.length) { wrap.innerHTML = ""; return; }
-    wrap.innerHTML = `
-      <div style="font-size:13px;font-weight:800;color:#0f172a;margin-bottom:10px;padding:0 2px;">📸 From the community</div>
-      ${feedPosts.map(p => {
-        const imgs = Array.isArray(p.image_urls) ? p.image_urls : [];
-        const img = imgs[0] || "";
-        const wa = formatWaNumber(p.whatsapp || "");
-        return `<div class="comm-card" style="margin-bottom:10px;">
-          ${img ? `<img src="${escapeHtml(img)}" style="width:100%;border-radius:10px;object-fit:cover;max-height:260px;display:block;margin-bottom:8px;" loading="lazy" />` : ""}
-          ${p.description ? `<div style="font-size:14px;color:#0f172a;line-height:1.5;">${escapeHtml(p.description)}</div>` : ""}
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
-            <span style="font-size:11px;color:#64748b;">📍 ${escapeHtml(p.author_name || "User")} • ${new Date(p.created_at).toLocaleDateString()}</span>
-            ${wa ? `<button class="comm-card-wa" data-action="contact" data-phone="${escapeHtml(wa)}" data-title="${escapeHtml((p.description||"").slice(0,40))}">WhatsApp</button>` : ""}
+    wrap.innerHTML = feedPosts.map(p => {
+      const imgUrl = p.image_urls[0] || "";
+      const wa = formatWaNumber(p.whatsapp || "");
+      const postName = p.title || p.description?.slice(0, 60) || "Product";
+      return `
+        <div class="feed-prod-card" data-action="open-feed-post" data-postid="${escapeHtml(p.id)}"
+          style="cursor:pointer;">
+          <div class="feed-prod-img-wrap">
+            ${imgUrl ? `<img class="feed-prod-img" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(postName)}" loading="lazy" />` : `<div class="feed-prod-img" style="display:flex;align-items:center;justify-content:center;font-size:32px;">🖼️</div>`}
+            ${p.price ? `<span class="feed-prod-price-badge">${escapeHtml(p.price)}</span>` : ""}
+            ${p.verified ? `<span class="feed-prod-verified">✔ Verified</span>` : ""}
+          </div>
+          <div class="feed-prod-body">
+            <div class="feed-prod-name">${escapeHtml(postName)}</div>
+            <div class="feed-prod-shop">👤 ${escapeHtml(p.author_name || "Seller")}</div>
           </div>
         </div>`;
-      }).join("")}`;
+    }).join("");
   }
 
   // =========================
@@ -1454,9 +1457,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Reset to feed post type
     document.querySelectorAll(".post-type-pill").forEach(p => p.classList.remove("active"));
     document.querySelector(".post-type-pill[data-type='feed']")?.classList.add("active");
-    // Show price fields (hidden only for community)
+    // Show price + product name for feed; hide flash/community extras
     const priceFields = document.getElementById("priceFields");
     if (priceFields) priceFields.style.display = "block";
+    const productNameField = document.getElementById("productNameField");
+    if (productNameField) productNameField.style.display = "block";
+    const titleEl = document.getElementById("postTitle");
+    if (titleEl) titleEl.value = "";
     const postTypeInput = document.getElementById("postType");
     if (postTypeInput) postTypeInput.value = "feed";
     document.getElementById("flashSaleFields").style.display = "none";
@@ -1499,9 +1506,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       const type = pill.dataset.type;
       const postTypeInput = document.getElementById("postType");
       if (postTypeInput) postTypeInput.value = type;
-      // Price always shows except community
+      // Price shows for feed and flash only
       const priceFields = document.getElementById("priceFields");
       if (priceFields) priceFields.style.display = type === "community" ? "none" : "block";
+      // Product name only for feed posts
+      const productNameField = document.getElementById("productNameField");
+      if (productNameField) productNameField.style.display = type === "feed" ? "block" : "none";
       // Flash-only extras
       document.getElementById("flashSaleFields").style.display = type === "flash" ? "block" : "none";
       document.getElementById("communityFields").style.display = type === "community" ? "block" : "none";
@@ -1545,13 +1555,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     e.preventDefault();
     if (!sessionUser || !myProfile) return alert("Please log in first.");
     const postTypeVal = document.getElementById("postType")?.value || "feed";
+    const title = document.getElementById("postTitle")?.value.trim() || "";
     const description = document.getElementById("postDesc")?.value.trim();
     const files = Array.from(document.getElementById("postImages")?.files || []);
-    if (!description && !files.length) return alert("Add a caption or at least one image.");
     const waRaw = (document.getElementById("postWhatsApp")?.value || "").trim() || (myProfile.wa || "").trim();
 
+    // Validate based on type
+    if (postTypeVal === "feed") {
+      if (!title) return alert("Enter a product name.");
+      if (!files.length) return alert("Add at least one product image.");
+    } else if (!description && !files.length) {
+      return alert("Add a description or at least one image.");
+    }
+
     // Map pill types to DB post types
-    let dbType = "feed";
+    let dbType = "social";
     let price = "";
     let original_price = "";
     let flash_ends_at = null;
@@ -1561,7 +1579,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (postTypeVal === "feed") {
       dbType = "social";
       price = document.getElementById("postPrice")?.value.trim() || "";
-      original_price = ""; // feed posts have no discount, no original price
     } else if (postTypeVal === "flash") {
       dbType = "market";
       price = document.getElementById("postPrice")?.value.trim() || "";
@@ -1570,7 +1587,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const hours = parseInt(document.getElementById("flashDuration")?.value || "0");
       if (hours > 0) flash_ends_at = new Date(Date.now() + hours * 3600000).toISOString();
     } else if (postTypeVal === "community") {
-      dbType = document.getElementById("communityType")?.value || "social";
+      dbType = document.getElementById("communityType")?.value || "announcement";
       apply_link = document.getElementById("applyLink")?.value.trim() || "";
     }
 
@@ -1581,6 +1598,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const image_urls = files.length ? await uploadPostImages(sessionUser.id, files.slice(0, 5)) : [];
       const { error } = await supabase.from("posts").insert({
         author_id: sessionUser.id, type: dbType, category,
+        title: title || null,
         description: description || "", price, apply_link, whatsapp: waRaw,
         image_urls, original_price, flash_ends_at,
       });
@@ -1765,6 +1783,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         shopName:  item.shop?.shop_name || item.author_name || "",
         wa:        item.whatsapp || item.shop?.whatsapp || "",
         authorId:  item.author_id || null,
+      });
+      return;
+    }
+
+    // Open feed post product detail sheet
+    const feedPostCard = e.target.closest("[data-action='open-feed-post']");
+    if (feedPostCard) {
+      const postId = feedPostCard.dataset.postid;
+      const p = cachedPosts.find(x => String(x.id) === String(postId));
+      if (!p) return;
+      const imgUrl = Array.isArray(p.image_urls) && p.image_urls.length ? p.image_urls[0] : "";
+      const postName = p.title || p.description?.slice(0, 60) || "Product";
+      openProductDetailSheet({
+        imgUrl,
+        name:      postName,
+        salePrice: p.price || "",
+        origPrice: "",
+        desc:      p.description || "",
+        shopName:  p.author_name || "Seller",
+        wa:        p.whatsapp || "",
+        authorId:  p.author_id || null,
       });
       return;
     }
