@@ -1706,6 +1706,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       window.location.href = `shop.html?seller=${visitSellerBtn.dataset.sellerid}`;
       return;
     }
+    // Open shop from directory card
+    const shopCard = e.target.closest("[data-action='open-shop']");
     if (shopCard) {
       const sellerId = shopCard.dataset.sellerid;
       if (sellerId) window.location.href = `shop.html?seller=${encodeURIComponent(sellerId)}`;
