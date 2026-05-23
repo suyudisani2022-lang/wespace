@@ -461,11 +461,11 @@
       <form id="postForm" class="modal-body">
         <!-- Post type selector — pill style -->
         <div class="post-type-pills">
-          <button type="button" class="post-type-pill active" data-type="feed">📸 Image Post</button>
+          <button type="button" class="post-type-pill active" data-type="feed">📸 Product Post</button>
           <button type="button" class="post-type-pill" data-type="flash">⚡ Flash Sale</button>
           <button type="button" class="post-type-pill" data-type="community">📢 Community</button>
         </div>
-        <p id="postTypeHint" style="font-size:11px;color:#64748b;margin:-6px 0 10px;">Photos shared to the feed. Not linked to your shop.</p>
+        <p id="postTypeHint" style="font-size:11px;color:#64748b;margin:-6px 0 10px;">Post a product to the feed with price so buyers can contact you.</p>
         <input type="hidden" id="postType" value="feed" />
         <input type="hidden" id="postCategory" value="" />
 
@@ -486,18 +486,20 @@
           <textarea id="postDesc" placeholder="Write something about this post…" rows="3" maxlength="600"></textarea>
         </label>
 
-        <!-- Flash Sale fields (shown only for flash type) -->
+        <!-- Price — always visible for product posts -->
+        <div id="priceFields">
+          <label class="field">
+            <span>Price</span>
+            <input id="postPrice" type="text" maxlength="20" placeholder="e.g. ₦18,000" />
+          </label>
+        </div>
+
+        <!-- Flash Sale only fields (original price + category + duration) -->
         <div id="flashSaleFields" style="display:none;">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <label class="field">
-              <span>Original Price</span>
-              <input id="postOriginalPrice" type="text" maxlength="20" placeholder="e.g. ₦25,000" />
-            </label>
-            <label class="field">
-              <span>Sale Price ⚡</span>
-              <input id="postPrice" type="text" maxlength="20" placeholder="e.g. ₦18,000" />
-            </label>
-          </div>
+          <label class="field">
+            <span>Original Price (before discount)</span>
+            <input id="postOriginalPrice" type="text" maxlength="20" placeholder="e.g. ₦25,000" />
+          </label>
           <label class="field">
             <span>Category</span>
             <select id="flashCategory">
