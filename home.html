@@ -229,7 +229,7 @@
       <!-- Desktop tabs -->
       <nav class="desktop-tabs" aria-label="Sections">
         <button type="button" class="tab-btn active" data-section="feed">Feed</button>
-        <button type="button" class="tab-btn" data-section="market">Market</button>
+        <button type="button" class="tab-btn" data-section="market">Flashes</button>
         <button type="button" class="tab-btn" data-section="opportunities">Opportunities</button>
         <button type="button" class="tab-btn" data-section="socials">Shops</button>
         <button type="button" class="tab-btn" data-section="profile">Profile</button>
@@ -480,10 +480,18 @@
           <div id="imagePreviewStrip" class="post-img-preview-strip"></div>
         </div>
 
-        <!-- Caption -->
-        <label class="field" style="margin-top:10px;">
-          <span>Caption</span>
-          <textarea id="postDesc" placeholder="Write something about this post…" rows="3" maxlength="600"></textarea>
+        <!-- Product Name (for feed product posts) -->
+        <div id="productNameField">
+          <label class="field" style="margin-top:10px;">
+            <span>Product Name</span>
+            <input id="postTitle" type="text" maxlength="80" placeholder="e.g. iPhone 13 Pro 256GB" />
+          </label>
+        </div>
+
+        <!-- Description -->
+        <label class="field" style="margin-top:6px;">
+          <span>Description</span>
+          <textarea id="postDesc" placeholder="Describe your product — condition, size, colour, location…" rows="3" maxlength="600"></textarea>
         </label>
 
         <!-- Price — always visible for product posts -->
@@ -557,7 +565,7 @@
   <!-- Bottom Navigation -->
   <nav class="bottom-nav" aria-label="Bottom Navigation">
     <button type="button" class="active">Feed</button>
-    <button type="button">Market</button>
+    <button type="button">Flashes</button>
     <button type="button">Opportunities</button>
     <button type="button">Shops</button>
     <button type="button">Profile</button>
