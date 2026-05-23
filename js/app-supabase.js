@@ -829,27 +829,27 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function renderFeedProductGrid() {
     if (!FEED_LIST) return;
-    let list = activeFeedCat
+
+    // Shop catalogue products
+    let shopItems = activeFeedCat
       ? cachedFeedProducts.filter(p => p.shop?.category === activeFeedCat)
       : cachedFeedProducts;
 
-    // Shuffle for discovery
-    list = [...list].sort(() => Math.random() - 0.5);
+    // Posted products (type=social with image + title/price)
+    const postedItems = cachedPosts.filter(p =>
+      p.type === "social" &&
+      Array.isArray(p.image_urls) && p.image_urls.length
+    );
 
-    if (!list.length) {
-      FEED_LIST.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 16px;color:#64748b;"><div style="font-size:40px;margin-bottom:10px;">🛍️</div><div style="font-weight:700;color:#0f172a;margin-bottom:4px;">${activeFeedCat ? "No products in this category yet" : "No products yet"}</div></div>`;
-      return;
-    }
-
-    FEED_LIST.innerHTML = list.map(p => {
+    // Merge: convert shop products to card HTML, posted products to same card HTML
+    const shopCards = shopItems.map(p => {
       let imgUrl = "";
-      if (Array.isArray(p.image_paths) && p.image_paths.length) {
+      if (Array.isArray(p.image_paths) && p.image_paths.length)
         imgUrl = supabase.storage.from("shop-products").getPublicUrl(p.image_paths[0]).data.publicUrl;
-      } else if (p.image_path) {
+      else if (p.image_path)
         imgUrl = supabase.storage.from("shop-products").getPublicUrl(p.image_path).data.publicUrl;
-      }
       const shopName = p.shop?.shop_name || "Shop";
-      return `
+      return { html: `
         <div class="feed-prod-card" data-action="open-product" data-productid="${escapeHtml(p.id)}">
           <div class="feed-prod-img-wrap">
             ${imgUrl ? `<img class="feed-prod-img" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(p.product_name)}" loading="lazy" />` : `<div class="feed-prod-img" style="display:flex;align-items:center;justify-content:center;font-size:32px;">🖼️</div>`}
@@ -860,13 +860,26 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="feed-prod-name">${escapeHtml(p.product_name || "")}</div>
             <div class="feed-prod-shop">🏪 ${escapeHtml(shopName)}</div>
           </div>
-        </div>`;
-    }).join("");
+        </div>`, sort: new Date(p.created_at).getTime() };
+    });
+
+    const postCards = postedItems.map(p => ({
+      html: buildPostCard(p),
+      sort: new Date(p.created_at).getTime(),
+    }));
+
+    // Merge and shuffle for discovery
+    const all = [...shopCards, ...postCards].sort(() => Math.random() - 0.5);
+
+    if (!all.length) {
+      FEED_LIST.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 16px;color:#64748b;"><div style="font-size:40px;margin-bottom:10px;">🛍️</div><div style="font-weight:700;color:#0f172a;margin-bottom:4px;">${activeFeedCat ? "No products in this category yet" : "No products yet"}</div></div>`;
+      return;
+    }
+    FEED_LIST.innerHTML = all.map(x => x.html).join("");
   }
 
   async function renderFeed() {
     if (!FEED_LIST) return;
-    // If shop.js signalled that a new product was added, force reload
     let forceReload = false;
     try {
       if (localStorage.getItem("wespace_feed_stale") === "1") {
@@ -881,34 +894,29 @@ document.addEventListener("DOMContentLoaded", async () => {
       await loadFeedProducts();
     }
     renderFeedProductGrid();
-    // Also load and show image feed posts (type=feed) below the product grid
-    await renderFeedImagePosts();
+    // Clear the old separate section — posts are now inside the main grid
+    const oldWrap = document.getElementById("feedPostsList");
+    if (oldWrap) oldWrap.innerHTML = "";
   }
 
-  async function renderFeedImagePosts() {
-    const wrap = document.getElementById("feedPostsList");
-    if (!wrap) return;
-    // Only social posts with images + price (product posts from + button)
-    const feedPosts = cachedPosts.filter(p => p.type === "social" && Array.isArray(p.image_urls) && p.image_urls.length);
-    if (!feedPosts.length) { wrap.innerHTML = ""; return; }
-    wrap.innerHTML = feedPosts.map(p => {
-      const imgUrl = p.image_urls[0] || "";
-      const wa = formatWaNumber(p.whatsapp || "");
-      const postName = p.title || p.description?.slice(0, 60) || "Product";
-      return `
-        <div class="feed-prod-card" data-action="open-feed-post" data-postid="${escapeHtml(p.id)}"
-          style="cursor:pointer;">
-          <div class="feed-prod-img-wrap">
-            ${imgUrl ? `<img class="feed-prod-img" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(postName)}" loading="lazy" />` : `<div class="feed-prod-img" style="display:flex;align-items:center;justify-content:center;font-size:32px;">🖼️</div>`}
-            ${p.price ? `<span class="feed-prod-price-badge">${escapeHtml(p.price)}</span>` : ""}
-            ${p.verified ? `<span class="feed-prod-verified">✔ Verified</span>` : ""}
-          </div>
-          <div class="feed-prod-body">
-            <div class="feed-prod-name">${escapeHtml(postName)}</div>
-            <div class="feed-prod-shop">👤 ${escapeHtml(p.author_name || "Seller")}</div>
-          </div>
-        </div>`;
-    }).join("");
+  function buildPostCard(p) {
+    // Renders a posted product as a feed-prod-card identical to shop products
+    const imgUrl = Array.isArray(p.image_urls) && p.image_urls.length ? p.image_urls[0] : "";
+    const postName = p.title || p.description?.slice(0, 60) || "Product";
+    return `
+      <div class="feed-prod-card" data-action="open-feed-post" data-postid="${escapeHtml(p.id)}" style="cursor:pointer;">
+        <div class="feed-prod-img-wrap">
+          ${imgUrl
+            ? `<img class="feed-prod-img" src="${escapeHtml(imgUrl)}" alt="${escapeHtml(postName)}" loading="lazy" />`
+            : `<div class="feed-prod-img" style="display:flex;align-items:center;justify-content:center;font-size:32px;">🖼️</div>`}
+          ${p.price ? `<span class="feed-prod-price-badge">${escapeHtml(p.price)}</span>` : ""}
+          ${verifiedSellerSet.has(p.author_id) ? `<span class="feed-prod-verified">✔ Verified</span>` : ""}
+        </div>
+        <div class="feed-prod-body">
+          <div class="feed-prod-name">${escapeHtml(postName)}</div>
+          <div class="feed-prod-shop">👤 ${escapeHtml(p.author_name || "Seller")}</div>
+        </div>
+      </div>`;
   }
 
   // =========================
