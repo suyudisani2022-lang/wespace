@@ -945,7 +945,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           <div data-action="open-shop" data-sellerid="${escapeHtml(shop.seller_id)}" style="cursor:pointer;">
             ${shop.banner_url ? `<img class="shop-dir-banner" src="${escapeHtml(shop.banner_url)}" alt="banner" loading="lazy" />` : `<div class="shop-dir-banner-placeholder">🏪</div>`}
             <div class="shop-dir-body">
-              ${shop.verified ? `<span class="shop-dir-verified">✔ Verified</span>` : ""}
+              ${shop.verified ? `<span class="shop-dir-verified" style="display:inline-flex;align-items:center;gap:4px;background:#dcfce7;color:#15803d;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;border:1px solid #bbf7d0;"><svg width='10' height='10' viewBox='0 0 10 10'><path d='M2 5l2 2 4-4' stroke='#15803d' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg> Verified Seller</span>` : ""}
               ${shop.logo_url ? `<img class="shop-dir-logo" src="${escapeHtml(shop.logo_url)}" alt="logo" loading="lazy" />` : `<div class="shop-dir-logo-placeholder">🏬</div>`}
               <div class="shop-dir-name">${escapeHtml(shop.shop_name || "Shop")}</div>
               ${loc ? `<div class="shop-dir-location">📍 ${escapeHtml(loc)}</div>` : ""}
@@ -1081,59 +1081,80 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ── PROFILE POST CARD (feed/flash style, delete only) ───
   function renderProfileCard(p, canDelete) {
     const isFlash = p.type === "market";
-    const isFeed  = p.type === "feed" || p.type === "social";
 
     // Resolve images
     let imgArr = p.image_urls;
     if (typeof imgArr === "string") { try { imgArr = JSON.parse(imgArr); } catch { imgArr = []; } }
     if (!Array.isArray(imgArr)) imgArr = [];
-    const imgUrl = imgArr[0] || "";
+
+    // Build swiper if multiple images
+    const pid = `ppost-${p.id}`;
+    const hasImgs = imgArr.length > 0;
+
+    const imagesHtml = imgArr.map((url, i) =>
+      `<img src="${escapeHtml(url)}" alt="" loading="${i===0?'eager':'lazy'}"
+        data-action="view-feed-img" data-src="${escapeHtml(url)}"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;transition:opacity .22s;opacity:${i===0?1:0};pointer-events:${i===0?'auto':'none'};" />`
+    ).join("");
+
+    const dotsHtml = imgArr.length > 1
+      ? `<div style="position:absolute;bottom:6px;left:0;right:0;display:flex;justify-content:center;gap:4px;z-index:2;">
+          ${imgArr.map((_,i) => `<span class="pp-dot" data-ppid="${pid}" data-idx="${i}"
+            style="width:6px;height:6px;border-radius:50%;background:${i===0?'#fff':'rgba(255,255,255,.45)'};cursor:pointer;display:inline-block;transition:background .2s;"></span>`).join("")}
+         </div>`
+      : "";
+
+    const arrowsHtml = imgArr.length > 1
+      ? `<button data-action="pp-prev" data-ppid="${pid}" data-total="${imgArr.length}"
+           style="position:absolute;left:4px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.35);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:14px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0;">‹</button>
+         <button data-action="pp-next" data-ppid="${pid}" data-total="${imgArr.length}"
+           style="position:absolute;right:4px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.35);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:14px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;padding:0;">›</button>`
+      : "";
+
+    const salePrice = p.price || "";
+    const origPrice = p.original_price || "";
+
+    const gradientHtml = hasImgs ? `
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:24px 10px ${imgArr.length>1?'22':'8'}px;
+        background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 100%);pointer-events:none;z-index:1;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          ${isFlash && salePrice ? `<span style="font-size:13px;font-weight:900;color:#fbbf24;">⚡ ${escapeHtml(salePrice)}</span>` : ""}
+          ${isFlash && origPrice ? `<span style="font-size:11px;color:rgba(255,255,255,.6);text-decoration:line-through;">${escapeHtml(origPrice)}</span>` : ""}
+        </div>
+      </div>` : "";
 
     const deleteBtn = canDelete
       ? `<button type="button" data-action="delete-post" data-postid="${p.id}"
-           style="background:#fee2e2;color:#dc2626;border:none;padding:5px 10px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">
-           🗑️ Delete
+           style="position:absolute;top:8px;right:8px;background:rgba(220,38,38,.85);color:#fff;border:none;
+           padding:5px 9px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;z-index:3;backdrop-filter:blur(4px);">
+           🗑️
          </button>`
       : "";
 
-    if (isFlash) {
-      const salePrice = p.price || "";
-      const origPrice = p.original_price || "";
-      return `
-        <div class="flash-card" style="margin-bottom:12px;border-radius:12px;overflow:hidden;background:#fff;border:1px solid rgba(0,0,0,.08);">
-          <div class="flash-img-wrap" style="position:relative;">
-            ${imgUrl ? `<img class="flash-img" src="${escapeHtml(imgUrl)}" alt="" loading="lazy" style="width:100%;height:180px;object-fit:cover;display:block;" />` : `<div style="height:100px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:32px;">⚡</div>`}
-            <span style="position:absolute;top:8px;left:8px;background:#ef4444;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;">⚡ FLASH SALE</span>
-          </div>
-          <div style="padding:10px 12px;">
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
-              <div>
-                <div style="font-size:14px;font-weight:800;color:#0f172a;">${escapeHtml(p.description?.slice(0,80) || "Flash Deal")}</div>
-                <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
-                  ${salePrice ? `<span style="font-size:16px;font-weight:900;color:#ef4444;">${escapeHtml(salePrice)}</span>` : ""}
-                  ${origPrice ? `<span style="font-size:12px;color:#94a3b8;text-decoration:line-through;">${escapeHtml(origPrice)}</span>` : ""}
-                </div>
-                <div style="font-size:11px;color:#64748b;margin-top:3px;">📅 ${new Date(p.created_at).toLocaleDateString()}</div>
-              </div>
-              ${deleteBtn}
-            </div>
-          </div>
-        </div>`;
-    }
+    const flashBadge = isFlash
+      ? `<span style="position:absolute;top:8px;left:8px;background:#ef4444;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;z-index:3;">⚡ FLASH</span>`
+      : "";
 
-    // Feed / community / other posts
     return `
-      <div style="margin-bottom:12px;border-radius:12px;overflow:hidden;background:#fff;border:1px solid rgba(0,0,0,.08);">
-        ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="" loading="lazy" style="width:100%;max-height:260px;object-fit:cover;display:block;" />` : ""}
-        <div style="padding:10px 12px;">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
-            <div style="flex:1;min-width:0;">
-              ${p.description ? `<div style="font-size:13px;color:#0f172a;line-height:1.5;">${escapeHtml(p.description)}</div>` : ""}
-              <div style="font-size:11px;color:#94a3b8;margin-top:4px;">📅 ${new Date(p.created_at).toLocaleDateString()}</div>
-            </div>
-            ${deleteBtn}
-          </div>
+      <div id="${pid}" style="border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.09);display:flex;flex-direction:column;position:relative;">
+        <!-- IMAGE AREA -->
+        <div style="position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;background:#f1f5f9;flex-shrink:0;">
+          ${hasImgs ? imagesHtml : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#cbd5e1;">${isFlash?"⚡":"🖼️"}</div>`}
+          ${gradientHtml}
+          ${dotsHtml}
+          ${arrowsHtml}
+          ${flashBadge}
+          ${deleteBtn}
         </div>
+        <!-- TEXT -->
+        ${p.description ? `
+        <div style="padding:8px 10px 10px;">
+          <div style="font-size:12px;color:#0f172a;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer;"
+            data-action="expand-desc" data-expanded="0">
+            ${escapeHtml(p.description)}
+          </div>
+          <div style="font-size:10px;color:#94a3b8;margin-top:4px;">${new Date(p.created_at).toLocaleDateString()}</div>
+        </div>` : `<div style="padding:6px 10px;font-size:10px;color:#94a3b8;">${new Date(p.created_at).toLocaleDateString()}</div>`}
       </div>`;
   }
 
@@ -1168,9 +1189,45 @@ document.addEventListener("DOMContentLoaded", async () => {
       ...resharedCards.map((x) => ({ kind: "reshare", post: x.post, meta: x.meta, sort: x.sort })),
     ].sort((a, b) => new Date(b.sort) - new Date(a.sort));
     const isSelf = profileView.mode === "self" && sessionUser && whoId === sessionUser.id;
-    myPostsWrap.innerHTML = combined.length
-      ? combined.map((x) => renderProfileCard(x.post, isSelf)).join("")
-      : `<p class="empty-state">No posts yet.</p>`;
+    if (!combined.length) {
+      myPostsWrap.innerHTML = `<p class="empty-state">No posts yet.</p>`;
+      return;
+    }
+    myPostsWrap.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding-bottom:80px;">
+        ${combined.map((x) => renderProfileCard(x.post, isSelf)).join("")}
+      </div>`;
+
+    // Profile post swiper handler
+    myPostsWrap.addEventListener("click", (e) => {
+      const next = e.target.closest("[data-action='pp-next']");
+      const prev = e.target.closest("[data-action='pp-prev']");
+      const dot  = e.target.closest(".pp-dot");
+      const desc = e.target.closest("[data-action='expand-desc']");
+      if (next || prev || dot) {
+        const btn   = next || prev || dot;
+        const ppid  = btn.dataset.ppid || btn.dataset.ppid;
+        const card  = document.getElementById(ppid);
+        if (!card) return;
+        const imgs  = card.querySelectorAll("img[data-action='view-feed-img']");
+        const dots  = card.querySelectorAll(".pp-dot");
+        const total = imgs.length;
+        if (!total) return;
+        let cur = [...imgs].findIndex(i => i.style.opacity === "1");
+        if (dot) cur = parseInt(dot.dataset.idx) - 1; // will +1 below
+        const newIdx = next ? (cur+1)%total : prev ? ((cur-1)+total)%total : parseInt(dot.dataset.idx);
+        const idx = dot ? newIdx : newIdx;
+        imgs.forEach((img,i) => { img.style.opacity = i===idx?"1":"0"; img.style.pointerEvents = i===idx?"auto":"none"; });
+        dots.forEach((d,i) => { d.style.background = i===idx?"#fff":"rgba(255,255,255,.45)"; });
+        return;
+      }
+      if (desc) {
+        const expanded = desc.dataset.expanded === "1";
+        desc.style.webkitLineClamp = expanded ? "2" : "unset";
+        desc.style.overflow = expanded ? "hidden" : "visible";
+        desc.dataset.expanded = expanded ? "0" : "1";
+      }
+    });
   }
 
   // =========================
@@ -1706,8 +1763,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       window.location.href = `shop.html?seller=${visitSellerBtn.dataset.sellerid}`;
       return;
     }
-    // Open shop from directory card
-    const shopCard = e.target.closest("[data-action='open-shop']");
     if (shopCard) {
       const sellerId = shopCard.dataset.sellerid;
       if (sellerId) window.location.href = `shop.html?seller=${encodeURIComponent(sellerId)}`;
