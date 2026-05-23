@@ -889,7 +889,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const wrap = document.getElementById("feedPostsList");
     if (!wrap) return;
     // Feed posts are posts with type="feed" — images posted via + button, not linked to shop
-    const feedPosts = cachedPosts.filter(p => p.type === "feed" || p.type === "social");
+    const feedPosts = cachedPosts.filter(p => p.type === "social");
     if (!feedPosts.length) { wrap.innerHTML = ""; return; }
     wrap.innerHTML = `
       <div style="font-size:13px;font-weight:800;color:#0f172a;margin-bottom:10px;padding:0 2px;">📸 From the community</div>
@@ -1190,13 +1190,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     ].sort((a, b) => new Date(b.sort) - new Date(a.sort));
     const isSelf = profileView.mode === "self" && sessionUser && whoId === sessionUser.id;
     if (!combined.length) {
+      myPostsWrap.style.display = "";
+      myPostsWrap.style.gridTemplateColumns = "";
       myPostsWrap.innerHTML = `<p class="empty-state">No posts yet.</p>`;
       return;
     }
-    myPostsWrap.innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding-bottom:80px;">
-        ${combined.map((x) => renderProfileCard(x.post, isSelf)).join("")}
-      </div>`;
+    myPostsWrap.style.display = "grid";
+    myPostsWrap.style.gridTemplateColumns = "repeat(2,1fr)";
+    myPostsWrap.style.gap = "10px";
+    myPostsWrap.style.paddingBottom = "80px";
+    myPostsWrap.innerHTML = combined.map((x) => renderProfileCard(x.post, isSelf)).join("");
 
     // Profile post swiper handler
     myPostsWrap.addEventListener("click", (e) => {
@@ -1217,8 +1220,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (dot) cur = parseInt(dot.dataset.idx) - 1; // will +1 below
         const newIdx = next ? (cur+1)%total : prev ? ((cur-1)+total)%total : parseInt(dot.dataset.idx);
         const idx = dot ? newIdx : newIdx;
-        imgs.forEach((img,i) => { img.style.opacity = i===idx?"1":"0"; img.style.pointerEvents = i===idx?"auto":"none"; });
-        dots.forEach((d,i) => { d.style.background = i===idx?"#fff":"rgba(255,255,255,.45)"; });
+        const finalIdx = ((idx % total) + total) % total;
+        imgs.forEach((img,i) => { img.style.opacity = i===finalIdx?"1":"0"; img.style.pointerEvents = i===finalIdx?"auto":"none"; });
+        dots.forEach((d,i) => { d.style.background = i===finalIdx?"#fff":"rgba(255,255,255,.45)"; });
         return;
       }
       if (desc) {
@@ -1450,6 +1454,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Reset to feed post type
     document.querySelectorAll(".post-type-pill").forEach(p => p.classList.remove("active"));
     document.querySelector(".post-type-pill[data-type='feed']")?.classList.add("active");
+    // Show price fields (hidden only for community)
+    const priceFields = document.getElementById("priceFields");
+    if (priceFields) priceFields.style.display = "block";
     const postTypeInput = document.getElementById("postType");
     if (postTypeInput) postTypeInput.value = "feed";
     document.getElementById("flashSaleFields").style.display = "none";
@@ -1481,8 +1488,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Post type pills
   const postTypeHints = {
-    feed: "Photos shared to the feed. Not linked to your shop.",
-    flash: "Discounted product shown in Flash Sales tab.",
+    feed: "Post a product to the feed with price so buyers can contact you.",
+    flash: "Discounted product shown in Flash Sales tab with countdown.",
     community: "Announcements, events or tips for the community.",
   };
   document.querySelectorAll(".post-type-pill").forEach(pill => {
@@ -1492,11 +1499,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       const type = pill.dataset.type;
       const postTypeInput = document.getElementById("postType");
       if (postTypeInput) postTypeInput.value = type;
+      // Price always shows except community
+      const priceFields = document.getElementById("priceFields");
+      if (priceFields) priceFields.style.display = type === "community" ? "none" : "block";
+      // Flash-only extras
       document.getElementById("flashSaleFields").style.display = type === "flash" ? "block" : "none";
       document.getElementById("communityFields").style.display = type === "community" ? "block" : "none";
       const hint = document.getElementById("postTypeHint");
       if (hint) hint.textContent = postTypeHints[type] || "";
-      // Show apply link for community opportunity type
+      // Apply link for community opportunity type
       const commType = document.getElementById("communityType");
       commType?.addEventListener("change", () => {
         const applyWrap = document.getElementById("applyLinkWrap");
@@ -1548,7 +1559,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     let apply_link = "";
 
     if (postTypeVal === "feed") {
-      dbType = "feed"; // image posts to feed only, not in shop
+      dbType = "social";
+      price = document.getElementById("postPrice")?.value.trim() || "";
+      original_price = ""; // feed posts have no discount, no original price
     } else if (postTypeVal === "flash") {
       dbType = "market";
       price = document.getElementById("postPrice")?.value.trim() || "";
