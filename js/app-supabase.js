@@ -1795,24 +1795,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    // Open feed post product detail sheet
+    // Open feed post product — navigate to product.html with postid
     const feedPostCard = e.target.closest("[data-action='open-feed-post']");
     if (feedPostCard) {
       const postId = feedPostCard.dataset.postid;
-      const p = cachedPosts.find(x => String(x.id) === String(postId));
-      if (!p) return;
-      const imgUrl = Array.isArray(p.image_urls) && p.image_urls.length ? p.image_urls[0] : "";
-      const postName = p.title || p.description?.slice(0, 60) || "Product";
-      openProductDetailSheet({
-        imgUrl,
-        name:      postName,
-        salePrice: p.price || "",
-        origPrice: "",
-        desc:      p.description || "",
-        shopName:  p.author_name || "Seller",
-        wa:        p.whatsapp || "",
-        authorId:  p.author_id || null,
-      });
+      if (postId) window.location.href = `product.html?postid=${encodeURIComponent(postId)}`;
       return;
     }
 
