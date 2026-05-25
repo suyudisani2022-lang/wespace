@@ -307,10 +307,126 @@
       });
     }
 
+    // ── POST PRODUCT INIT (from feed post) ──
+    async function initFromPost(postId) {
+      const { data: post, error } = await supabase.from("posts_with_stats")
+        .select("*").eq("id", postId).maybeSingle();
+
+      if (error || !post) {
+        $("productPage").innerHTML = `<div style="padding:40px;text-align:center;color:#64748b;">Post not found.</div>`;
+        return;
+      }
+
+      // Parse image_urls safely
+      let imageUrls = post.image_urls;
+      if (typeof imageUrls === "string") { try { imageUrls = JSON.parse(imageUrls); } catch { imageUrls = []; } }
+      if (!Array.isArray(imageUrls)) imageUrls = [];
+
+      const postName = post.title || post.description?.slice(0, 60) || "Product";
+      $("topbarProductName").textContent = postName;
+      document.title = `${postName} — weSPACE`;
+
+      // Load seller profile + shop
+      const sid = post.author_id;
+      const { data: shop } = await supabase.from("shops").select("*").eq("seller_id", sid).maybeSingle();
+      const { data: verif } = await supabase.from("seller_verifications").select("status").eq("user_id", sid).maybeSingle();
+      const verified = verif?.status === "approved";
+      const { data: prof } = await supabase.from("profiles").select("name,wa").eq("id", sid).maybeSingle();
+
+      let waNumber = formatWa(post.whatsapp || shop?.whatsapp || prof?.wa || "");
+      const sellerName = shop?.shop_name || prof?.name || "Seller";
+
+      // Related shop products (same category or random)
+      const cat = post.category || shop?.category || "";
+      let relatedQuery = supabase.from("shop_products").select("*").neq("seller_id", sid).limit(6);
+      const { data: related } = await relatedQuery.order("created_at", { ascending: false });
+
+      const shopLogoHTML = shop?.logo_url
+        ? `<img src="${esc(shop.logo_url)}" alt="logo" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" />`
+        : `👤`;
+
+      const relatedHTML = (related || []).length ? `
+        <div class="more-products-title">🛍️ Related Products from Shops</div>
+        <div class="more-products-grid">
+          ${(related || []).map(p => {
+            let img = "";
+            if (Array.isArray(p.image_paths) && p.image_paths.length) img = publicUrl(p.image_paths[0]);
+            else if (p.image_path) img = publicUrl(p.image_path);
+            return `<div class="more-prod-card" onclick="window.location.href='product.html?id=${p.id}'">
+              ${img ? `<img class="more-prod-img" src="${esc(img)}" alt="${esc(p.product_name)}" loading="lazy" />` : `<div class="more-prod-img" style="display:flex;align-items:center;justify-content:center;font-size:28px;">🖼️</div>`}
+              <div class="more-prod-body">
+                <div class="more-prod-name">${esc(p.product_name)}</div>
+                <div class="more-prod-price">${esc(p.price_text || "")}</div>
+              </div>
+            </div>`;
+          }).join("")}
+        </div>` : "";
+
+      $("productPage").innerHTML = `
+        ${buildGallery(imageUrls)}
+
+        <div class="product-info-card">
+          <div class="product-price-big">${esc(post.price || "")}</div>
+          <div class="product-name-big">${esc(postName)}</div>
+          ${post.description ? `<div class="product-desc">${esc(post.description)}</div>` : ""}
+        </div>
+
+        <div class="product-actions">
+          <button class="btn-wa-big" id="waActionBtn" ${waNumber ? "" : "disabled"}>
+            <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WA" />
+            Chat Seller
+          </button>
+          ${shop ? `<button class="btn-visit-shop" id="visitShopActionBtn">🛒 Visit Shop</button>` : ""}
+        </div>
+
+        ${shop || prof ? `
+        <div class="shop-info-card" id="shopInfoCard">
+          <div class="shop-info-logo">${shopLogoHTML}</div>
+          <div class="shop-info-body">
+            <div class="shop-info-name">
+              ${esc(sellerName)}
+              ${verified ? `<span class="shop-verified">✔ Verified</span>` : ""}
+            </div>
+            ${shop?.city || shop?.market ? `<div class="shop-info-loc">📍 ${esc([shop.city, shop.market].filter(Boolean).join(" • "))}</div>` : ""}
+            ${shop?.category ? `<div class="shop-info-cat">${esc(shop.category)}</div>` : ""}
+          </div>
+          <div class="shop-info-arrow">›</div>
+        </div>` : ""}
+
+        ${relatedHTML}`;
+
+      initGallery(imageUrls);
+
+      $("waActionBtn")?.addEventListener("click", () => {
+        if (!waNumber) return alert("No WhatsApp number available.");
+        const msg = encodeURIComponent(`Assalamu alaikum! I saw *${postName}* on weSPACE. Is it still available?`);
+        window.open(`https://wa.me/${waNumber}?text=${msg}`, "_blank");
+      });
+
+      $("visitShopActionBtn")?.addEventListener("click", () => {
+        window.location.href = `shop.html?seller=${encodeURIComponent(sid)}`;
+      });
+
+      $("shopInfoCard")?.addEventListener("click", () => {
+        if (shop) window.location.href = `shop.html?seller=${encodeURIComponent(sid)}`;
+      });
+
+      $("shareProductBtn").addEventListener("click", async () => {
+        const url = `${location.origin}/product.html?postid=${postId}`;
+        if (navigator.share) {
+          try { await navigator.share({ title: postName, url }); return; } catch {}
+        }
+        await navigator.clipboard.writeText(url).catch(() => {});
+        alert("Product link copied ✅");
+      });
+    }
+
     // ── MAIN INIT ──
     async function init() {
       const productId = getParam("id");
-      const sellerId = getParam("seller");
+      const postId    = getParam("postid");
+
+      if (postId) { await initFromPost(postId); return; }
 
       if (!productId) {
         $("productPage").innerHTML = `<div style="padding:40px;text-align:center;color:#64748b;">Product not found.</div>`;
