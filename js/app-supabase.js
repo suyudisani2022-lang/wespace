@@ -1014,13 +1014,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (btn.dataset.ptab === "posts") await renderProfilePostsList();
   });
 
-  function fillBirthdayDays() {
-    if (!pBdayDay) return;
-    if (pBdayDay.options.length > 1) return;
-    pBdayDay.innerHTML = `<option value="">Day</option>` +
-      Array.from({ length: 31 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join("");
-  }
-  fillBirthdayDays();
+  // fillBirthdayDays removed — birthday field no longer in profile
 
   async function fetchProfileById(id) {
     const { data, error } = await supabase.from("profiles").select("*").eq("id", id).single();
@@ -1144,14 +1138,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       ? `<span style="position:absolute;top:8px;left:8px;background:#2563eb;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;z-index:3;">🛍️ PRODUCT</span>`
       : "";
 
-    const cardClick = isProduct
-      ? `data-action="open-feed-post" data-postid="${p.id}" style="cursor:pointer;"`
+    const cardAction = isProduct
+      ? `data-action="open-feed-post" data-postid="${p.id}"`
       : isFlash
-      ? `data-action="open-flash-detail" data-flashid="${p.id}" style="cursor:pointer;"`
+      ? `data-action="open-flash-detail" data-flashid="${p.id}"`
       : "";
 
     return `
-      <div id="${pid}" ${cardClick} style="border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.09);display:flex;flex-direction:column;position:relative;">
+      <div id="${pid}" ${cardAction} style="border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.09);display:flex;flex-direction:column;position:relative;${(isProduct||isFlash)?'cursor:pointer;':''}">
         <!-- IMAGE AREA -->
         <div style="position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;background:#f1f5f9;flex-shrink:0;">
           ${hasImgs ? imagesHtml : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#cbd5e1;">${isFlash?"⚡":"🖼️"}</div>`}
@@ -1375,9 +1369,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       else { profileAvatar.removeAttribute("src"); profileAvatar.setAttribute("data-no-photo", "1"); }
     }
     if (pAbout) pAbout.value = myProfile.about || "";
-    if (pSkills) pSkills.value = myProfile.skills || "";
-    if (pBdayDay) pBdayDay.value = myProfile.bday_day || "";
-    if (pBdayMonth) pBdayMonth.value = myProfile.bday_month || "";
     if (pIG) pIG.value = myProfile.ig || "";
     if (pWA) pWA.value = myProfile.wa || "";
     if (pTT) pTT.value = myProfile.tt || "";
