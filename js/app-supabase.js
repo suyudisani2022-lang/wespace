@@ -53,12 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const saveProfileBtn2 = document.getElementById("saveProfileBtn2");
 
   const pAbout = document.getElementById("pAbout");
-  const pSkills = document.getElementById("pSkills");
-  const pBdayDay = document.getElementById("pBdayDay");
-  const pBdayMonth = document.getElementById("pBdayMonth");
-  const pEdu = document.getElementById("pEdu");
   const pIG = document.getElementById("pIG");
-  const pX = document.getElementById("pX");
   const pWA = document.getElementById("pWA");
   const pTT = document.getElementById("pTT");
 
@@ -359,7 +354,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const setDisabledProfileInputs = (disabled) => {
-    ["pAbout","pSkills","pBdayDay","pBdayMonth","pEdu","pIG","pX","pWA","pTT"].forEach((id) => {
+    ["pAbout","pIG","pWA","pTT"].forEach((id) => {
       const el = document.getElementById(id);
       if (!el) return;
       el.disabled = disabled; el.readOnly = disabled;
@@ -1091,7 +1086,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // =========================
   // ── PROFILE POST CARD (feed/flash style, delete only) ───
   function renderProfileCard(p, canDelete) {
-    const isFlash = p.type === "market";
+    const isFlash   = p.type === "market";
+    const isProduct = p.type === "social";
 
     // Resolve images
     let imgArr = p.image_urls;
@@ -1129,7 +1125,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div style="position:absolute;bottom:0;left:0;right:0;padding:24px 10px ${imgArr.length>1?'22':'8'}px;
         background:linear-gradient(to top,rgba(0,0,0,.6) 0%,transparent 100%);pointer-events:none;z-index:1;">
         <div style="display:flex;align-items:center;gap:6px;">
-          ${isFlash && salePrice ? `<span style="font-size:13px;font-weight:900;color:#fbbf24;">⚡ ${escapeHtml(salePrice)}</span>` : ""}
+          ${salePrice ? `<span style="font-size:13px;font-weight:900;color:${isFlash?'#fbbf24':'#fff'};">${isFlash?'⚡ ':''}${escapeHtml(salePrice)}</span>` : ""}
           ${isFlash && origPrice ? `<span style="font-size:11px;color:rgba(255,255,255,.6);text-decoration:line-through;">${escapeHtml(origPrice)}</span>` : ""}
         </div>
       </div>` : "";
@@ -1144,10 +1140,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const flashBadge = isFlash
       ? `<span style="position:absolute;top:8px;left:8px;background:#ef4444;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;z-index:3;">⚡ FLASH</span>`
+      : isProduct
+      ? `<span style="position:absolute;top:8px;left:8px;background:#2563eb;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px;z-index:3;">🛍️ PRODUCT</span>`
+      : "";
+
+    const cardClick = isProduct
+      ? `data-action="open-feed-post" data-postid="${p.id}" style="cursor:pointer;"`
+      : isFlash
+      ? `data-action="open-flash-detail" data-flashid="${p.id}" style="cursor:pointer;"`
       : "";
 
     return `
-      <div id="${pid}" style="border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.09);display:flex;flex-direction:column;position:relative;">
+      <div id="${pid}" ${cardClick} style="border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.09);display:flex;flex-direction:column;position:relative;">
         <!-- IMAGE AREA -->
         <div style="position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;background:#f1f5f9;flex-shrink:0;">
           ${hasImgs ? imagesHtml : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#cbd5e1;">${isFlash?"⚡":"🖼️"}</div>`}
@@ -1196,8 +1200,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     }
     const combined = [
-      ...originalsMapped.map((p) => ({ kind: "post", post: p, meta: null, sort: p.created_at })),
-      ...resharedCards.map((x) => ({ kind: "reshare", post: x.post, meta: x.meta, sort: x.sort })),
+      ...originalsMapped
+        .filter(p => p.type === "social" || p.type === "market")
+        .map((p) => ({ kind: "post", post: p, meta: null, sort: p.created_at })),
+      // reshares excluded — profile shows only the user's own product posts
     ].sort((a, b) => new Date(b.sort) - new Date(a.sort));
     const isSelf = profileView.mode === "self" && sessionUser && whoId === sessionUser.id;
     if (!combined.length) {
@@ -1339,12 +1345,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           else { profileAvatar.removeAttribute("src"); profileAvatar.setAttribute("data-no-photo", "1"); }
         }
         if (pAbout) pAbout.value = u.about || "";
-        if (pSkills) pSkills.value = u.skills || "";
-        if (pBdayDay) pBdayDay.value = u.bday_day || "";
-        if (pBdayMonth) pBdayMonth.value = u.bday_month || "";
-        if (pEdu) pEdu.value = u.education || "";
         if (pIG) pIG.value = u.ig || "";
-        if (pX) pX.value = u.x || "";
         if (pWA) pWA.value = u.wa || "";
         if (pTT) pTT.value = u.tt || "";
       })();
@@ -1377,9 +1378,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (pSkills) pSkills.value = myProfile.skills || "";
     if (pBdayDay) pBdayDay.value = myProfile.bday_day || "";
     if (pBdayMonth) pBdayMonth.value = myProfile.bday_month || "";
-    if (pEdu) pEdu.value = myProfile.education || "";
     if (pIG) pIG.value = myProfile.ig || "";
-    if (pX) pX.value = myProfile.x || "";
     if (pWA) pWA.value = myProfile.wa || "";
     if (pTT) pTT.value = myProfile.tt || "";
     if (goRegisterBtn) goRegisterBtn.style.display = "none";
@@ -1398,10 +1397,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!sessionUser) return alert("Please log in first.");
     if (profileView.mode === "visitor") return;
     const updated = {
-      about: pAbout?.value?.trim() || "", skills: pSkills?.value?.trim() || "",
-      bday_day: pBdayDay?.value || "", bday_month: pBdayMonth?.value || "",
-      education: pEdu?.value || "", ig: pIG?.value?.trim() || "",
-      x: pX?.value?.trim() || "", wa: pWA?.value?.trim() || "", tt: pTT?.value?.trim() || "",
+      about: pAbout?.value?.trim() || "",
+      ig: pIG?.value?.trim() || "", wa: pWA?.value?.trim() || "", tt: pTT?.value?.trim() || "",
     };
     const { error } = await supabase.from("profiles").update(updated).eq("id", sessionUser.id);
     if (error) return alert(error.message || "Could not save profile.");
