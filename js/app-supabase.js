@@ -561,8 +561,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   // ── PRODUCT / FLASH DETAIL SHEET (in-page modal) ────────
-  function openProductDetailSheet({ imgUrl, name, salePrice, origPrice, desc, shopName, wa, authorId }) {
-    // Build a bottom sheet inside home.html without navigating away
+  // ── FLASH / POST DETAIL SHEET ────────────────────────────
+  let _sheetImgs = []; let _sheetIdx = 0;
+
+  function sheetGoTo(idx) {
+    const imgs = document.querySelectorAll(".sheet-slide-img");
+    const dots = document.querySelectorAll(".sheet-slide-dot");
+    _sheetIdx = ((idx % imgs.length) + imgs.length) % imgs.length;
+    imgs.forEach((img, i) => { img.style.opacity = i === _sheetIdx ? "1" : "0"; img.style.pointerEvents = i === _sheetIdx ? "auto" : "none"; });
+    dots.forEach((d, i) => { d.style.background = i === _sheetIdx ? "#fff" : "rgba(255,255,255,.5)"; });
+  }
+
+  function openProductDetailSheet({ allImgs = [], imgUrl, name, salePrice, origPrice, desc, shopName, wa, authorId }) {
+    // Back-compat: accept imgUrl as single image
+    if (!allImgs.length && imgUrl) allImgs = [imgUrl];
+    _sheetImgs = allImgs; _sheetIdx = 0;
+
     let sheet = document.getElementById("homeProductDetailSheet");
     if (!sheet) {
       sheet = document.createElement("div");
@@ -570,44 +584,77 @@ document.addEventListener("DOMContentLoaded", async () => {
       sheet.style.cssText = "display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:800;align-items:flex-end;justify-content:center;";
       sheet.innerHTML = `
         <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;
-          padding:20px 16px 48px;max-height:92vh;overflow-y:auto;animation:slideUpSheet .22s ease;">
+          max-height:92vh;overflow-y:auto;animation:slideUpSheet .22s ease;">
           <style>@keyframes slideUpSheet{from{transform:translateY(100%)}to{transform:translateY(0)}}</style>
-          <div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
-            <button id="closeHomeProductSheet" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748b;">✕</button>
-          </div>
-          <div id="homeProductSheetBody"></div>
+          <div id="homeProductSheetBody" style="padding-bottom:40px;"></div>
         </div>`;
       document.body.appendChild(sheet);
-      document.getElementById("closeHomeProductSheet")?.addEventListener("click", closeProductDetailSheet);
       sheet.addEventListener("click", (e) => { if (e.target === sheet) closeProductDetailSheet(); });
     }
+
     const waNum = formatWaNumber(wa || "");
+
+    // Build image slider
+    const sliderHtml = allImgs.length ? `
+      <div style="position:relative;width:100%;aspect-ratio:4/3;overflow:hidden;background:#111;border-radius:20px 20px 0 0;">
+        ${allImgs.map((url, i) => `
+          <img class="sheet-slide-img" src="${escapeHtml(url)}" alt=""
+            data-action="sheet-zoom" data-src="${escapeHtml(url)}"
+            style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;
+              transition:opacity .22s;opacity:${i===0?1:0};pointer-events:${i===0?'auto':'none'};cursor:zoom-in;" />`).join("")}
+        ${allImgs.length > 1 ? `
+          <button onclick="sheetGoTo(_sheetIdx-1)"
+            style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.45);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;">‹</button>
+          <button onclick="sheetGoTo(_sheetIdx+1)"
+            style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.45);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;">›</button>
+          <div style="position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:5px;z-index:2;">
+            ${allImgs.map((_,i) => `<span class="sheet-slide-dot" onclick="sheetGoTo(${i})"
+              style="width:7px;height:7px;border-radius:50%;background:${i===0?'#fff':'rgba(255,255,255,.45)'};cursor:pointer;display:inline-block;transition:background .2s;"></span>`).join("")}
+          </div>` : ""}
+        <!-- Close button overlaid on image -->
+        <button onclick="closeProductDetailSheet()"
+          style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer;z-index:3;display:flex;align-items:center;justify-content:center;">✕</button>
+      </div>` : `
+      <div style="display:flex;justify-content:flex-end;padding:14px 14px 0;">
+        <button onclick="closeProductDetailSheet()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748b;">✕</button>
+      </div>`;
+
     const body = document.getElementById("homeProductSheetBody");
     if (body) body.innerHTML = `
-      ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" style="width:100%;border-radius:12px;object-fit:cover;max-height:280px;display:block;margin-bottom:14px;background:#f1f5f9;" loading="lazy" />` : ""}
-      <div style="font-size:18px;font-weight:900;color:#0f172a;margin-bottom:6px;">${escapeHtml(name || "Product")}</div>
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-        ${salePrice ? `<span style="font-size:20px;font-weight:900;color:#ef4444;">${escapeHtml(salePrice)}</span>` : ""}
-        ${origPrice ? `<span style="font-size:14px;color:#94a3b8;text-decoration:line-through;">${escapeHtml(origPrice)}</span>` : ""}
-      </div>
-      ${desc ? `<div style="font-size:14px;color:#475569;line-height:1.5;margin-bottom:14px;">${escapeHtml(desc)}</div>` : ""}
-      ${shopName ? `<div style="font-size:12px;color:#64748b;margin-bottom:14px;">🏪 ${escapeHtml(shopName)}</div>` : ""}
-      <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
-        ${waNum
-          ? `<button onclick="window.open('https://wa.me/${waNum}?text=${encodeURIComponent(`Assalamu alaikum! I saw *${name}* on weSPACE. Is it available?`)}','_blank')"
-              style="background:#25d366;color:#fff;border:none;width:100%;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-              <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" style="width:18px;" alt="WA"> Chat Seller on WhatsApp
-            </button>`
-          : `<div style="text-align:center;color:#94a3b8;font-size:13px;padding:10px 0;">No WhatsApp number on this post</div>`}
-        ${authorId
-          ? `<button data-action="visit-seller-shop" data-sellerid="${encodeURIComponent(authorId)}"
-              style="background:#eff6ff;color:#2563eb;border:2px solid #2563eb;width:100%;padding:13px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
-              🛒 Visit Seller's Shop
-            </button>`
-          : ""}
+      ${sliderHtml}
+      <div style="padding:16px 16px 0;">
+        <div style="font-size:19px;font-weight:900;color:#0f172a;margin-bottom:6px;">${escapeHtml(name || "Product")}</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          ${salePrice ? `<span style="font-size:20px;font-weight:900;color:#ef4444;">${escapeHtml(salePrice)}</span>` : ""}
+          ${origPrice ? `<span style="font-size:14px;color:#94a3b8;text-decoration:line-through;">${escapeHtml(origPrice)}</span>` : ""}
+        </div>
+        ${desc ? `<div style="font-size:14px;color:#475569;line-height:1.5;margin-bottom:12px;">${escapeHtml(desc)}</div>` : ""}
+        ${shopName ? `<div style="font-size:12px;color:#64748b;margin-bottom:14px;">🏪 ${escapeHtml(shopName)}</div>` : ""}
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          ${waNum
+            ? `<button onclick="window.open('https://wa.me/${waNum}?text=${encodeURIComponent(`Assalamu alaikum! I saw *${name}* on weSPACE. Is it available?`)}','_blank')"
+                style="background:#25d366;color:#fff;border:none;width:100%;padding:14px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" style="width:18px;" alt="WA"> Chat Seller on WhatsApp
+              </button>`
+            : `<div style="text-align:center;color:#94a3b8;font-size:13px;padding:10px 0;">No WhatsApp number on this post</div>`}
+          ${authorId
+            ? `<button data-action="visit-seller-shop" data-sellerid="${encodeURIComponent(authorId)}"
+                style="background:#eff6ff;color:#2563eb;border:2px solid #2563eb;width:100%;padding:13px;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                🛒 Visit Seller's Shop
+              </button>`
+            : ""}
+        </div>
       </div>`;
     sheet.style.display = "flex";
+
+    // Add tap-to-zoom on images via global lightbox
+    sheet.querySelectorAll("[data-action='sheet-zoom']").forEach(img => {
+      img.addEventListener("click", () => openLightbox(img.dataset.src));
+    });
   }
+
+  window.sheetGoTo = (idx) => sheetGoTo(idx);
+  window.closeProductDetailSheet = () => closeProductDetailSheet();
 
   function closeProductDetailSheet() {
     const sheet = document.getElementById("homeProductDetailSheet");
@@ -1770,12 +1817,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       const flashId = flashCard.dataset.flashid;
       const item = cachedFlashItems.find(f => String(f.id) === String(flashId));
       if (!item) return;
-      let imgUrl = "";
-      if (Array.isArray(item.image_urls) && item.image_urls.length) imgUrl = item.image_urls[0];
-      else if (Array.isArray(item.image_paths) && item.image_paths.length) imgUrl = supabase.storage.from("shop-products").getPublicUrl(item.image_paths[0]).data.publicUrl;
-      else if (item.image_path) imgUrl = supabase.storage.from("shop-products").getPublicUrl(item.image_path).data.publicUrl;
+      let allImgs = [];
+      if (Array.isArray(item.image_urls) && item.image_urls.length) allImgs = item.image_urls;
+      else if (Array.isArray(item.image_paths) && item.image_paths.length) allImgs = item.image_paths.map(p => supabase.storage.from("shop-products").getPublicUrl(p).data.publicUrl);
+      else if (item.image_path) allImgs = [supabase.storage.from("shop-products").getPublicUrl(item.image_path).data.publicUrl];
       openProductDetailSheet({
-        imgUrl,
+        allImgs,
         name:      item.product_name || item.description || "Flash Deal",
         salePrice: item.price_text || item.price || "",
         origPrice: item.original_price || "",
