@@ -833,7 +833,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Posted products (type=social with image + title/price)
     const postedItems = cachedPosts.filter(p =>
       p.type === "social" &&
-      Array.isArray(p.image_urls) && p.image_urls.length
+      Array.isArray(p.image_urls) && p.image_urls.length &&
+      (!activeFeedCat || p.category === activeFeedCat)
     );
 
     // Merge: convert shop products to card HTML, posted products to same card HTML
@@ -1460,6 +1461,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (productNameField) productNameField.style.display = "block";
     const titleEl = document.getElementById("postTitle");
     if (titleEl) titleEl.value = "";
+    const feedCatEl = document.getElementById("postFeedCategory");
+    if (feedCatEl) feedCatEl.value = "";
     const postTypeInput = document.getElementById("postType");
     if (postTypeInput) postTypeInput.value = "feed";
     document.getElementById("flashSaleFields").style.display = "none";
@@ -1575,6 +1578,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (postTypeVal === "feed") {
       dbType = "social";
       price = document.getElementById("postPrice")?.value.trim() || "";
+      category = document.getElementById("postFeedCategory")?.value || "";
     } else if (postTypeVal === "flash") {
       dbType = "market";
       price = document.getElementById("postPrice")?.value.trim() || "";
