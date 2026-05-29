@@ -774,8 +774,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   function renderOpps() {
     if (!oppsList) return;
 
-    // Show all post types except market — social posts, opportunities, announcements
-    const posts = cachedPosts.filter(p => p.type !== "market");
+    // Community posts: exclude market (flash) AND social posts with a title (those are product posts for feed)
+    const posts = cachedPosts.filter(p => p.type !== "market" && !(p.type === "social" && p.title));
 
     if (!posts.length) {
       oppsList.innerHTML = `<div style="text-align:center;padding:60px 16px;color:#64748b;"><div style="font-size:40px;margin-bottom:10px;">📢</div><div style="font-weight:700;color:#0f172a;margin-bottom:4px;">No community posts yet</div><div style="font-size:13px;">Be the first to post!</div></div>`;
@@ -880,6 +880,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Posted products (type=social with image + title/price)
     const postedItems = cachedPosts.filter(p =>
       p.type === "social" &&
+      p.title &&
       Array.isArray(p.image_urls) && p.image_urls.length &&
       (!activeFeedCat || p.category === activeFeedCat)
     );
@@ -1243,7 +1244,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     const combined = [
       ...originalsMapped
-        .filter(p => p.type === "social" || p.type === "market")
+        .filter(p => p.type === "market" || (p.type === "social" && p.title))
         .map((p) => ({ kind: "post", post: p, meta: null, sort: p.created_at })),
       // reshares excluded — profile shows only the user's own product posts
     ].sort((a, b) => new Date(b.sort) - new Date(a.sort));
