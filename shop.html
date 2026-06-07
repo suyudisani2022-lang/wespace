@@ -221,6 +221,12 @@
           <img id="setupLogoPreview" class="setup-preview-logo" alt="Logo preview" />
         </label>
 
+        <div class="setup-label">About Your Shop</div>
+        <label class="field">
+          <span>About Shop</span>
+          <textarea id="setupAbout" rows="3" maxlength="300" placeholder="Describe what you sell, delivery options, location…"></textarea>
+        </label>
+
         <div class="setup-label">Social Handles</div>
         <label class="field">
           <span>Instagram username</span>
@@ -278,6 +284,18 @@
       <button class="prod-detail-close" id="closeProdDetail" type="button">✕</button>
     </div>
     <div id="prodDetailBody"></div>
+  </div>
+</div>
+
+<!-- ABOUT SHOP MODAL -->
+<div id="shopAboutModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:700;align-items:flex-end;justify-content:center;">
+  <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:600px;padding:24px 18px 48px;animation:slideUp .22s ease;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="font-size:16px;font-weight:800;color:#0f172a;">ℹ️ About this Shop</div>
+      <button onclick="document.getElementById('shopAboutModal').style.display='none'"
+        style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748b;">✕</button>
+    </div>
+    <div id="shopAboutText" style="font-size:14px;color:#475569;line-height:1.6;"></div>
   </div>
 </div>
 
