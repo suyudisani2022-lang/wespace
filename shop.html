@@ -141,6 +141,8 @@
         </button>
         <button id="shopShareBtn" class="shop-share-pill">🔗 Share Shop</button>
       </div>
+      <!-- Social handles — shown only if seller has added them -->
+      <div id="shopSocialRow" style="display:none;margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;"></div>
     </div>
 
     <!-- ══════════════════════════════ -->
@@ -217,6 +219,16 @@
           <span>Shop logo</span>
           <input id="setupLogo" type="file" accept="image/*" />
           <img id="setupLogoPreview" class="setup-preview-logo" alt="Logo preview" />
+        </label>
+
+        <div class="setup-label">Social Handles</div>
+        <label class="field">
+          <span>Instagram username</span>
+          <input id="setupIG" type="text" maxlength="60" placeholder="@yourusername" />
+        </label>
+        <label class="field">
+          <span>TikTok username</span>
+          <input id="setupTT" type="text" maxlength="60" placeholder="@yourusername" />
         </label>
 
         <button class="btn primary" id="saveSetupBtn" type="button" style="width:100%;margin-top:18px;">
