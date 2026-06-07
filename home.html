@@ -348,49 +348,40 @@
             <button id="deleteAccountBtn" class="btn danger" type="button">Delete my account</button>
           </div>
           <button id="shareShopBtn" class="btn ghost" type="button">🔗 Share Shop Link</button>
-          <nav class="profile-tabs" aria-label="Profile tabs">
-            <button type="button" class="profile-tab active" data-ptab="about">About</button>
-            <button type="button" class="profile-tab" data-ptab="details">Details</button>
-            <button type="button" class="profile-tab" data-ptab="posts">Posts</button>
-            
-          </nav>
-          <div class="profile-panels">
-            <div class="profile-panel active" id="ptab-about">
-              <div class="panel-title">Description</div>
-              <p class="panel-hint">Describe what you sell or who you are.</p>
-              <label class="field">
-                <span>About you</span>
-                <textarea id="pAbout" rows="4" maxlength="300" placeholder="E.g. I sell perfumes and skincare. Delivery available."></textarea>
-              </label>
-              <div class="panel-actions">
-                <button class="btn primary" id="saveProfileBtn" type="button">Save</button>
-              </div>
+
+          <!-- POSTS GRID — direct, no tabs -->
+          <div id="myPostsWrap" style="margin-top:14px;"></div>
+
+          <!-- weSPACE INFO SECTION -->
+          <div style="margin-top:28px;border-top:1px solid #e5e7eb;padding-top:20px;padding-bottom:80px;">
+            <div style="font-size:11px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">weSPACE</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button type="button" data-action="wespace-about"
+                style="display:flex;align-items:center;gap:10px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;width:100%;">
+                <span style="font-size:20px;">🏪</span>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:#0f172a;">About weSPACE</div>
+                  <div style="font-size:11px;color:#64748b;">Learn what weSPACE is and how it works</div>
+                </div>
+              </button>
+              <a href="https://wa.me/2348000000000?text=Hello%20weSPACE%20Support!" target="_blank" rel="noopener"
+                style="display:flex;align-items:center;gap:10px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:12px 14px;text-decoration:none;">
+                <span style="font-size:20px;">💬</span>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:#15803d;">Contact Support</div>
+                  <div style="font-size:11px;color:#64748b;">Chat with us on WhatsApp</div>
+                </div>
+              </a>
+              <button type="button" data-action="wespace-report"
+                style="display:flex;align-items:center;gap:10px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;width:100%;">
+                <span style="font-size:20px;">🚩</span>
+                <div>
+                  <div style="font-size:13px;font-weight:700;color:#0f172a;">Report a Problem</div>
+                  <div style="font-size:11px;color:#64748b;">Let us know about any issue</div>
+                </div>
+              </button>
             </div>
-            <div class="profile-panel" id="ptab-details">
-              <div class="panel-title">Contact & Social</div>
-              <label class="field">
-                <span>WhatsApp Number</span>
-                <input id="pWA" type="text" maxlength="40" placeholder="+234..." />
-              </label>
-              <label class="field">
-                <span>Instagram</span>
-                <input id="pIG" type="text" maxlength="60" placeholder="@username" />
-              </label>
-              <label class="field">
-                <span>TikTok</span>
-                <input id="pTT" type="text" maxlength="60" placeholder="@username" />
-              </label>
-              <div class="panel-actions">
-                <button class="btn primary" id="saveProfileBtn2" type="button">Save</button>
-              </div>
-            </div>
-            <div class="profile-panel" id="ptab-posts">
-              <div class="panel-title">Posts</div>
-              <div id="myPostsWrap"></div>
-            </div>
-            <p class="panel-hint">People you connected with.</p>
-              <div id="myConnectionsWrap"></div>
-            </div>
+            <div style="text-align:center;margin-top:20px;font-size:11px;color:#94a3b8;">weSPACE v1.0 · Made with ❤️ for local commerce</div>
           </div>
         </div>
       </section>
