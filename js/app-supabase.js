@@ -976,11 +976,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (error) { console.error("loadShopsDirectory error:", error); cachedShops = []; return; }
     const sellerIds = (shops || []).map(s => s.seller_id);
     let productCounts = {};
+    let profileMap = {};
     if (sellerIds.length) {
       const { data: counts } = await supabase.from("shop_products").select("seller_id").in("seller_id", sellerIds);
       (counts || []).forEach(r => { productCounts[r.seller_id] = (productCounts[r.seller_id] || 0) + 1; });
+      // Fetch social handles from profiles
+      const { data: profiles } = await supabase.from("profiles").select("id, ig, tt").in("id", sellerIds);
+      (profiles || []).forEach(p => { profileMap[p.id] = p; });
     }
-    cachedShops = (shops || []).map(s => ({ ...s, productCount: productCounts[s.seller_id] || 0, verified: verifiedSellerSet.has(s.seller_id) }));
+    cachedShops = (shops || []).map(s => ({
+      ...s,
+      ig: profileMap[s.seller_id]?.ig || null,
+      tt: profileMap[s.seller_id]?.tt || null,
+      productCount: productCounts[s.seller_id] || 0,
+      verified: verifiedSellerSet.has(s.seller_id),
+    }));
     shopsLoaded = true;
   }
 
@@ -1007,7 +1017,12 @@ document.addEventListener("DOMContentLoaded", async () => {
               ${shop.category ? `<div class="shop-dir-cat">${escapeHtml(shop.category)}</div>` : ""}
               <div class="shop-dir-footer">
                 <div class="shop-dir-products">${shop.productCount} product${shop.productCount !== 1 ? "s" : ""}</div>
-                <button class="shop-visit-profile-btn" data-action="view-seller-profile" data-sellerid="${escapeHtml(shop.seller_id)}" type="button">👤 Profile</button>
+                ${shop.ig ? `<a href="https://instagram.com/${encodeURIComponent(shop.ig.replace('@',''))}" target="_blank" rel="noopener"
+                  style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;font-size:13px;text-decoration:none;" title="Instagram">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/></svg>
+                </a>` : ""}
+                ${shop.tt ? `<a href="https://tiktok.com/@${encodeURIComponent(shop.tt.replace('@',''))}" target="_blank" rel="noopener"
+                  style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:#000;color:#fff;font-size:11px;font-weight:900;text-decoration:none;" title="TikTok">TT</a>` : ""}
               </div>
             </div>
           </div>
