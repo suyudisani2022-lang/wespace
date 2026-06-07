@@ -206,6 +206,27 @@ function renderShopHeader(shop, verified) {
   }
 }
 
+// ─── RENDER SOCIAL HANDLES ───────────────────────────────
+function renderSocialHandles(ig, tt) {
+  const row = $("shopSocialRow");
+  if (!row) return;
+  const igClean = (ig || "").replace("@", "").trim();
+  const ttClean = (tt || "").replace("@", "").trim();
+  if (!igClean && !ttClean) { row.style.display = "none"; return; }
+  row.style.display = "flex";
+  row.innerHTML = `
+    ${igClean ? `<a href="https://instagram.com/${encodeURIComponent(igClean)}" target="_blank" rel="noopener"
+      style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;padding:7px 14px;border-radius:999px;font-size:12px;font-weight:700;text-decoration:none;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/></svg>
+      @${igClean}
+    </a>` : ""}
+    ${ttClean ? `<a href="https://tiktok.com/@${encodeURIComponent(ttClean)}" target="_blank" rel="noopener"
+      style="display:inline-flex;align-items:center;gap:6px;background:#000;color:#fff;padding:7px 14px;border-radius:999px;font-size:12px;font-weight:700;text-decoration:none;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.95a8.16 8.16 0 004.78 1.52V7.02a4.85 4.85 0 01-1.01-.33z"/></svg>
+      @${ttClean}
+    </a>` : ""}`;
+}
+
 // ─── VISITOR: LOAD CATALOGUES ────────────────────────────
 // Uses original .shop-card / .shop-card-img / .shop-card-title CSS classes
 async function loadVisitorCatalogues() {
@@ -599,7 +620,13 @@ $("saveSetupBtn")?.addEventListener("click", async () => {
       .upsert(payload, { onConflict: "seller_id" });
     if (error) throw error;
 
+    // Save social handles to profiles table
+    const ig = $("setupIG")?.value.trim().replace("@","") || null;
+    const tt = $("setupTT")?.value.trim().replace("@","") || null;
+    await supabase.from("profiles").update({ ig, tt }).eq("id", currentUid);
+
     shopData = { ...shopData, ...payload };
+    renderSocialHandles(ig, tt);
     renderShopHeader(shopData, $("shopVerifiedBadge")?.style.display !== "none");
     if ($("setupLogo"))   $("setupLogo").value   = "";
     if ($("setupBanner")) $("setupBanner").value = "";
@@ -632,13 +659,15 @@ $("setupLogo")?.addEventListener("change", () => {
 });
 
 // Pre-fill setup form from shopData
-function fillSetupForm(shop) {
+function fillSetupForm(shop, profile) {
   if (!shop) return;
   if ($("setupShopName"))  $("setupShopName").value  = shop.shop_name  || "";
   if ($("setupWhatsApp"))  $("setupWhatsApp").value  = shop.whatsapp   || "";
   if ($("setupCity"))      $("setupCity").value      = shop.city       || "";
   if ($("setupMarket"))    $("setupMarket").value    = shop.market     || "";
   if ($("setupCategory"))  $("setupCategory").value  = shop.category   || "";
+  if ($("setupIG"))        $("setupIG").value        = profile?.ig     || "";
+  if ($("setupTT"))        $("setupTT").value        = profile?.tt     || "";
 }
 
 // ─── SWIPER STATE ────────────────────────────────────────
@@ -795,7 +824,12 @@ document.addEventListener("click", async (e) => {
     .select("status").eq("user_id", sellerId).maybeSingle();
   const verified = verif?.status === "approved";
 
+  // Fetch seller social handles from profiles
+  const { data: sellerProfile } = await supabase.from("profiles")
+    .select("ig, tt").eq("id", sellerId).maybeSingle();
+
   renderShopHeader(shop, verified);
+  renderSocialHandles(sellerProfile?.ig, sellerProfile?.tt);
 
   // Always open as visitor view (safe for shared links)
   // Owner gets a floating "Manage My Shop" button
@@ -813,7 +847,7 @@ document.addEventListener("click", async (e) => {
       ownerPanel.style.display   = managing ? "none"  : "block";
       visitorPanel.style.display = managing ? "block" : "none";
       manageBtn.innerHTML = managing ? "⚙️ Manage My Shop" : "👁️ View as Visitor";
-      if (!managing && shop) { fillSetupForm(shop); loadOwnerCatalogueList(); }
+      if (!managing && shop) { fillSetupForm(shop, sellerProfile); loadOwnerCatalogueList(); }
     };
     document.body.appendChild(manageBtn);
   }
