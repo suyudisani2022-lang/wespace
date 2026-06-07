@@ -207,14 +207,21 @@ function renderShopHeader(shop, verified) {
 }
 
 // ─── RENDER SOCIAL HANDLES ───────────────────────────────
-function renderSocialHandles(ig, tt) {
+function renderSocialHandles(ig, tt, about) {
   const row = $("shopSocialRow");
   if (!row) return;
   const igClean = (ig || "").replace("@", "").trim();
   const ttClean = (tt || "").replace("@", "").trim();
-  if (!igClean && !ttClean) { row.style.display = "none"; return; }
+  const aboutText = (about || "").trim();
+  if (!igClean && !ttClean && !aboutText) { row.style.display = "none"; return; }
   row.style.display = "flex";
+  const aboutEl = $("shopAboutText");
+  if (aboutEl) aboutEl.textContent = aboutText || "";
   row.innerHTML = `
+    ${aboutText ? `<button onclick="document.getElementById('shopAboutModal').style.display='flex'"
+      style="display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;color:#0f172a;border:1px solid #e2e8f0;padding:7px 14px;border-radius:999px;font-size:12px;font-weight:700;cursor:pointer;">
+      ℹ️ About Shop
+    </button>` : ""}
     ${igClean ? `<a href="https://instagram.com/${encodeURIComponent(igClean)}" target="_blank" rel="noopener"
       style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);color:#fff;padding:7px 14px;border-radius:999px;font-size:12px;font-weight:700;text-decoration:none;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="white" stroke="none"/></svg>
@@ -609,9 +616,10 @@ $("saveSetupBtn")?.addEventListener("click", async () => {
     if (logoFile)   { const p = await uploadFile(currentUid, logoFile,   "logos");   logoUrl   = publicUrl(p); }
     if (bannerFile) { const p = await uploadFile(currentUid, bannerFile, "banners"); bannerUrl = publicUrl(p); }
 
+    const about = $("setupAbout")?.value.trim() || null;
     const payload = {
       seller_id: currentUid,
-      shop_name: name, city, market, category, whatsapp,
+      shop_name: name, city, market, category, whatsapp, about,
       logo_url: logoUrl, banner_url: bannerUrl,
       updated_at: new Date().toISOString(),
     };
@@ -626,7 +634,7 @@ $("saveSetupBtn")?.addEventListener("click", async () => {
     await supabase.from("profiles").update({ ig, tt }).eq("id", currentUid);
 
     shopData = { ...shopData, ...payload };
-    renderSocialHandles(ig, tt);
+    renderSocialHandles(ig, tt, about);
     renderShopHeader(shopData, $("shopVerifiedBadge")?.style.display !== "none");
     if ($("setupLogo"))   $("setupLogo").value   = "";
     if ($("setupBanner")) $("setupBanner").value = "";
@@ -666,8 +674,9 @@ function fillSetupForm(shop, profile) {
   if ($("setupCity"))      $("setupCity").value      = shop.city       || "";
   if ($("setupMarket"))    $("setupMarket").value    = shop.market     || "";
   if ($("setupCategory"))  $("setupCategory").value  = shop.category   || "";
-  if ($("setupIG"))        $("setupIG").value        = profile?.ig     || "";
-  if ($("setupTT"))        $("setupTT").value        = profile?.tt     || "";
+  if ($("setupIG"))    $("setupIG").value    = profile?.ig    || "";
+  if ($("setupTT"))    $("setupTT").value    = profile?.tt    || "";
+  if ($("setupAbout")) $("setupAbout").value = shop.about     || "";
 }
 
 // ─── SWIPER STATE ────────────────────────────────────────
@@ -829,7 +838,7 @@ document.addEventListener("click", async (e) => {
     .select("ig, tt").eq("id", sellerId).maybeSingle();
 
   renderShopHeader(shop, verified);
-  renderSocialHandles(sellerProfile?.ig, sellerProfile?.tt);
+  renderSocialHandles(sellerProfile?.ig, sellerProfile?.tt, shop?.about);
 
   // Always open as visitor view (safe for shared links)
   // Owner gets a floating "Manage My Shop" button
