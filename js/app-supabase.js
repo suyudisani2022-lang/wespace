@@ -382,7 +382,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (id === "market") renderMarket();
     if (id === "opportunities") renderOpps();
     if (id === "socials") renderSocials();
-    if (id === "profile") renderProfileUI();
+    if (id === "profile") { renderProfileUI(); setTimeout(() => renderProfilePostsList(), 100); }
   };
 
   function ensureNotifBadge() {
@@ -1062,21 +1062,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // =========================
   // PROFILE TABS
   // =========================
-  const tabsNav = document.querySelector(".profile-tabs");
-  const panels = Array.from(document.querySelectorAll(".profile-panel"));
-
-  const openPTab = (key) => {
-    document.querySelectorAll(".profile-tab").forEach((btn) => btn.classList.toggle("active", btn.dataset.ptab === key));
-    panels.forEach((p) => p.classList.toggle("active", p.id === `ptab-${key}`));
-  };
-
-  tabsNav?.addEventListener("click", async (e) => {
-    const btn = e.target.closest(".profile-tab");
-    if (!btn) return;
-    openPTab(btn.dataset.ptab);
-    // connections tab removed
-    if (btn.dataset.ptab === "posts") await renderProfilePostsList();
-  });
+  // Profile tabs removed — posts load directly
 
   // fillBirthdayDays removed — birthday field no longer in profile
 
@@ -1265,9 +1251,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ].sort((a, b) => new Date(b.sort) - new Date(a.sort));
     const isSelf = profileView.mode === "self" && sessionUser && whoId === sessionUser.id;
     if (!combined.length) {
-      myPostsWrap.style.display = "";
-      myPostsWrap.style.gridTemplateColumns = "";
-      myPostsWrap.innerHTML = `<p class="empty-state">No posts yet.</p>`;
+      myPostsWrap.innerHTML = `<div style="text-align:center;padding:30px;color:#94a3b8;font-size:13px;">No posts yet.</div>`;
       return;
     }
     myPostsWrap.style.display = "grid";
@@ -1336,7 +1320,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     cachedPosts = await fetchPosts();
     
     renderFeed(); renderMarket(); renderOpps(); renderSocials();
-    const activePtab = document.querySelector(".profile-tab.active")?.dataset?.ptab;
+
     if (activeSectionId === "profile" && profileView.mode === "self" && activePtab === "connections") await renderConnectionsList();
   }
 
@@ -1704,8 +1688,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     cachedPosts = await fetchPosts();
     
     renderFeed(); renderMarket(); renderOpps(); renderSocials();
-    const activePtab = document.querySelector(".profile-tab.active")?.dataset?.ptab;
-    if (activeSectionId === "profile" && activePtab === "posts") await renderProfilePostsList();
+    if (activeSectionId === "profile") await renderProfilePostsList();
   }
 
   // =========================
@@ -1855,6 +1838,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (feedPostCard) {
       const postId = feedPostCard.dataset.postid;
       if (postId) window.location.href = `product.html?postid=${encodeURIComponent(postId)}`;
+      return;
+    }
+
+    // weSPACE info buttons
+    const weBtn = e.target.closest("[data-action='wespace-about']");
+    if (weBtn) {
+      alert("weSPACE is a marketplace platform connecting buyers and sellers in local communities. Post products, manage your shop catalogue, run flash sales and connect with buyers directly on WhatsApp.");
+      return;
+    }
+    const reportBtn = e.target.closest("[data-action='wespace-report']");
+    if (reportBtn) {
+      const msg = encodeURIComponent("Hello weSPACE Support! I want to report a problem: ");
+      window.open(`https://wa.me/2348000000000?text=${msg}`, "_blank");
       return;
     }
 
