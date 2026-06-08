@@ -1841,19 +1841,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    // weSPACE info buttons
-    const weBtn = e.target.closest("[data-action='wespace-about']");
-    if (weBtn) {
-      alert("weSPACE is a marketplace platform connecting buyers and sellers in local communities. Post products, manage your shop catalogue, run flash sales and connect with buyers directly on WhatsApp.");
-      return;
-    }
-    const reportBtn = e.target.closest("[data-action='wespace-report']");
-    if (reportBtn) {
-      const msg = encodeURIComponent("Hello weSPACE Support! I want to report a problem: ");
-      window.open(`https://wa.me/2348000000000?text=${msg}`, "_blank");
-      return;
-    }
-
     // Visit seller shop from flash detail sheet
     const visitSellerBtn = e.target.closest("[data-action='visit-seller-shop']");
     if (visitSellerBtn) {
