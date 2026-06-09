@@ -373,13 +373,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (verifySellerBtn) verifySellerBtn.style.display = profileView.mode === "visitor" ? "none" : "inline-flex";
   };
 
-  // Restore section from URL param on back navigation
   const urlSection = new URL(location.href).searchParams.get("section");
-  if (urlSection) {
-    // Clean URL without refreshing
-    history.replaceState({}, "", location.pathname);
-    // Will be shown after auth ready via showSection below
-  }
+  if (urlSection) history.replaceState({}, "", location.pathname);
 
   const showSection = async (id) => {
     activeSectionId = id;
@@ -393,7 +388,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (id === "profile") { renderProfileUI(); setTimeout(() => renderProfilePostsList(), 100); }
   };
 
-  // Section restore happens below after bottomButtons and mapSection are defined
+  // Section restore is handled in the auth boot sequence below
 
   function ensureNotifBadge() {
     if (!notifBtn) return null;
@@ -465,12 +460,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.scrollTo({ top: profileView.returnScrollY || 0, behavior: "smooth" });
   });
 
-  // ── RESTORE SECTION ON RETURN FROM shop.html / product.html ──
-  if (urlSection && ["feed","market","opportunities","socials","profile"].includes(urlSection)) {
-    bottomButtons.forEach(btn => btn.classList.toggle("active", mapSection(btn.textContent) === urlSection));
-    document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.section === urlSection));
-    await showSection(urlSection);
-  }
+  // (section restore handled in auth boot above)
 
   // =========================
   // CATEGORIES
@@ -2095,9 +2085,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       } else { myProfile = null; myConnectionSet = new Set(); setProfileMode({ mode: "self", userId: null }); }
       setProfileMode({ mode: "self", userId: null });
       renderProfileUI();
-      showSection("feed");
-      if (bottomButtons.length) setBottomActive(bottomButtons[0]);
-      if (tabButtons.length) setTabActive(tabButtons[0]);
+      const bootSection = urlSection && ["feed","market","opportunities","socials","profile"].includes(urlSection) ? urlSection : "feed";
+      showSection(bootSection);
+      if (bootSection === "feed") {
+        if (bottomButtons.length) setBottomActive(bottomButtons[0]);
+        if (tabButtons.length) setTabActive(tabButtons[0]);
+      } else {
+        bottomButtons.forEach(btn => btn.classList.toggle("active", mapSection(btn.textContent) === bootSection));
+        document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.section === bootSection));
+      }
       if (postType) { postType.value = "market"; setCategoryOptions("market"); setPriceVisibility("market"); }
       try {
         cachedPosts = await fetchPosts();
