@@ -1754,7 +1754,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const shopBtn = e.target.closest("[data-action='visit-shop']");
     if (shopBtn) {
       const sellerId = shopBtn.getAttribute("data-sellerid");
-      if (sellerId) window.location.href = `shop.html?seller=${encodeURIComponent(sellerId)}`;
+      if (sellerId) window.location.href = `shop.html?seller=${encodeURIComponent(sellerId)}&from=profile`;
       return;
     }
 
@@ -2006,11 +2006,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // =========================
   visitShopBtn?.addEventListener("click", () => {
     if (profileView.mode === "visitor" && profileView.userId) {
-      window.location.href = `shop.html?seller=${encodeURIComponent(profileView.userId)}`;
+      window.location.href = `shop.html?seller=${encodeURIComponent(profileView.userId)}&from=profile`;
       return;
     }
     if (profileView.mode === "self" && sessionUser) {
-      window.location.href = `shop.html?seller=${encodeURIComponent(sessionUser.id)}&mode=manage`;
+      window.location.href = `shop.html?seller=${encodeURIComponent(sessionUser.id)}&from=profile`;
       return;
     }
     alert("Log in to view your shop.");
