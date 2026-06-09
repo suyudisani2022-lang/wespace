@@ -230,7 +230,7 @@
       <nav class="desktop-tabs" aria-label="Sections">
         <button type="button" class="tab-btn active" data-section="feed">Feed</button>
         <button type="button" class="tab-btn" data-section="market">Flashes</button>
-        <button type="button" class="tab-btn" data-section="opportunities">Opportunities</button>
+        <button type="button" class="tab-btn" data-section="opportunities">Adverts</button>
         <button type="button" class="tab-btn" data-section="socials">Shops</button>
         <button type="button" class="tab-btn" data-section="profile">Profile</button>
       </nav>
@@ -276,11 +276,11 @@
       <section id="opportunities" class="section">
         <div class="comm-header">
           <div class="comm-title-row">
-            <span class="comm-title">📢 Community</span>
+            <span class="comm-title">📢 Adverts</span>
           </div>
-          <p class="comm-subtitle">Posts, announcements and opportunities from the community</p>
+          <p class="comm-subtitle">Promotions, business announcements and advertisements</p>
         </div>
-        <div id="oppsList" class="comm-list"></div>
+        <div id="oppsList" class="advert-list"></div>
       </section>
 
       <!-- SHOPS DIRECTORY -->
@@ -415,7 +415,7 @@
         <div class="post-type-pills">
           <button type="button" class="post-type-pill active" data-type="feed">📸 Product Post</button>
           <button type="button" class="post-type-pill" data-type="flash">⚡ Flash Sale</button>
-          <button type="button" class="post-type-pill" data-type="community">📢 Community</button>
+          <button type="button" class="post-type-pill" data-type="community">📢 Advert</button>
         </div>
         <p id="postTypeHint" style="font-size:11px;color:#64748b;margin:-6px 0 10px;">Post a product to the feed with price so buyers can contact you.</p>
         <input type="hidden" id="postType" value="feed" />
@@ -496,13 +496,13 @@
           </label>
         </div>
 
-        <!-- Community fields (shown only for community type) -->
+        <!-- Advert fields (shown only for advert type) -->
         <div id="communityFields" style="display:none;">
           <label class="field">
-            <span>Post type</span>
+            <span>Advert type</span>
             <select id="communityType">
-              <option value="announcement">📣 Announcement</option>
-              <option value="opportunity">💼 Job / Opportunity</option>
+              <option value="announcement">📣 Business Announcement</option>
+              <option value="opportunity">🏷️ Product / Service Promo</option>
               <option value="event">📅 Event / Market Day</option>
               <option value="tip">💡 Business Tip</option>
             </select>
@@ -533,7 +533,7 @@
   <nav class="bottom-nav" aria-label="Bottom Navigation">
     <button type="button" class="active">Feed</button>
     <button type="button">Flashes</button>
-    <button type="button">Opportunities</button>
+    <button type="button">Adverts</button>
     <button type="button">Shops</button>
     <button type="button">Profile</button>
   </nav>
