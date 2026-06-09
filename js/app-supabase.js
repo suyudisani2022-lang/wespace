@@ -393,10 +393,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (id === "profile") { renderProfileUI(); setTimeout(() => renderProfilePostsList(), 100); }
   };
 
-  // Restore section from URL param (e.g. when returning from shop.html?from=socials)
-  if (urlSection && ["feed","market","opportunities","socials","profile"].includes(urlSection)) {
-    showSection(urlSection);
-  }
+  // Section restore happens below after bottomButtons and mapSection are defined
 
   function ensureNotifBadge() {
     if (!notifBtn) return null;
@@ -467,6 +464,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     await showSection(target);
     window.scrollTo({ top: profileView.returnScrollY || 0, behavior: "smooth" });
   });
+
+  // ── RESTORE SECTION ON RETURN FROM shop.html / product.html ──
+  if (urlSection && ["feed","market","opportunities","socials","profile"].includes(urlSection)) {
+    bottomButtons.forEach(btn => btn.classList.toggle("active", mapSection(btn.textContent) === urlSection));
+    document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.toggle("active", btn.dataset.section === urlSection));
+    await showSection(urlSection);
+  }
 
   // =========================
   // CATEGORIES
