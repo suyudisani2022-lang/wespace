@@ -149,7 +149,10 @@ async function shareShop() {
 }
 
 // ─── BACK BUTTON ─────────────────────────────────────────
-$("shopBackBtn")?.addEventListener("click", () => history.back());
+$("shopBackBtn")?.addEventListener("click", () => {
+  const from = new URL(location.href).searchParams.get("from") || "socials";
+  window.location.href = `home.html?section=${from}`;
+});
 
 // ─── MANAGEMENT TABS ─────────────────────────────────────
 document.querySelectorAll(".mgmt-tab").forEach(tab => {
