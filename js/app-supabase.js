@@ -432,7 +432,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const mapSection = (label) => {
     const key = (label || "").toLowerCase().trim();
-    return ({ feed: "feed", market: "market", flashes: "market", flash: "market", opportunities: "opportunities", socials: "socials", shops: "socials", profile: "profile" }[key] || "feed");
+    return ({ feed: "feed", market: "market", flashes: "market", flash: "market", opportunities: "opportunities", adverts: "opportunities", advert: "opportunities", socials: "socials", shops: "socials", profile: "profile" }[key] || "feed");
   };
 
   bottomButtons.forEach((btn) => {
@@ -780,30 +780,56 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ── COMMUNITY ──
   function renderOpps() {
     if (!oppsList) return;
-
-    // Community posts: exclude market (flash) AND social posts with a title (those are product posts for feed)
     const posts = cachedPosts.filter(p => p.type !== "market" && !(p.type === "social" && p.title));
-
     if (!posts.length) {
-      oppsList.innerHTML = `<div style="text-align:center;padding:60px 16px;color:#64748b;"><div style="font-size:40px;margin-bottom:10px;">📢</div><div style="font-weight:700;color:#0f172a;margin-bottom:4px;">No community posts yet</div><div style="font-size:13px;">Be the first to post!</div></div>`;
+      oppsList.innerHTML = `
+        <div style="text-align:center;padding:60px 16px;color:#64748b;">
+          <div style="font-size:48px;margin-bottom:12px;">📢</div>
+          <div style="font-size:16px;font-weight:800;color:#0f172a;margin-bottom:6px;">No adverts yet</div>
+          <div style="font-size:13px;">Be the first to advertise your business here</div>
+        </div>`;
       return;
     }
-
     oppsList.innerHTML = posts.map(p => {
-      const typeLabels = { opportunity: "💼 Opportunity", social: "📣 Announcement", community: "📢 Community", event: "📅 Event", tip: "💡 Tip" };
-      const label = typeLabels[p.type] || p.type || "Post";
       const img = Array.isArray(p.image_urls) && p.image_urls.length ? p.image_urls[0] : "";
       const wa = formatWaNumber(p.whatsapp || "");
+      const link = p.apply_link || "";
+      const title = p.title || p.description?.slice(0, 60) || "Advertisement";
+      const isPromo = p.type === "opportunity";
       return `
-        <div class="comm-card">
-          <span class="comm-card-type">${label}</span>
-          <div class="comm-card-desc">${escapeHtml(p.description || "")}</div>
-          ${img ? `<img class="comm-card-img" src="${escapeHtml(img)}" alt="Post" loading="lazy" />` : ""}
-          <div class="comm-card-footer">
-            <span class="comm-card-author">📍 ${escapeHtml(p.author_name || "Community")} • ${new Date(p.created_at).toLocaleDateString()}</span>
-            ${wa ? `<button class="comm-card-wa" data-action="contact" data-phone="${escapeHtml(wa)}" data-title="${escapeHtml((p.description||"").slice(0,40))}">WhatsApp</button>` : ""}
+        <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:14px;">
+          ${img ? `
+            <div style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#f1f5f9;">
+              <img src="${escapeHtml(img)}" alt="${escapeHtml(title)}" loading="lazy"
+                style="width:100%;height:100%;object-fit:cover;display:block;" />
+              <span style="position:absolute;top:10px;left:10px;background:${isPromo?'#f59e0b':'#2563eb'};color:#fff;
+                font-size:10px;font-weight:800;padding:3px 10px;border-radius:999px;letter-spacing:.04em;">
+                ${isPromo ? '🏷️ PROMO' : '📣 ADVERT'}
+              </span>
+            </div>` : ""}
+          <div style="padding:14px 14px 12px;">
+            <div style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:6px;">${escapeHtml(title)}</div>
+            ${p.description && p.description !== title ? `
+              <div style="font-size:13px;color:#475569;line-height:1.5;margin-bottom:10px;">${escapeHtml(p.description)}</div>` : ""}
+            <div style="margin-bottom:10px;">
+              <span style="font-size:11px;color:#94a3b8;">🏪 ${escapeHtml(p.author_name || "Advertiser")} • ${new Date(p.created_at).toLocaleDateString()}</span>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              ${wa ? `
+                <button data-action="contact" data-phone="${escapeHtml(wa)}" data-title="${escapeHtml(title)}"
+                  style="flex:1;background:#25d366;color:#fff;border:none;padding:10px 12px;border-radius:10px;
+                    font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-width:120px;">
+                  <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" style="width:14px;filter:brightness(10);" alt="WA"> Contact
+                </button>` : ""}
+              ${link ? `
+                <a href="${escapeHtml(link)}" target="_blank" rel="noopener"
+                  style="flex:1;background:#eff6ff;color:#2563eb;border:1.5px solid #2563eb;padding:10px 12px;border-radius:10px;
+                    font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;
+                    min-width:120px;text-decoration:none;">
+                  🔗 Learn More
+                </a>` : ""}
+            </div>
           </div>
-          ${p.apply_link ? `<a href="${escapeHtml(p.apply_link)}" target="_blank" rel="noopener" style="display:block;margin-top:8px;background:#eff6ff;color:#2563eb;padding:8px;border-radius:8px;text-align:center;font-size:13px;font-weight:700;text-decoration:none;">🔗 Learn More / Apply</a>` : ""}
         </div>`;
     }).join("");
   }
@@ -1252,7 +1278,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     const combined = [
       ...originalsMapped
-        .filter(p => p.type === "market" || (p.type === "social" && p.title))
+        .filter(p => p.type === "market" || (p.type === "social" && p.title)) // only product posts and flash sales
         .map((p) => ({ kind: "post", post: p, meta: null, sort: p.created_at })),
       // reshares excluded — profile shows only the user's own product posts
     ].sort((a, b) => new Date(b.sort) - new Date(a.sort));
@@ -1641,7 +1667,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const hours = parseInt(document.getElementById("flashDuration")?.value || "0");
       if (hours > 0) flash_ends_at = new Date(Date.now() + hours * 3600000).toISOString();
     } else if (postTypeVal === "community") {
-      dbType = document.getElementById("communityType")?.value || "announcement";
+      dbType = document.getElementById("communityType")?.value || "announcement"; // saved as announcement type for adverts
       apply_link = document.getElementById("applyLink")?.value.trim() || "";
     }
 
