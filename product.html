@@ -553,7 +553,10 @@
       });
     }
 
-    $("backBtn").onclick = () => history.back();
+    $("backBtn").onclick = () => {
+      const from = new URL(location.href).searchParams.get("from") || "feed";
+      window.location.href = `home.html?section=${from}`;
+    };
 
     init();
   </script>
