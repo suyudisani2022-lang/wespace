@@ -373,6 +373,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (verifySellerBtn) verifySellerBtn.style.display = profileView.mode === "visitor" ? "none" : "inline-flex";
   };
 
+  // Restore section from URL param on back navigation
+  const urlSection = new URL(location.href).searchParams.get("section");
+  if (urlSection) {
+    // Clean URL without refreshing
+    history.replaceState({}, "", location.pathname);
+    // Will be shown after auth ready via showSection below
+  }
+
   const showSection = async (id) => {
     activeSectionId = id;
     if (!authReady) await initAuth();
@@ -384,6 +392,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (id === "socials") renderSocials();
     if (id === "profile") { renderProfileUI(); setTimeout(() => renderProfilePostsList(), 100); }
   };
+
+  // Restore section from URL param (e.g. when returning from shop.html?from=socials)
+  if (urlSection && ["feed","market","opportunities","socials","profile"].includes(urlSection)) {
+    showSection(urlSection);
+  }
 
   function ensureNotifBadge() {
     if (!notifBtn) return null;
@@ -1806,7 +1819,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const prodCard = e.target.closest("[data-action='open-product']");
     if (prodCard) {
       const productId = prodCard.dataset.productid;
-      if (productId) window.location.href = `product.html?id=${encodeURIComponent(productId)}`;
+      if (productId) window.location.href = `product.html?id=${encodeURIComponent(productId)}&from=${activeSectionId || "feed"}`;
       return;
     }
 
@@ -1837,7 +1850,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const feedPostCard = e.target.closest("[data-action='open-feed-post']");
     if (feedPostCard) {
       const postId = feedPostCard.dataset.postid;
-      if (postId) window.location.href = `product.html?postid=${encodeURIComponent(postId)}`;
+      if (postId) window.location.href = `product.html?postid=${encodeURIComponent(postId)}&from=${activeSectionId || "feed"}`;
       return;
     }
 
@@ -1845,7 +1858,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const visitSellerBtn = e.target.closest("[data-action='visit-seller-shop']");
     if (visitSellerBtn) {
       closeProductDetailSheet();
-      window.location.href = `shop.html?seller=${visitSellerBtn.dataset.sellerid}`;
+      window.location.href = `shop.html?seller=${visitSellerBtn.dataset.sellerid}&from=${activeSectionId || "feed"}`;
       return;
     }
 
@@ -1853,7 +1866,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const shopCard = e.target.closest("[data-action='open-shop']");
     if (shopCard) {
       const sellerId = shopCard.dataset.sellerid;
-      if (sellerId) window.location.href = `shop.html?seller=${encodeURIComponent(sellerId)}`;
+      if (sellerId) window.location.href = `shop.html?seller=${encodeURIComponent(sellerId)}&from=${activeSectionId || "socials"}`;
       return;
     }
 
