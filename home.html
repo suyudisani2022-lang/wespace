@@ -20,7 +20,7 @@
 
   <style>
     /* ── FEED PRODUCT GRID ── */
-    .feed-header { padding: 10px 0 6px; display: flex; align-items: center; justify-content: space-between; }
+    .feed-header { padding: 10px 0 6px; display: flex; align-items: center; justify-content: space-between; } /* legacy */
     .feed-brand { font-size: 20px; font-weight: 900; color: #2563eb; }
     .feed-product-grid {
       display: grid; grid-template-columns: repeat(2, 1fr);
@@ -237,8 +237,9 @@
 
       <!-- FEED — Product Discovery + Community Image Posts -->
       <section id="feed" class="section active-section">
-        <div class="feed-header">
-          <div class="feed-brand">weSPACE</div>
+        <div class="section-hero section-hero--feed">
+          <div class="section-hero-title">weSPACE</div>
+          <div class="section-hero-sub">Discover products from shops near you</div>
         </div>
         <!-- Shop catalogue products -->
         <div id="feedList" class="feed-product-grid"></div>
@@ -248,13 +249,9 @@
 
       <!-- FLASH SALES -->
       <section id="market" class="section">
-        <div class="flash-header">
-          <div class="flash-title-row">
-            <span class="flash-icon">⚡</span>
-            <span class="flash-title">Flash Sales</span>
-            <span class="flash-badge">Limited Deals</span>
-          </div>
-          <p class="flash-subtitle">Discounted products from shops across Northern Nigeria</p>
+        <div class="section-hero section-hero--flash">
+          <div class="section-hero-title">⚡ Flash Sales</div>
+          <div class="section-hero-sub">Limited-time discounts from shops near you</div>
         </div>
         <div class="flash-filter-bar" id="flashFilterBar">
           <button class="flash-chip active" data-cat="">All</button>
@@ -274,20 +271,18 @@
 
       <!-- OPPORTUNITIES — repurposed as Community Posts feed -->
       <section id="opportunities" class="section">
-        <div class="comm-header">
-          <div class="comm-title-row">
-            <span class="comm-title">📢 Adverts</span>
-          </div>
-          <p class="comm-subtitle">Promotions, business announcements and advertisements</p>
+        <div class="section-hero section-hero--adverts">
+          <div class="section-hero-title">📢 Adverts</div>
+          <div class="section-hero-sub">Business promotions and announcements</div>
         </div>
         <div id="oppsList" class="advert-list"></div>
       </section>
 
       <!-- SHOPS DIRECTORY -->
       <section id="socials" class="section">
-        <div class="shops-header">
-          <h2 style="margin:0;">🏪 Shops</h2>
-          <p style="font-size:13px;color:#64748b;margin:4px 0 0;">Discover shops across Northern Nigeria</p>
+        <div class="section-hero section-hero--shops">
+          <div class="section-hero-title">🏪 Shops</div>
+          <div class="section-hero-sub">Discover shops across Northern Nigeria</div>
         </div>
         <div class="shops-filter-wrap">
           <div class="shops-filter-bar" id="cityFilterBar">
@@ -320,7 +315,10 @@
 
       <!-- PROFILE -->
       <section id="profile" class="section">
-        <h2>Profile</h2>
+        <div class="section-hero section-hero--profile">
+          <div class="section-hero-title">My Profile</div>
+          <div class="section-hero-sub">Manage your shop, posts and settings</div>
+        </div>
         <div class="profile-card" id="profileBox">
           <div class="profile-head">
             <img id="profileAvatar" class="profile-avatar" alt="Profile photo" loading="lazy"/>
