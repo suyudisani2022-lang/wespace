@@ -794,42 +794,85 @@ document.addEventListener("DOMContentLoaded", async () => {
         </div>`;
       return;
     }
+
+    const badgeColors = {
+      opportunity: { bg: "#f59e0b", label: "🏷️ PROMO" },
+      event:       { bg: "#8b5cf6", label: "📅 EVENT" },
+      announcement:{ bg: "#2563eb", label: "📣 ADVERT" },
+    };
+
     oppsList.innerHTML = posts.map(p => {
-      const img = Array.isArray(p.image_urls) && p.image_urls.length ? p.image_urls[0] : "";
+      const imgs = Array.isArray(p.image_urls) ? p.image_urls : [];
+      const img = imgs[0] || "";
       const wa = formatWaNumber(p.whatsapp || "");
       const link = p.apply_link || "";
-      const title = p.title || p.description?.slice(0, 60) || "Advertisement";
-      const isPromo = p.type === "opportunity";
+      // Use title as headline; description as body only if different
+      const headline = p.title || "";
+      const body = p.description || "";
+      const badge = badgeColors[p.type] || badgeColors.announcement;
+
       return `
-        <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:14px;">
+        <div style="background:#fff;border-radius:18px;overflow:hidden;
+          box-shadow:0 4px 20px rgba(0,0,0,.10);margin-bottom:18px;">
+
+          <!-- IMAGE BANNER -->
           ${img ? `
-            <div style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#f1f5f9;">
-              <img src="${escapeHtml(img)}" alt="${escapeHtml(title)}" loading="lazy"
-                style="width:100%;height:100%;object-fit:cover;display:block;" />
-              <span style="position:absolute;top:10px;left:10px;background:${isPromo?'#f59e0b':'#2563eb'};color:#fff;
-                font-size:10px;font-weight:800;padding:3px 10px;border-radius:999px;letter-spacing:.04em;">
-                ${isPromo ? '🏷️ PROMO' : '📣 ADVERT'}
+            <div style="position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#0f172a;">
+              <img src="${escapeHtml(img)}" alt="${escapeHtml(headline || body)}" loading="lazy"
+                style="width:100%;height:100%;object-fit:cover;display:block;opacity:.92;" />
+              <!-- gradient overlay -->
+              <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.0) 40%,rgba(0,0,0,.65) 100%);"></div>
+              <!-- badge top-left -->
+              <span style="position:absolute;top:12px;left:12px;background:${badge.bg};color:#fff;
+                font-size:10px;font-weight:800;padding:4px 10px;border-radius:999px;letter-spacing:.06em;">
+                ${badge.label}
               </span>
-            </div>` : ""}
-          <div style="padding:14px 14px 12px;">
-            <div style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:6px;">${escapeHtml(title)}</div>
-            ${p.description && p.description !== title ? `
-              <div style="font-size:13px;color:#475569;line-height:1.5;margin-bottom:10px;">${escapeHtml(p.description)}</div>` : ""}
-            <div style="margin-bottom:10px;">
-              <span style="font-size:11px;color:#94a3b8;">🏪 ${escapeHtml(p.author_name || "Advertiser")} • ${new Date(p.created_at).toLocaleDateString()}</span>
+              <!-- headline over image bottom -->
+              ${headline ? `
+                <div style="position:absolute;bottom:12px;left:12px;right:12px;">
+                  <div style="font-size:17px;font-weight:900;color:#fff;line-height:1.3;
+                    text-shadow:0 2px 8px rgba(0,0,0,.5);">${escapeHtml(headline)}</div>
+                </div>` : ""}
+            </div>` : `
+            <!-- No image — coloured header band -->
+            <div style="background:linear-gradient(135deg,${badge.bg},${badge.bg}cc);padding:20px 16px 16px;position:relative;">
+              <span style="background:rgba(255,255,255,.25);color:#fff;font-size:10px;font-weight:800;
+                padding:3px 10px;border-radius:999px;letter-spacing:.06em;">${badge.label}</span>
+              ${headline ? `<div style="font-size:18px;font-weight:900;color:#fff;margin-top:10px;line-height:1.3;">${escapeHtml(headline)}</div>` : ""}
+            </div>`}
+
+          <!-- BODY -->
+          <div style="padding:14px 16px 16px;">
+            <!-- description — only show if it adds info beyond the headline -->
+            ${body ? `
+              <div style="font-size:13px;color:#475569;line-height:1.6;margin-bottom:12px;">
+                ${escapeHtml(body)}
+              </div>` : ""}
+
+            <!-- advertiser + date -->
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:14px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">🏪</div>
+              <div>
+                <div style="font-size:12px;font-weight:700;color:#0f172a;">${escapeHtml(p.author_name || "Advertiser")}</div>
+                <div style="font-size:10px;color:#94a3b8;">${new Date(p.created_at).toLocaleDateString("en-NG", { day:"numeric", month:"short", year:"numeric" })}</div>
+              </div>
             </div>
+
+            <!-- CTA buttons -->
             <div style="display:flex;gap:8px;flex-wrap:wrap;">
               ${wa ? `
-                <button data-action="contact" data-phone="${escapeHtml(wa)}" data-title="${escapeHtml(title)}"
-                  style="flex:1;background:#25d366;color:#fff;border:none;padding:10px 12px;border-radius:10px;
-                    font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;min-width:120px;">
-                  <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" style="width:14px;filter:brightness(10);" alt="WA"> Contact
+                <button data-action="contact" data-phone="${escapeHtml(wa)}" data-title="${escapeHtml(headline || body)}"
+                  style="flex:1;background:#25d366;color:#fff;border:none;padding:11px 14px;border-radius:12px;
+                    font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;
+                    justify-content:center;gap:7px;min-width:130px;box-shadow:0 2px 8px rgba(37,211,102,.3);">
+                  <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png"
+                    style="width:15px;filter:brightness(10);" alt="WA"> WhatsApp
                 </button>` : ""}
               ${link ? `
                 <a href="${escapeHtml(link)}" target="_blank" rel="noopener"
-                  style="flex:1;background:#eff6ff;color:#2563eb;border:1.5px solid #2563eb;padding:10px 12px;border-radius:10px;
-                    font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;
-                    min-width:120px;text-decoration:none;">
+                  style="flex:1;background:#0f172a;color:#fff;border:none;padding:11px 14px;border-radius:12px;
+                    font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;
+                    gap:7px;min-width:130px;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,.15);">
                   🔗 Learn More
                 </a>` : ""}
             </div>
