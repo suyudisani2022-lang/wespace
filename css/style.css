@@ -4133,73 +4133,233 @@ body.auth .link2:hover {
 
 
 /* ══════════════════════════════════════════════
-   BLUE TOPBAR
+   LIGHT BLUE TOPBAR (LinkedIn-style, #eef3f8)
 ══════════════════════════════════════════════ */
 .topbar {
-  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
-  border-bottom: none !important;
-  box-shadow: 0 2px 12px rgba(37,99,235,.35) !important;
+  background: rgba(238,243,248,0.96) !important;
+  backdrop-filter: blur(10px) !important;
+  border-bottom: 1px solid rgba(229,231,235,0.95) !important;
+  box-shadow: 0 2px 8px rgba(10,102,194,0.08) !important;
 }
 
 .topbar .icon-btn {
-  color: #fff !important;
-  background: rgba(255,255,255,.12) !important;
+  color: #0a66c2 !important;
+  background: rgba(10,102,194,0.08) !important;
 }
 .topbar .icon-btn:hover,
 .topbar .icon-btn:active {
-  background: rgba(255,255,255,.22) !important;
+  background: rgba(10,102,194,0.15) !important;
 }
 
-/* Search bar inside topbar */
-.search-bar,
-.search-input,
-#mainSearch,
-.topbar input[type="search"],
-.topbar input[type="text"] {
-  background: rgba(255,255,255,.18) !important;
-  border: 1.5px solid rgba(255,255,255,.3) !important;
-  color: #fff !important;
+/* Search bar */
+.search-bar, .search-input, #mainSearch,
+.topbar input[type="search"], .topbar input[type="text"] {
+  background: #fff !important;
+  border: 1.5px solid rgba(10,102,194,0.2) !important;
+  color: #0f172a !important;
   border-radius: 999px !important;
+}
+.search-bar::placeholder, .search-input::placeholder, #mainSearch::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Tab buttons row */
+.tab-btn {
+  color: #64748b !important;
+  border-color: rgba(10,102,194,0.2) !important;
+  background: rgba(10,102,194,0.05) !important;
+}
+.tab-btn.active {
+  color: #0a66c2 !important;
+  border-color: #0a66c2 !important;
+  background: rgba(10,102,194,0.12) !important;
+}
+.tab-btn:hover {
+  color: #0a66c2 !important;
+  background: rgba(10,102,194,0.08) !important;
+}
+
+/* ══════════════════════════════════════════════
+   APP BACKGROUND — light blue tint like landing
+══════════════════════════════════════════════ */
+body, .page, .container, #app {
+  background: #eef3f8 !important;
+}
+
+/* ══════════════════════════════════════════════
+   PRODUCT / SHOP TILES — light blue bg instead of white
+══════════════════════════════════════════════ */
+.feed-prod-card,
+.shop-card,
+.shop-tile,
+.flash-card,
+.comm-card,
+.mgmt-cat-card,
+.shop-dir-card,
+.product-card {
+  background: #fff !important;
+  border: 1px solid rgba(10,102,194,0.1) !important;
+  box-shadow: 0 2px 8px rgba(10,102,194,0.06) !important;
+}
+
+.feed-prod-card:hover,
+.shop-card:hover,
+.shop-tile:hover {
+  box-shadow: 0 4px 16px rgba(10,102,194,0.12) !important;
+  transform: translateY(-1px);
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+/* ══════════════════════════════════════════════
+   SECTION HERO HEADERS — light blue style
+══════════════════════════════════════════════ */
+.section-hero {
+  margin: 0 -14px 16px;
+  padding: 18px 18px 20px;
+  background: linear-gradient(135deg,
+    rgba(10,102,194,0.12) 0%,
+    rgba(10,102,194,0.06) 100%);
+  border-bottom: 1.5px solid rgba(10,102,194,0.12);
+  position: relative;
+  overflow: hidden;
+}
+.section-hero::after {
+  content: "";
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 10px;
+  background: #eef3f8;
+  border-radius: 10px 10px 0 0;
+}
+.section-hero::before {
+  content: "";
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(10,102,194,0.07);
+  z-index: 0;
+}
+
+.section-hero-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #0a66c2;
+  letter-spacing: -.3px;
+  line-height: 1.2;
+  position: relative;
+  z-index: 1;
+}
+.section-hero-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+}
+
+/* Per-section accent stripe (left border) */
+.section-hero--flash   { border-left: 4px solid #ef4444; }
+.section-hero--adverts { border-left: 4px solid #7c3aed; }
+.section-hero--shops   { border-left: 4px solid #0891b2; }
+.section-hero--profile { border-left: 4px solid #0a66c2; }
+.section-hero--feed    { border-left: 4px solid #0a66c2; }
+
+/* Flash title accent */
+.section-hero--flash .section-hero-title { color: #dc2626; }
+.section-hero--adverts .section-hero-title { color: #7c3aed; }
+.section-hero--shops .section-hero-title { color: #0891b2; }
+
+/* ══════════════════════════════════════════════
+   BOTTOM NAV — light blue style
+══════════════════════════════════════════════ */
+.bottom-nav {
+  background: rgba(238,243,248,0.97) !important;
+  backdrop-filter: blur(10px) !important;
+  border-top: 1px solid rgba(10,102,194,0.12) !important;
+  box-shadow: 0 -2px 10px rgba(10,102,194,0.08) !important;
+}
+.bottom-nav button {
+  color: #94a3b8 !important;
+}
+.bottom-nav button.active {
+  color: #0a66c2 !important;
+}
+.bottom-nav button.active::before {
+  background: #0a66c2 !important;
+}
+
+/* ══════════════════════════════════════════════
+   ADVERT CARD DESCRIPTION
+══════════════════════════════════════════════ */
+.advert-list .advert-desc,
+.advert-list [data-advert-desc] {
+  color: #334155;
+}
+
+
+/* ══════════════════════════════════════════════
+   weSPACE — LIGHT BLUE THEME (landing.css style)
+   Primary: #0a66c2  |  Background: #eef3f8
+══════════════════════════════════════════════ */
+
+/* ── APP BACKGROUND ── */
+body {
+  background: #eef3f8 !important;
+}
+
+/* ── TOPBAR — light frosted blue-white ── */
+.topbar {
+  background: rgba(238,243,248,0.96) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border-bottom: 1px solid rgba(229,231,235,0.95) !important;
+  box-shadow: 0 2px 12px rgba(10,102,194,0.08) !important;
+}
+
+.topbar .icon-btn {
+  color: #0a66c2 !important;
+  background: rgba(10,102,194,0.08) !important;
+}
+.topbar .icon-btn:hover,
+.topbar .icon-btn:active {
+  background: rgba(10,102,194,0.15) !important;
+}
+
+/* Search bar */
+.search-bar, .search-input, #mainSearch {
+  background: #fff !important;
+  border: 1.5px solid rgba(10,102,194,0.2) !important;
+  color: #0f172a !important;
 }
 .search-bar::placeholder,
 .search-input::placeholder,
 #mainSearch::placeholder {
-  color: rgba(255,255,255,.7) !important;
+  color: #94a3b8 !important;
 }
 
-/* Tab buttons row (desktop) */
+/* Desktop tab buttons */
 .tab-btn {
-  color: rgba(255,255,255,.75) !important;
-  border-color: rgba(255,255,255,.3) !important;
-  background: rgba(255,255,255,.1) !important;
+  color: #64748b !important;
+  border-color: #e5e7eb !important;
+  background: #fff !important;
 }
 .tab-btn.active {
-  color: #fff !important;
-  border-color: #fff !important;
-  background: rgba(255,255,255,.22) !important;
+  color: #0a66c2 !important;
+  border-color: #0a66c2 !important;
+  background: rgba(10,102,194,0.08) !important;
 }
 .tab-btn:hover {
-  color: #fff !important;
-  background: rgba(255,255,255,.18) !important;
+  color: #0a66c2 !important;
+  background: rgba(10,102,194,0.06) !important;
 }
 
-/* Post + Category buttons in topbar */
-.topbar .btn,
-.topbar button:not(.icon-btn) {
-  color: #fff !important;
-  border-color: rgba(255,255,255,.4) !important;
-}
-
-/* ══════════════════════════════════════════════
-   SECTION HERO HEADERS
-   Sticky blue pillar that disappears on scroll
-   (it's inside the scrollable content so it
-    naturally scrolls away)
-══════════════════════════════════════════════ */
+/* ── SECTION HERO HEADERS ── */
 .section-hero {
   margin: 0 -14px 16px;
-  padding: 18px 18px 16px;
-  background: linear-gradient(135deg, #1e40af 0%, #2563eb 60%, #3b82f6 100%);
+  padding: 20px 18px 22px;
+  background: linear-gradient(135deg, #0a66c2 0%, #1d8cf8 100%);
   position: relative;
   overflow: hidden;
 }
@@ -4209,81 +4369,126 @@ body.auth .link2:hover {
   bottom: -1px;
   left: 0;
   right: 0;
-  height: 12px;
-  background: #f8fafc;
-  border-radius: 12px 12px 0 0;
+  height: 14px;
+  background: #eef3f8;
+  border-radius: 14px 14px 0 0;
 }
-
+.section-hero::before {
+  content: "";
+  position: absolute;
+  top: -24px;
+  right: -24px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.10);
+  z-index: 0;
+}
 .section-hero-title {
   font-size: 22px;
   font-weight: 900;
   color: #fff;
-  letter-spacing: -.3px;
+  letter-spacing: -0.3px;
   line-height: 1.2;
   position: relative;
   z-index: 1;
-  text-shadow: 0 1px 4px rgba(0,0,0,.15);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.12);
 }
-
 .section-hero-sub {
   font-size: 12px;
-  color: rgba(255,255,255,.8);
+  color: rgba(255,255,255,0.85);
   margin-top: 4px;
   font-weight: 500;
   position: relative;
   z-index: 1;
 }
 
-/* Subtle decorative circle per section */
-.section-hero::before {
-  content: "";
-  position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.08);
-  z-index: 0;
+/* Per-section gradients */
+.section-hero--feed     { background: linear-gradient(135deg, #0a66c2 0%, #1d8cf8 100%); }
+.section-hero--flash    { background: linear-gradient(135deg, #0a66c2 0%, #e11d48 100%); }
+.section-hero--adverts  { background: linear-gradient(135deg, #0a66c2 0%, #7c3aed 100%); }
+.section-hero--shops    { background: linear-gradient(135deg, #0a66c2 0%, #0891b2 100%); }
+.section-hero--profile  { background: linear-gradient(135deg, #0a66c2 0%, #1d8cf8 100%); }
+
+/* ── PRODUCT TILES & CARDS — light blue-white tint ── */
+.feed-prod-card,
+.shop-card,
+.shop-tile,
+.flash-card,
+.product-card,
+.more-prod-card,
+.mgmt-cat-card,
+.cat-mgmt-card {
+  background: #fff !important;
+  border: 1px solid rgba(10,102,194,0.10) !important;
+  box-shadow: 0 2px 10px rgba(10,102,194,0.07) !important;
 }
 
-/* Per-section accent tweaks */
-.section-hero--flash {
-  background: linear-gradient(135deg, #1e40af 0%, #dc2626 100%);
-}
-.section-hero--flash::before {
-  background: rgba(255,255,255,.07);
-}
-.section-hero--adverts {
-  background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
-}
-.section-hero--shops {
-  background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%);
-}
-.section-hero--profile {
-  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+/* Shop grid background */
+.shops-grid,
+.feed-product-grid,
+.flash-grid,
+.shop-grid {
+  background: transparent !important;
 }
 
-/* ══════════════════════════════════════════════
-   ADVERT CARD DESCRIPTION COLOR
-══════════════════════════════════════════════ */
-.advert-list .advert-desc,
-.advert-list [data-advert-desc] {
-  color: #334155;
-}
-
-/* Bottom nav — keep white text on blue */
+/* ── BOTTOM NAV ── */
 .bottom-nav {
-  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
-  border-top: none !important;
-  box-shadow: 0 -2px 12px rgba(37,99,235,.25) !important;
+  background: rgba(238,243,248,0.97) !important;
+  border-top: 1px solid rgba(10,102,194,0.12) !important;
+  box-shadow: 0 -2px 12px rgba(10,102,194,0.08) !important;
+  backdrop-filter: blur(10px) !important;
 }
 .bottom-nav button {
-  color: rgba(255,255,255,.65) !important;
+  color: #64748b !important;
 }
 .bottom-nav button.active {
-  color: #fff !important;
+  color: #0a66c2 !important;
 }
 .bottom-nav button.active::before {
-  background: #fff !important;
+  background: #0a66c2 !important;
+}
+
+/* ── ADVERT CARD DESCRIPTION ── */
+.advert-list [style*="color:#475569"],
+.advert-list [style*="color: #475569"] {
+  color: #334155 !important;
+}
+
+/* ── PROFILE FOOTER LINKS ── */
+.profile-footer {
+  margin-top: 28px;
+  border-top: 1.5px solid rgba(10,102,194,0.12);
+  padding-top: 20px;
+  padding-bottom: 80px;
+  text-align: center;
+}
+.profile-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 14px;
+  margin-bottom: 12px;
+}
+.profile-footer-links a {
+  font-size: 13px;
+  color: #0a66c2;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 4px 2px;
+  transition: color 0.15s;
+}
+.profile-footer-links a:hover {
+  color: #084f96;
+  text-decoration: underline;
+}
+.profile-footer-sep {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+.profile-footer-copy {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
 }
