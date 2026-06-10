@@ -1699,9 +1699,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
       if (isAdvert) {
-        alert("✅ Advert submitted!
-
-Your advert is under review. We will contact you on WhatsApp within 24 hours to confirm payment and publish your advert.");
+        alert("Advert submitted! Your advert is under review. We will contact you on WhatsApp within 24 hours to confirm payment and publish your advert.");
       } else {
         alert("Posted ✅");
       }
