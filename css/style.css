@@ -4130,3 +4130,160 @@ body.auth .link2:hover {
   color: #94a3b8;
   margin-top: 4px;
 }
+
+
+/* ══════════════════════════════════════════════
+   BLUE TOPBAR
+══════════════════════════════════════════════ */
+.topbar {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
+  border-bottom: none !important;
+  box-shadow: 0 2px 12px rgba(37,99,235,.35) !important;
+}
+
+.topbar .icon-btn {
+  color: #fff !important;
+  background: rgba(255,255,255,.12) !important;
+}
+.topbar .icon-btn:hover,
+.topbar .icon-btn:active {
+  background: rgba(255,255,255,.22) !important;
+}
+
+/* Search bar inside topbar */
+.search-bar,
+.search-input,
+#mainSearch,
+.topbar input[type="search"],
+.topbar input[type="text"] {
+  background: rgba(255,255,255,.18) !important;
+  border: 1.5px solid rgba(255,255,255,.3) !important;
+  color: #fff !important;
+  border-radius: 999px !important;
+}
+.search-bar::placeholder,
+.search-input::placeholder,
+#mainSearch::placeholder {
+  color: rgba(255,255,255,.7) !important;
+}
+
+/* Tab buttons row (desktop) */
+.tab-btn {
+  color: rgba(255,255,255,.75) !important;
+  border-color: rgba(255,255,255,.3) !important;
+  background: rgba(255,255,255,.1) !important;
+}
+.tab-btn.active {
+  color: #fff !important;
+  border-color: #fff !important;
+  background: rgba(255,255,255,.22) !important;
+}
+.tab-btn:hover {
+  color: #fff !important;
+  background: rgba(255,255,255,.18) !important;
+}
+
+/* Post + Category buttons in topbar */
+.topbar .btn,
+.topbar button:not(.icon-btn) {
+  color: #fff !important;
+  border-color: rgba(255,255,255,.4) !important;
+}
+
+/* ══════════════════════════════════════════════
+   SECTION HERO HEADERS
+   Sticky blue pillar that disappears on scroll
+   (it's inside the scrollable content so it
+    naturally scrolls away)
+══════════════════════════════════════════════ */
+.section-hero {
+  margin: 0 -14px 16px;
+  padding: 18px 18px 16px;
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 60%, #3b82f6 100%);
+  position: relative;
+  overflow: hidden;
+}
+.section-hero::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background: #f8fafc;
+  border-radius: 12px 12px 0 0;
+}
+
+.section-hero-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -.3px;
+  line-height: 1.2;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
+
+.section-hero-sub {
+  font-size: 12px;
+  color: rgba(255,255,255,.8);
+  margin-top: 4px;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+}
+
+/* Subtle decorative circle per section */
+.section-hero::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.08);
+  z-index: 0;
+}
+
+/* Per-section accent tweaks */
+.section-hero--flash {
+  background: linear-gradient(135deg, #1e40af 0%, #dc2626 100%);
+}
+.section-hero--flash::before {
+  background: rgba(255,255,255,.07);
+}
+.section-hero--adverts {
+  background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+}
+.section-hero--shops {
+  background: linear-gradient(135deg, #1e40af 0%, #0891b2 100%);
+}
+.section-hero--profile {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+}
+
+/* ══════════════════════════════════════════════
+   ADVERT CARD DESCRIPTION COLOR
+══════════════════════════════════════════════ */
+.advert-list .advert-desc,
+.advert-list [data-advert-desc] {
+  color: #334155;
+}
+
+/* Bottom nav — keep white text on blue */
+.bottom-nav {
+  background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%) !important;
+  border-top: none !important;
+  box-shadow: 0 -2px 12px rgba(37,99,235,.25) !important;
+}
+.bottom-nav button {
+  color: rgba(255,255,255,.65) !important;
+}
+.bottom-nav button.active {
+  color: #fff !important;
+}
+.bottom-nav button.active::before {
+  background: #fff !important;
+}
