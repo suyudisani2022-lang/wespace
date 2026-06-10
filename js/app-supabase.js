@@ -780,7 +780,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ── COMMUNITY ──
   function renderOpps() {
     if (!oppsList) return;
-    const posts = cachedPosts.filter(p => p.type !== "market" && !(p.type === "social" && p.title));
+    const posts = cachedPosts.filter(p =>
+      p.type !== "market" &&
+      !(p.type === "social" && p.title) &&
+      p.approved === true
+    );
     if (!posts.length) {
       oppsList.innerHTML = `
         <div style="text-align:center;padding:60px 16px;color:#64748b;">
@@ -1129,6 +1133,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return {
         ...p,
         image_urls,
+        approved: p.approved ?? true, // default true for old posts without the column
         author_name: a?.name || "User",
         author_campus: a?.campus || "",
         author_department: a?.department || "",
@@ -1667,12 +1672,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       const hours = parseInt(document.getElementById("flashDuration")?.value || "0");
       if (hours > 0) flash_ends_at = new Date(Date.now() + hours * 3600000).toISOString();
     } else if (postTypeVal === "community") {
-      dbType = document.getElementById("communityType")?.value || "announcement"; // saved as announcement type for adverts
+      dbType = document.getElementById("communityType")?.value || "announcement";
       apply_link = document.getElementById("applyLink")?.value.trim() || "";
     }
 
     const btn = document.getElementById("submitPostBtn");
     const oldText = btn?.textContent || "Post";
+    const isAdvert = postTypeVal === "community";
     try {
       if (btn) { btn.disabled = true; btn.textContent = "Posting..."; }
       const image_urls = files.length ? await uploadPostImages(sessionUser.id, files.slice(0, 5)) : [];
@@ -1681,18 +1687,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         title: title || null,
         description: description || "", price, apply_link, whatsapp: waRaw,
         image_urls, original_price, flash_ends_at,
+        approved: !isAdvert, // adverts start as pending (false), other posts go live immediately (true)
       });
       if (error) throw error;
       closePostModal();
       cachedPosts = await fetchPosts();
       renderFeed(); renderMarket(); renderOpps(); renderSocials();
-      // If feed post, scroll to feed image posts
       if (postTypeVal === "feed") {
         showSection("feed");
         setTimeout(() => document.getElementById("feedPostsList")?.scrollIntoView({ behavior: "smooth" }), 300);
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
-      alert("Posted ✅");
+      if (isAdvert) {
+        alert("✅ Advert submitted!
+
+Your advert is under review. We will contact you on WhatsApp within 24 hours to confirm payment and publish your advert.");
+      } else {
+        alert("Posted ✅");
+      }
     } catch (err) {
       console.error("post submit error:", err);
       alert(err.message || "Could not create post.");
