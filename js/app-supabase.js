@@ -8,6 +8,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   let sessionUser = null;
   let authReady = false;
 
+  // ── GUEST PROMPT ─────────────────────────────────────────
+  function showGuestPrompt(reason) {
+    const modal = document.getElementById("guestModal");
+    const reasonEl = document.getElementById("guestModalReason");
+    if (!modal) return;
+    if (reasonEl) reasonEl.textContent = reason || "Create an account to continue";
+    modal.style.display = "flex";
+  }
+
   async function initAuth() {
     if (authReady) return;
     const { data: { session }, error } = await supabase.auth.getSession();
@@ -389,7 +398,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (id === "market") renderMarket();
     if (id === "opportunities") renderOpps();
     if (id === "socials") renderSocials();
-    if (id === "profile") { renderProfileUI(); setTimeout(() => renderProfilePostsList(), 100); }
+    if (id === "profile") {
+      if (!sessionUser) { showGuestPrompt("Sign in to view your profile and manage your shop"); return; }
+      renderProfileUI(); setTimeout(() => renderProfilePostsList(), 100);
+    }
   };
 
   // Section restore is handled in the auth boot sequence below
@@ -1632,7 +1644,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (previewEmpty) previewEmpty.style.display = "block";
   };
 
-  createPostBtn?.addEventListener("click", openPostModal);
+  createPostBtn?.addEventListener("click", () => {
+    if (!sessionUser) { showGuestPrompt("Sign in to post products and sell on weSPACE"); return; }
+    openPostModal();
+  });
   closePostBtn?.addEventListener("click", closePostModal);
   cancelPostBtn?.addEventListener("click", closePostModal);
   postModal?.addEventListener("click", (e) => { if (e.target === postModal) closePostModal(); });
@@ -1828,6 +1843,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // WhatsApp contact
     const waBtn = e.target.closest("[data-action='contact']");
     if (waBtn) {
+      if (!sessionUser) { showGuestPrompt("Sign in to contact sellers on weSPACE"); return; }
       const phone = formatWaNumber(waBtn.getAttribute("data-phone") || "");
       const title = waBtn.getAttribute("data-title") || "";
       if (!phone) return alert("No WhatsApp number for this post.");
@@ -2181,6 +2197,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       } else { myProfile = null; myConnectionSet = new Set(); setProfileMode({ mode: "self", userId: null }); }
       setProfileMode({ mode: "self", userId: null });
       renderProfileUI();
+
+      // Show guest banner for logged-out users, hide for logged-in
+      const guestBanner = document.getElementById("guestBanner");
+      const createPostBtn = document.getElementById("createPostBtn");
+      if (!sessionUser) {
+        if (guestBanner) guestBanner.style.display = "flex";
+        if (createPostBtn) createPostBtn.style.display = "none"; // hide post button for guests
+      } else {
+        if (guestBanner) guestBanner.style.display = "none";
+        if (createPostBtn) createPostBtn.style.display = "";
+      }
+
       const bootSection = urlSection && ["feed","market","opportunities","socials","profile"].includes(urlSection) ? urlSection : "feed";
       showSection(bootSection);
       if (bootSection === "feed") {
