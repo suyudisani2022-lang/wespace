@@ -771,10 +771,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("flashFilterBar")?.addEventListener("click", (e) => {
     const chip = e.target.closest(".flash-chip");
     if (!chip) return;
-    document.querySelectorAll(".flash-chip").forEach(c => c.classList.remove("active"));
+    document.querySelectorAll("#flashFilterBar .flash-chip").forEach(c => c.classList.remove("active"));
     chip.classList.add("active");
     activeFlashCat = chip.dataset.cat || "";
     renderMarket();
+  });
+
+  // Feed filter bar — same chip style, uses data-feedcat
+  document.getElementById("feedFilterBar")?.addEventListener("click", (e) => {
+    const chip = e.target.closest("[data-feedcat]");
+    if (!chip) return;
+    document.querySelectorAll("#feedFilterBar [data-feedcat]").forEach(c => c.classList.remove("active"));
+    chip.classList.add("active");
+    activeFeedCat = chip.dataset.feedcat || "";
+    catActiveDot?.classList.toggle("show", !!activeFeedCat);
+    renderFeedProductGrid();
   });
 
   // ── COMMUNITY ──
@@ -918,6 +929,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     activeFeedCat = "";
     catActiveDot?.classList.remove("show");
     closeCatModal();
+    // Reset feed filter bar
+    document.querySelectorAll("#feedFilterBar [data-feedcat]").forEach(c => c.classList.toggle("active", c.dataset.feedcat === ""));
     renderFeedProductGrid();
     showSection("feed");
   });
