@@ -1,7 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta http-equiv="refresh" content="0; url=home.html">
+  <!-- Smart redirect: send new visitors to feed, but keep logged-in users and those 
+       coming back from inside the app on this login/landing page -->
+  <script>
+    (function() {
+      // Don't redirect if coming from inside the app (back button)
+      const fromApp = document.referrer && document.referrer.includes(location.hostname) && 
+                      !document.referrer.includes('index.html');
+      // Don't redirect if user has an active Supabase session
+      const hasSession = Object.keys(localStorage).some(k => k.startsWith('sb-') && k.includes('auth-token'));
+      // Don't redirect if user explicitly navigated here (e.g. clicked Sign In)
+      const intentional = location.search.includes('login') || location.hash.includes('login');
+      
+      if (!fromApp && !hasSession && !intentional) {
+        window.location.replace('home.html');
+      }
+    })();
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>weSPACE • Welcome</title>
@@ -201,6 +217,14 @@
 </script>
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+  <script>
+    // Auto-login: if Supabase session token exists in localStorage, 
+    // user is already logged in — send them straight to the feed
+    const _hasAuth = Object.keys(localStorage).some(k => 
+      k.startsWith('sb-') && k.includes('auth-token')
+    );
+    if (_hasAuth) window.location.replace('home.html');
   </script>
   <script type="module" src="js/login-supabase.js" defer></script>
   
