@@ -241,13 +241,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   window.addEventListener("scroll", () => {
     const y = window.scrollY;
     const delta = y - lastY;
-    if (y <= 0) { setNavHidden(false); lastY = y; return; }
-    if (delta > threshold) { setNavHidden(true); lastY = y; return; }
-    if (delta < -threshold) { setNavHidden(false); lastY = y; return; }
+    lastY = y;
+    if (y <= 10) { setNavHidden(false); return; }   // at the very top — show
+    if (delta > threshold) { setNavHidden(true); }   // scrolling down — hide
+    // scrolling up — stay hidden until user reaches top
   }, { passive: true });
 
-  // =========================
-  // STATE VARS
+  // Location-based sorting disabled until more shops are available
   // =========================
   function requireUser() { return sessionUser?.id ? sessionUser : null; }
   let myProfile = null;
@@ -1005,14 +1005,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       sort: new Date(p.created_at).getTime(),
     }));
 
-    // Merge and shuffle for discovery
-    const all = [...shopCards, ...postCards].sort(() => Math.random() - 0.5);
+    // Simple shuffle for discovery
+    const sorted = [...shopCards, ...postCards].sort(() => Math.random() - 0.5);
 
-    if (!all.length) {
+    if (!sorted.length) {
       FEED_LIST.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 16px;color:#64748b;"><div style="font-size:40px;margin-bottom:10px;">🛍️</div><div style="font-weight:700;color:#0f172a;margin-bottom:4px;">${activeFeedCat ? "No products in this category yet" : "No products yet"}</div></div>`;
       return;
     }
-    FEED_LIST.innerHTML = all.map(x => x.html).join("");
+    FEED_LIST.innerHTML = sorted.map(x => x.html).join("");
   }
 
   async function renderFeed() {
