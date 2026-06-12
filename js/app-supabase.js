@@ -235,16 +235,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   const setNavHidden = (hidden) => {
     topbar?.classList.toggle("nav-hidden", hidden);
     desktopTabs?.classList.toggle("nav-hidden", hidden);
-    bottomNav?.classList.toggle("nav-hidden", hidden);
   };
 
   window.addEventListener("scroll", () => {
     const y = window.scrollY;
     const delta = y - lastY;
     lastY = y;
-    if (y <= 10) { setNavHidden(false); return; }   // at the very top — show
-    if (delta > threshold) { setNavHidden(true); }   // scrolling down — hide
-    // scrolling up — stay hidden until user reaches top
+
+    // Topbar: only show at very top
+    if (y <= 10) setNavHidden(false);
+    else if (delta > threshold) setNavHidden(true);
+
+    // Bottom nav: hide on scroll down, show on any scroll up
+    if (delta > threshold) bottomNav?.classList.add("nav-hidden");
+    else if (delta < -threshold) bottomNav?.classList.remove("nav-hidden");
   }, { passive: true });
 
   // Location-based sorting disabled until more shops are available
