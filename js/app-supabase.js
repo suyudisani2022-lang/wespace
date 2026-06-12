@@ -1648,6 +1648,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!sessionUser) { showGuestPrompt("Sign in to post products and sell on weSPACE"); return; }
     openPostModal();
   });
+  // Auto-login: if Supabase session exists, user is already logged in (handled by onAuthStateChange)
   closePostBtn?.addEventListener("click", closePostModal);
   cancelPostBtn?.addEventListener("click", closePostModal);
   postModal?.addEventListener("click", (e) => { if (e.target === postModal) closePostModal(); });
@@ -2197,17 +2198,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       } else { myProfile = null; myConnectionSet = new Set(); setProfileMode({ mode: "self", userId: null }); }
       setProfileMode({ mode: "self", userId: null });
       renderProfileUI();
-
-      // Show guest banner for logged-out users, hide for logged-in
-      const guestBanner = document.getElementById("guestBanner");
-      const createPostBtn = document.getElementById("createPostBtn");
-      if (!sessionUser) {
-        if (guestBanner) guestBanner.style.display = "flex";
-        if (createPostBtn) createPostBtn.style.display = "none"; // hide post button for guests
-      } else {
-        if (guestBanner) guestBanner.style.display = "none";
-        if (createPostBtn) createPostBtn.style.display = "";
-      }
 
       const bootSection = urlSection && ["feed","market","opportunities","socials","profile"].includes(urlSection) ? urlSection : "feed";
       showSection(bootSection);
