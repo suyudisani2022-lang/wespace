@@ -2015,22 +2015,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Delete post
     const delBtn = e.target.closest("[data-action='delete-post']");
     if (delBtn) {
-      if (!sessionUser || profileView.mode === "visitor") return;
-      const card = delBtn.closest(".post-card");
-      const postId = card?.getAttribute("data-postid");
-      const authorId = card?.getAttribute("data-authorid");
-      const kind = card?.getAttribute("data-kind") || "post";
-      if (!postId || !confirm(`Delete this ${kind}?`)) return;
+      if (!sessionUser) return;
+      // Get postId from button's own data attribute (profile cards) OR from closest post-card (feed cards)
+      const postId = delBtn.dataset.postid || delBtn.closest(".post-card")?.getAttribute("data-postid");
+      const authorId = delBtn.dataset.authorid || delBtn.closest(".post-card")?.getAttribute("data-authorid");
+      const kind = delBtn.dataset.kind || delBtn.closest(".post-card")?.getAttribute("data-kind") || "post";
+      if (!postId) return alert("Could not find post to delete.");
+      if (!confirm("Delete this post? This cannot be undone.")) return;
       let error;
       if (kind === "reshare") {
         ({ error } = await supabase.from("post_reshares").delete().eq("post_id", postId).eq("user_id", sessionUser.id));
       } else {
-        if (authorId !== sessionUser.id) return alert("You can only delete your own post.");
-        ({ error } = await supabase.from("posts").delete().eq("id", postId));
+        ({ error } = await supabase.from("posts").delete().eq("id", postId).eq("author_id", sessionUser.id));
       }
-      if (error) return alert(error.message || `Could not delete ${kind}.`);
+      if (error) return alert(error.message || "Could not delete post.");
       cachedPosts = await fetchPosts();
-      
       renderFeed(); renderMarket(); renderOpps(); renderSocials();
       await renderProfilePostsList();
       alert("Deleted ✅");
