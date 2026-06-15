@@ -100,7 +100,7 @@
     /* ── BACK BUTTON ── */
     .back-to-cat-btn { display: inline-flex; align-items: center; gap: 6px; background: #f1f5f9; color: #0f172a; border: none; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; margin-bottom: 14px; }
 
-    /* ── VISITOR PRODUCT GRID (uses original .shop-grid + .shop-tile CSS) ── */
+    /* ── VISITOR PRODUCT GRID ── */
     .catalogue-card { cursor: pointer; }
     .catalogue-card-img { width: 100%; aspect-ratio: 4/3; overflow: hidden; border-radius: 10px 10px 0 0; background: #f1f5f9; display: flex; align-items: center; justify-content: center; }
     .catalogue-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -141,7 +141,6 @@
         </button>
         <button id="shopShareBtn" class="shop-share-pill">🔗 Share Shop</button>
       </div>
-      <!-- Social handles — shown only if seller has added them -->
       <div id="shopSocialRow" style="display:none;margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;"></div>
     </div>
 
@@ -201,22 +200,27 @@
           <span>Category</span>
           <select id="setupCategory">
             <option value="">Select category</option>
-            <option>Phones & Gadgets</option><option>Fashion & Clothing</option>
-            <option>Shoes & Bags</option><option>Perfumes & Beauty</option>
-            <option>Food & Groceries</option><option>Electronics</option>
-            <option>Fabric & Textiles</option><option>Furniture & Home</option>
+            <option>Phones & Gadgets</option>
+            <option>Fashion & Clothing</option>
+            <option>Shoes & Bags</option>
+            <option>Perfumes & Beauty</option>
+            <option>Food & Groceries</option>
+            <option>Electronics</option>
+            <option>Fabric & Textiles</option>
+            <option>Furniture & Home</option>
             <option>Services</option>
+            <option>Others</option>
           </select>
         </label>
 
-        <div class="setup-label">Branding</div>
+        <div class="setup-label">Branding <span style="font-size:10px;color:#94a3b8;font-weight:400;text-transform:none;">(optional — you can add these later)</span></div>
         <label class="field">
-          <span>Shop banner image</span>
+          <span>Shop banner image <span style="color:#94a3b8;font-weight:400;">(optional)</span></span>
           <input id="setupBanner" type="file" accept="image/*" />
           <img id="setupBannerPreview" class="setup-preview-banner" alt="Banner preview" />
         </label>
         <label class="field">
-          <span>Shop logo</span>
+          <span>Shop logo <span style="color:#94a3b8;font-weight:400;">(optional)</span></span>
           <input id="setupLogo" type="file" accept="image/*" />
           <img id="setupLogoPreview" class="setup-preview-logo" alt="Logo preview" />
         </label>
@@ -247,10 +251,7 @@
     <!-- VISITOR PANEL                 -->
     <!-- ══════════════════════════════ -->
     <div id="visitorPanel" style="display:none; padding:0 14px;">
-      <!-- Catalogue grid — uses .shop-card CSS from style.css -->
       <div id="catalogueGrid" class="shop-grid" style="margin-top:14px; padding-bottom:80px;"></div>
-
-      <!-- Product view inside a catalogue -->
       <div id="catalogueView" style="display:none; margin-top:8px;">
         <button id="backToCatalogues" class="back-to-cat-btn">← Catalogues</button>
         <h3 id="catalogueNameTitle" style="font-size:15px;font-weight:800;color:#0f172a;margin-bottom:12px;"></h3>
@@ -270,14 +271,14 @@
     </div>
     <label class="field"><span>Product name</span><input id="productName" type="text" placeholder="e.g. iPhone 11 128GB" maxlength="80" /></label>
     <label class="field"><span>Sale / regular price</span><input id="prodPrice" type="text" maxlength="20" placeholder="e.g. ₦25,000" /></label>
-    <label class="field"><span>Original price (for discounts, optional)</span><input id="prodOrigPrice" type="text" maxlength="20" placeholder="e.g. ₦30,000" /></label>
-    <label class="field"><span>Description (optional)</span><textarea id="prodDesc" rows="2" maxlength="200" placeholder="Short description…"></textarea></label>
+    <label class="field"><span>Original price <span style="color:#94a3b8;font-weight:400;">(optional — for discounts)</span></span><input id="prodOrigPrice" type="text" maxlength="20" placeholder="e.g. ₦30,000" /></label>
+    <label class="field"><span>Description <span style="color:#94a3b8;font-weight:400;">(optional)</span></span><textarea id="prodDesc" rows="2" maxlength="200" placeholder="Short description…"></textarea></label>
     <label class="field"><span>Product images (up to 5)</span><input id="prodImage" type="file" accept="image/*" multiple /></label>
     <button class="btn primary" id="addProductBtn" type="button" style="width:100%;margin-top:14px;">Add Product</button>
   </div>
 </div>
 
-<!-- PRODUCT DETAIL MODAL (flash / feed product) -->
+<!-- PRODUCT DETAIL MODAL -->
 <div class="prod-detail-overlay" id="prodDetailModal" aria-hidden="true">
   <div class="prod-detail-sheet">
     <div class="prod-detail-close-row">
