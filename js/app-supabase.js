@@ -1369,9 +1369,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     myPostsWrap.style.gap = "10px";
     myPostsWrap.style.paddingBottom = "80px";
     myPostsWrap.innerHTML = combined.map((x) => renderProfileCard(x.post, isSelf)).join("");
+  }
 
-    // Profile post swiper handler
-    myPostsWrap.addEventListener("click", (e) => {
+  // Profile post swiper handler — attached ONCE outside renderProfilePostsList
+  myPostsWrap?.addEventListener("click", (e) => {
       const next = e.target.closest("[data-action='pp-next']");
       const prev = e.target.closest("[data-action='pp-prev']");
       const dot  = e.target.closest(".pp-dot");
@@ -1400,8 +1401,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         desc.style.overflow = expanded ? "hidden" : "visible";
         desc.dataset.expanded = expanded ? "0" : "1";
       }
-    });
-  }
+  });
 
   // =========================
   // CONNECTIONS
@@ -2016,11 +2016,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const delBtn = e.target.closest("[data-action='delete-post']");
     if (delBtn) {
       if (!sessionUser) return;
-      // Get postId from button's own data attribute (profile cards) OR from closest post-card (feed cards)
+      // Read postId directly from the button (works for both profile cards and feed cards)
       const postId = delBtn.dataset.postid || delBtn.closest(".post-card")?.getAttribute("data-postid");
-      const authorId = delBtn.dataset.authorid || delBtn.closest(".post-card")?.getAttribute("data-authorid");
       const kind = delBtn.dataset.kind || delBtn.closest(".post-card")?.getAttribute("data-kind") || "post";
-      if (!postId) return alert("Could not find post to delete.");
+      if (!postId) { alert("Could not find post ID."); return; }
       if (!confirm("Delete this post? This cannot be undone.")) return;
       let error;
       if (kind === "reshare") {
