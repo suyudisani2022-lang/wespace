@@ -590,15 +590,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   function sheetGoTo(idx) {
     const imgs = document.querySelectorAll(".sheet-slide-img");
     const dots = document.querySelectorAll(".sheet-slide-dot");
+    if (!imgs.length) return;
     _sheetIdx = ((idx % imgs.length) + imgs.length) % imgs.length;
     imgs.forEach((img, i) => { img.style.opacity = i === _sheetIdx ? "1" : "0"; img.style.pointerEvents = i === _sheetIdx ? "auto" : "none"; });
     dots.forEach((d, i) => { d.style.background = i === _sheetIdx ? "#fff" : "rgba(255,255,255,.5)"; });
   }
+  window._sheetIdx = 0;
+  window.sheetPrev = () => { sheetGoTo(window._sheetIdx - 1); window._sheetIdx = _sheetIdx; };
+  window.sheetNext = () => { sheetGoTo(window._sheetIdx + 1); window._sheetIdx = _sheetIdx; };
+  window.sheetGoToIdx = (i) => { sheetGoTo(i); window._sheetIdx = _sheetIdx; };
 
   function openProductDetailSheet({ allImgs = [], imgUrl, name, salePrice, origPrice, desc, shopName, wa, authorId }) {
     // Back-compat: accept imgUrl as single image
     if (!allImgs.length && imgUrl) allImgs = [imgUrl];
-    _sheetImgs = allImgs; _sheetIdx = 0;
+    _sheetImgs = allImgs; _sheetIdx = 0; window._sheetIdx = 0;
 
     let sheet = document.getElementById("homeProductDetailSheet");
     if (!sheet) {
@@ -626,12 +631,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;
               transition:opacity .22s;opacity:${i===0?1:0};pointer-events:${i===0?'auto':'none'};cursor:zoom-in;" />`).join("")}
         ${allImgs.length > 1 ? `
-          <button onclick="sheetGoTo(_sheetIdx-1)"
+          <button onclick="sheetPrev()"
             style="position:absolute;left:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.45);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;">‹</button>
-          <button onclick="sheetGoTo(_sheetIdx+1)"
+          <button onclick="sheetNext()"
             style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.45);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;z-index:2;display:flex;align-items:center;justify-content:center;">›</button>
           <div style="position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:5px;z-index:2;">
-            ${allImgs.map((_,i) => `<span class="sheet-slide-dot" onclick="sheetGoTo(${i})"
+            ${allImgs.map((_,i) => `<span class="sheet-slide-dot" onclick="sheetGoToIdx(${i})"
               style="width:7px;height:7px;border-radius:50%;background:${i===0?'#fff':'rgba(255,255,255,.45)'};cursor:pointer;display:inline-block;transition:background .2s;"></span>`).join("")}
           </div>` : ""}
         <!-- Close button overlaid on image -->
@@ -676,7 +681,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  window.sheetGoTo = (idx) => sheetGoTo(idx);
   window.closeProductDetailSheet = () => closeProductDetailSheet();
 
   function closeProductDetailSheet() {
@@ -1930,6 +1934,23 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
+    // Delete post — checked FIRST so it doesn't get swallowed by parent card's open-* handlers
+    const delBtnEarly = e.target.closest("[data-action='delete-post']");
+    if (delBtnEarly) {
+      if (!sessionUser) return;
+      const postId = delBtnEarly.dataset.postid;
+      if (!postId) { alert("Could not find post ID."); return; }
+      if (!confirm("Delete this post? This cannot be undone.")) return;
+      const { error } = await supabase.from("posts").delete().eq("id", postId).eq("author_id", sessionUser.id);
+      if (error) return alert(error.message || "Could not delete post.");
+      cachedPosts = await fetchPosts();
+      feedProductsLoaded = false;
+      renderFeed(); renderMarket(); renderOpps(); renderSocials();
+      await renderProfilePostsList();
+      alert("Deleted ✅");
+      return;
+    }
+
     // Open flash detail sheet (post-sourced flash items — no product.html page)
     const flashCard = e.target.closest("[data-action='open-flash-detail']");
     if (flashCard) {
@@ -2009,29 +2030,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         showSection("feed");
         setTimeout(() => { document.querySelector(`.post-card[data-postid="${postId}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" }); }, 100);
       }
-      return;
-    }
-
-    // Delete post
-    const delBtn = e.target.closest("[data-action='delete-post']");
-    if (delBtn) {
-      if (!sessionUser) return;
-      // Read postId directly from the button (works for both profile cards and feed cards)
-      const postId = delBtn.dataset.postid || delBtn.closest(".post-card")?.getAttribute("data-postid");
-      const kind = delBtn.dataset.kind || delBtn.closest(".post-card")?.getAttribute("data-kind") || "post";
-      if (!postId) { alert("Could not find post ID."); return; }
-      if (!confirm("Delete this post? This cannot be undone.")) return;
-      let error;
-      if (kind === "reshare") {
-        ({ error } = await supabase.from("post_reshares").delete().eq("post_id", postId).eq("user_id", sessionUser.id));
-      } else {
-        ({ error } = await supabase.from("posts").delete().eq("id", postId).eq("author_id", sessionUser.id));
-      }
-      if (error) return alert(error.message || "Could not delete post.");
-      cachedPosts = await fetchPosts();
-      renderFeed(); renderMarket(); renderOpps(); renderSocials();
-      await renderProfilePostsList();
-      alert("Deleted ✅");
       return;
     }
 
